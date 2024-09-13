@@ -11,4 +11,3 @@ Classe de base -> helper qui permet l’autocomplétion, classe qui instancie de
 Exemples:
 db_connection = connecte la code python avec la base de données
 Joueur_dao : utilise la connexion mise en place pour lancer des requêtes SQL dans la base de donnée
-Je te deteste le P comme Piccollo
