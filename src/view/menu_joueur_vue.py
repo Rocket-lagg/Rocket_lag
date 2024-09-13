@@ -35,7 +35,9 @@ class MenuJoueurVue(VueAbstraite):
             message="Faites votre choix : ",
             choices=[
                 "Afficher les joueurs de la base de données",
-                "Afficher des pokemons (par appel à un Webservice)",
+                "Obtenir statistiques",
+                "Accéder au calendrier",
+                "Organiser tournoi personnalisé",
                 "Infos de session",
                 "Se déconnecter",
             ],
@@ -44,6 +46,21 @@ class MenuJoueurVue(VueAbstraite):
         match choix:
             case "Se déconnecter":
                 Session().deconnexion()
+                from view.accueil.accueil_vue import AccueilVue
+
+                return AccueilVue()
+
+            case "Obtenir statistiques":
+                from view.accueil.accueil_vue import AccueilVue
+
+                return AccueilVue()
+
+            case "Accéder au calendrier":
+                from view.accueil.accueil_vue import AccueilVue
+
+                return AccueilVue()
+
+            case "Organiser tournoi personnalisé":
                 from view.accueil.accueil_vue import AccueilVue
 
                 return AccueilVue()
