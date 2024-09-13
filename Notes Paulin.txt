@@ -1,6 +1,6 @@
 Notes pour les diagrammes
 
-Classes à créer :
+Classes à créer : a
 Classe utilisateur (joueur DAO)
 Classe match
 
