@@ -1,21 +1,29 @@
 # Point Hebdomadaire - Projet
 
-Date : Jeudi ...
-Semaine n° ...
+Date : Jeudi 19/01
+Semaine n° 3
 
 ## Tâches réalisées cette semaine
 
 > Exemples : `- [x] Tâche 1` ou - `ras`
 
-### Nom Prénom élève 1
+### BORRELLI Claire
+[x] Réalisation Diagramme classe (1er jet)
+[x] Réalisation Diagramme activité (1er jet)
 
-### Nom Prénom élève 2
+### LEMOINE Paulin
+[x] Réalisation Diagramme activité (1er jet)
+[x] Réparation des problèmes du git
 
-### Nom Prénom élève 3
+### TEGUEM Michèle
+[x] Réalisation des graphiques
 
-### Nom Prénom élève 4
+### SOCARD Andre
+[x] J'ai grâce au package request récupéré des données API sur l'API fourni par le professeur et celle
+de ballchasing pour récupérer les matchs manquants. Par exemple ceux des World de Rocket League) que BDS
+ont gagné.
 
-### Nom Prénom élève 5
+### PELLAT Camille
 
 ---
 
