@@ -1,4 +1,4 @@
-class Joueur:
+class Utilisateur:
     """
     Classe représentant un Joueur
 
