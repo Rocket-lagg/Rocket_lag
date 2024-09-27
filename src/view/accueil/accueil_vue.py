@@ -43,7 +43,7 @@ class AccueilVue(VueAbstraite):
             case "Créer un compte":
                 from view.accueil.inscription_vue import InscriptionVue
 
-                return InscriptionVue("Création de compte joueur")
+                return InscriptionVue("Création de compte utilisateur")
 
             case "Infos de session":
                 return AccueilVue(Session().afficher())
