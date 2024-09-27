@@ -308,3 +308,7 @@ Vous pouvez maintenant lancer l'application, le webservice ou les tests unitaire
 - `pytest -v`
 
 MONSTRE
+
+python -m venv .venv
+source .venv/Scripts/activate
+pip freeze > <nom du fichier>
