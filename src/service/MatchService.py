@@ -1,4 +1,5 @@
 from src.utils.singleton import Singleton
+from src.dao.match_dao import MatchDao
 
 
 class MatchService(metaclass=Singleton):
