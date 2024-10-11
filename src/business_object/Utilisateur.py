@@ -4,33 +4,34 @@ class Utilisateur:
 
     Attributs
     ----------
-    id_utilisateur : int
-        identifiant
-    pseudo : str
-        pseudo de l'utilisateur
-    mdp : str
-        le mot de passe de l'utilisateur
-    age : int
-        age de l'utilisateur
-    mail : str
-        mail de l'utilisateur
-    fan_pokemon : bool
-        indique si le joueur est un fan de Pokemon
+    nom_utilisateur : str
+        Pseudo de l'utilisateur
+
+    mot_de_passe : str
+        Mot de passe de l'utilisateur
+
+    email : str
+        Email de l'utilisateur
+
+    tournois_crées: list[Tournoi]
+        Liste des tournois créés par l'utilisateur"
+
+    paris: list[Pari]
+        Liste des paris fait par l'utilisateur
+
+    points: int
+        Nombre de points de l'utilisateur (pour faire des paris)
     """
 
-    def __init__(self, pseudo, age, mail, mdp=None, fan_pokemon=False, id_utilisateur=None):
+    def __init__(self, nom_utilisateur, mot_de_passe, email, tournois_crees, paris, points):
         """Constructeur"""
-        self.id_utilisateur = id_utilisateur
-        self.pseudo = pseudo
-        self.mdp = mdp
-        self.age = age
-        self.mail = mail
-        self.fan_pokemon = fan_pokemon
+        self.nom_utilisateur = nom_utilisateur
+        self.mot_de_passe = mot_de_passe
+        self.email = email
+        self.tournois_crees = tournois_crees
+        self.paris = paris
+        self.points = points
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"Joueur({self.pseudo}, {self.age} ans)"
-
-    def as_list(self) -> list[str]:
-        """Retourne les attributs du joueur dans une liste"""
-        return [self.pseudo, self.age, self.mail, self.fan_pokemon]
+        return f"Joueur({self.nom_utilisateur}"
