@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class EntiteSportive(ABC):
     """
     Classe abstraite représentant une entité sportive avec des statistiques de match.
@@ -46,14 +47,28 @@ class EntiteSportive(ABC):
         Nombre de démolitions reçues par l'entité sportive.
 
     goal_participation : float
-        Taux de participation aux buts, calculé comme la somme des buts et des passes décisives divisée par le nombre total de buts marqués par l'équipe.
+        Taux de participation aux buts, calculé comme la somme des buts et des
+        passes décisives divisée par le nombre total de buts marqués par
+        l'équipe.
     """
 
-    def __init__(self, match_id, equipe_nom,
-                 shots, goals, saves, assists, score, shooting_percentage,
-                 time_offensive_third, time_defensive_third, time_neutral_third,
-                 demo_inflige, demo_recu, goal_participation):
-
+    def __init__(
+        self,
+        match_id,
+        equipe_nom,
+        shots,
+        goals,
+        saves,
+        assists,
+        score,
+        shooting_percentage,
+        time_offensive_third,
+        time_defensive_third,
+        time_neutral_third,
+        demo_inflige,
+        demo_recu,
+        goal_participation,
+    ):
 
         self.match_id = match_id
         self.equipe_nom = equipe_nom
@@ -75,6 +90,7 @@ class EntiteSportive(ABC):
         """
         Méthode abstraite à implémenter dans les classes dérivées.
 
-        Cette méthode doit retourner une représentation sous forme de chaîne de caractères de l'entité sportive.
+        Cette méthode doit retourner une représentation sous forme de chaîne de
+        caractères de l'entité sportive.
         """
         pass
