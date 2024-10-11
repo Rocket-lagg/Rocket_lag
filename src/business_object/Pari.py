@@ -4,25 +4,25 @@ class Pari:
     Parameters:
     ---------------
     id_pari: int
-     identifiant du pari
+        Identifiant du pari
 
     id_match: int
-     identifiant du match sur lequel est fait le pari
+        Identifiant du match sur lequel est fait le pari
 
     id_equipe: Equipe
-     identifiant de l'équipe sur laquelle le joueur place son pari
+        Identifiant de l'équipe sur laquelle le joueur place son pari
 
     id_vainqueur: Equipe
-     identifiant du joueur qui remporte le pari
+        Identifiant du joueur qui remporte le pari
 
     cote_match: Match
-     Cote sur le match du pari
+        Cote sur le match du pari
 
     statut: str
-     Etat du pari: "Remporté", "En cours"
+        Etat du pari: "Remporté", "En cours"
 
     montant: int
-     Montant mis en jeu dans le pari
+        Montant mis en jeu dans le pari
     """
 
     def __init__(self, id_pari, id_match, id_equipe, id_vainqueur, cote_match, status, montant):
