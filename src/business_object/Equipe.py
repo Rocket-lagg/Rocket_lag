@@ -47,7 +47,9 @@ class Equipe(EntiteSportive):
         Nombre de démolitions reçues par l'équipe.
 
     goal_participation : float
-        Taux de participation aux buts, calculé comme la somme des buts et des passes décisives divisée par le nombre total de buts marqués par l'équipe.
+        Taux de participation aux buts, calculé comme la somme des buts et des
+        passes décisives divisée par le nombre total de buts marqués par
+        l'équipe.
 
     Nouveaux attributs propres à Equipe:
     ------------------------------------
@@ -64,7 +66,8 @@ class Equipe(EntiteSportive):
         Ligue ou division dans laquelle l'équipe évolue.
 
     stage : str
-        Étape du tournoi ou de la compétition où se situe l'équipe (ex : poule, quart de finale, etc.).
+        Étape du tournoi ou de la compétition où se situe l'équipe
+        (ex : poule, quart de finale, etc.).
     """
 
     def __init__(

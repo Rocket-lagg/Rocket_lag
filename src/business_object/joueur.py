@@ -47,7 +47,9 @@ class Joueur(EntiteSportive):
         Nombre de démolitions reçues par le joueur.
 
     goal_participation : float
-        Taux de participation aux buts, calculé comme la somme des buts et des passes décisives divisée par le nombre total de buts marqués par l'équipe.
+        Taux de participation aux buts, calculé comme la somme des buts et des
+        passes décisives divisée par le nombre total de buts marqués par
+        l'équipe.
 
     Nouveaux Attributs propres à Joueur:
     ------------------------------------
@@ -64,16 +66,45 @@ class Joueur(EntiteSportive):
         Note ou évaluation de la performance du joueur.
     """
 
-    def __init__(self, match_id, equipe_nom,
-                 shots, goals, saves, assists, score, shooting_percentage,
-                 time_offensive_third, time_defensive_third, time_neutral_third,
-                 demo_inflige, demo_recu, goal_participation, nom, nationalite,
-                 region, rating):
+    def __init__(
+        self,
+        match_id,
+        equipe_nom,
+        shots,
+        goals,
+        saves,
+        assists,
+        score,
+        shooting_percentage,
+        time_offensive_third,
+        time_defensive_third,
+        time_neutral_third,
+        demo_inflige,
+        demo_recu,
+        goal_participation,
+        nom,
+        nationalite,
+        region,
+        rating,
+    ):
 
         # Appel du constructeur parent (EntiteSportive)
-        super().__init__(match_id, equipe_nom, shots, goals, saves, assists, score,
-                         shooting_percentage, time_offensive_third, time_defensive_third,
-                         time_neutral_third, demo_inflige, demo_recu, goal_participation)
+        super().__init__(
+            match_id,
+            equipe_nom,
+            shots,
+            goals,
+            saves,
+            assists,
+            score,
+            shooting_percentage,
+            time_offensive_third,
+            time_defensive_third,
+            time_neutral_third,
+            demo_inflige,
+            demo_recu,
+            goal_participation,
+        )
 
         # Initialisation des nouveaux attributs
         self.nom = nom
