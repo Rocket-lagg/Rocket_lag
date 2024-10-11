@@ -125,3 +125,6 @@ class Equipe(EntiteSportive):
             Représentation de l'équipe avec son nom, son score et sa région.
         """
         return f"Equipe({self.equipe_nom}, Score: {self.equipe_score}, Région: {self.region}, Vainqueur: {'Oui' if self.equipe_winner else 'Non'})"
+
+
+    
