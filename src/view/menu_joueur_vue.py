@@ -35,9 +35,9 @@ class MenuJoueurVue(VueAbstraite):
             message="Faites votre choix : ",
             choices=[
                 "Afficher les joueurs de la base de données",
-                "Obtenir statistiques",
-                "Accéder au calendrier",
-                "Organiser tournoi personnalisé",
+                "Parier",
+                "Participer à un tournoi",
+                "Envoyer invitation à un tournoi",
                 "Infos de session",
                 "Se déconnecter",
             ],
@@ -50,17 +50,17 @@ class MenuJoueurVue(VueAbstraite):
 
                 return AccueilVue()
 
-            case "Obtenir statistiques":
+            case "Participer à un tournoi":
                 from view.accueil.accueil_vue import AccueilVue
 
                 return AccueilVue()
 
-            case "Accéder au calendrier":
+            case "Parier":
                 from view.accueil.accueil_vue import AccueilVue
 
                 return AccueilVue()
 
-            case "Organiser tournoi personnalisé":
+            case "Envoyer invitation à un tournoi":
                 from view.accueil.accueil_vue import AccueilVue
 
                 return AccueilVue()
@@ -69,10 +69,5 @@ class MenuJoueurVue(VueAbstraite):
                 return MenuJoueurVue(Session().afficher())
 
             case "Afficher les joueurs de la base de données":
-                joueurs_str = JoueurService().afficher_tous()
-                return MenuJoueurVue(joueurs_str)
-
-            case "Afficher des pokemons (par appel à un Webservice)":
-                from view.pokemon_vue import PokemonVue
-
-                return PokemonVue()
+                utilisateur_str = UtilisateurService().afficher_tous()
+                return MenuJoueurVue(utilisateur_str)
