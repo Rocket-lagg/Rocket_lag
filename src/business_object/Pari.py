@@ -1,3 +1,7 @@
+from Equipe import Equipe
+from Match import Match
+
+
 class Pari:
     """
     Définit un pari pour un joueur
@@ -26,6 +30,22 @@ class Pari:
     """
 
     def __init__(self, id_pari, id_match, id_equipe, id_vainqueur, cote_match, status, montant):
+
+        if not isinstance(id_pari, int):
+            raise TypeError("id_pari doit être de type int")
+        if not isinstance(id_match, int):
+            raise TypeError("id_match doit être de type int")
+        if not isinstance(id_equipe, Equipe):
+            raise TypeError("id_equipe doit être de type int")
+        if not isinstance(id_vainqueur, Equipe):
+            raise TypeError("id_vainqueur doit être de type int")
+        if not isinstance(cote_match, Match):
+            raise TypeError("cote_match doit être de type float")
+        if not isinstance(status, str):
+            raise TypeError("status doit être de type str")
+        if not isinstance(montant, float):
+            raise TypeError("montant doit être de type float")
+
         self.id_pari = id_pari
         self.id_match = id_match
         self.id_equipe = id_equipe
