@@ -30,12 +30,12 @@ class JoueurDao(metaclass=Singleton):
                     # Requête d'insertion SQL
                     cursor.execute(
                         """
-                        INSERT INTO Joueur (nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score, 
-                                            shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third, 
+                        INSERT INTO Joueur (nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
+                                            shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
                                             demo_inflige, demo_recu, goal_participation)
-                        VALUES (%(nom)s, %(nationalite)s, %(region)s, %(rating)s, %(match_id)s, %(shots)s, %(goals)s, %(saves)s, 
-                                %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s, %(time_defensive_third)s, 
-                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s, %(goal_participation)s)
+                        VALUES (%(nom)s, %(nationalite)s, %(region)s, %(rating)s, %(match_id)s, %(shots)s, %(goals)s, %(saves)s,
+                                %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s, %(time_defensive_third)s,
+                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s, %(goal_participation)s,%(equipe_nom)s)
                         """,
                         {
                             "nom": joueur.nom,
@@ -43,6 +43,7 @@ class JoueurDao(metaclass=Singleton):
                             "region": joueur.region,
                             "rating": joueur.rating,
                             "match_id": joueur.match_id,
+                            "equipe_nom": joueur.equipe_nom,
                             "shots": joueur.shots,
                             "goals": joueur.goals,
                             "saves": joueur.saves,
@@ -65,8 +66,8 @@ class JoueurDao(metaclass=Singleton):
             return False
 
     @log
-    def obtenir_par_id(self, joueur_id: int) -> Joueur:
-        """Récupère un joueur de la base de données par son ID
+    def obtenir_par_nom(self, joueur_nom: str) -> Joueur:
+        """Récupère un joueur de la base de données par son nom
 
         Parameters
         ----------
@@ -84,13 +85,13 @@ class JoueurDao(metaclass=Singleton):
                     # Requête SQL pour obtenir un joueur par ID
                     cursor.execute(
                         """
-                        SELECT nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score, 
-                               shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third, 
+                        SELECT nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
+                               shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
                                demo_inflige, demo_recu, goal_participation
                         FROM Joueur
-                        WHERE joueur_id = %s
+                        WHERE joueur_nom = %s
                         """,
-                        (joueur_id,),
+                        (joueur_nom,),
                     )
                     row = cursor.fetchone()
                     if row:
@@ -140,10 +141,10 @@ class JoueurDao(metaclass=Singleton):
                         """
                         UPDATE Joueur
                         SET nom = %(nom)s, nationalite = %(nationalite)s, region = %(region)s, rating = %(rating)s,
-                            match_id = %(match_id)s, shots = %(shots)s, goals = %(goals)s, saves = %(saves)s, 
-                            assists = %(assists)s, score = %(score)s, shooting_percentage = %(shooting_percentage)s, 
-                            time_offensive_third = %(time_offensive_third)s, time_defensive_third = %(time_defensive_third)s, 
-                            time_neutral_third = %(time_neutral_third)s, demo_inflige = %(demo_inflige)s, 
+                            match_id = %(match_id)s, shots = %(shots)s, goals = %(goals)s, saves = %(saves)s,
+                            assists = %(assists)s, score = %(score)s, shooting_percentage = %(shooting_percentage)s,
+                            time_offensive_third = %(time_offensive_third)s, time_defensive_third = %(time_defensive_third)s,
+                            time_neutral_third = %(time_neutral_third)s, demo_inflige = %(demo_inflige)s,
                             demo_recu = %(demo_recu)s, goal_participation = %(goal_participation)s
                         WHERE joueur_id = %(joueur_id)s
                         """,
