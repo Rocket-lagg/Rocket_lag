@@ -1,4 +1,5 @@
 from src.utils.singleton import Singleton
+from src.dao.equipe_dao import EquipeDao
 
 
 class EquipeService(metaclass=Singleton):
