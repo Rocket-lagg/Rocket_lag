@@ -114,7 +114,7 @@ class Equipe(EntiteSportive):
         # Initialisation des nouveaux attributs spécifiques à la classe Equipe
         self.equipe_score = equipe_score
         self.equipe_winner = equipe_winner
-        self.region = region
+        self.region = region # autant créer une classe match non?
         self.ligue = ligue
         self.stage = stage
 
@@ -128,6 +128,3 @@ class Equipe(EntiteSportive):
             Représentation de l'équipe avec son nom, son score et sa région.
         """
         return f"Equipe({self.equipe_nom}, Score: {self.equipe_score}, Région: {self.region}, Vainqueur: {'Oui' if self.equipe_winner else 'Non'})"
-
-
-    
