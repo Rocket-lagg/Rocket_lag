@@ -1,22 +1,24 @@
-CREATE TABLE matches (
+CREATE TABLE Equipe (
     match_id VARCHAR(255),
     equipe_nom VARCHAR(255),
-    equipe_image VARCHAR(255),
-    equipe_score INT,
-    equipe_winner BOOLEAN,
+    equipe_winner INT,
     shots INT,
     goals INT,
     saves INT,
     assists INT,
     score INT,
     shooting_percentage FLOAT,
-    date TIMESTAMP,
-    ligue VARCHAR(255),
-    region VARCHAR(50),
-    stage VARCHAR(50)
+    demo_infligées INT,
+    demo_reçues INT,
+    goal_participation FLOAT,
+    time_defensive_third FLOAT,
+    time_neutral_third FLOAT,
+    time_offensive_third FLOAT,
+    PRIMARY KEY (match_id, equipe_nom),  -- Clé primaire composée
+    FOREIGN KEY (match_id) REFERENCES matches(match_id)
 );
 
-CREATE TABLE players (
+CREATE TABLE Joueur (
     match_id VARCHAR(255),
     equipe_nom VARCHAR(255),
     joueur_nom VARCHAR(255),
@@ -33,5 +35,14 @@ CREATE TABLE players (
     rating FLOAT,
     time_defensive_third FLOAT,
     time_neutral_third FLOAT,
-    time_offensive_third FLOAT
+    time_offensive_third FLOAT,
+    PRIMARY KEY (match_id, joueur_nom),  -- Clé primaire composée
+    FOREIGN KEY (match_id) REFERENCES matches(match_id)  -- Clé étrangère qui fait référence à 'ligue_id' dans la table 'leagues'
+);
+
+CREATE TABLE matches (
+    match_id VARCHAR(255) PRIMARY KEY,
+    date DATE,
+    ligue VARCHAR(255),
+    region VARCHAR(255)
 );
