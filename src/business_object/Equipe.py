@@ -120,7 +120,7 @@ class Equipe(EntiteSportive):
         # Initialisation des nouveaux attributs spécifiques à la classe Equipe
         self.equipe_score = equipe_score
         self.equipe_winner = equipe_winner
-        self.region = region
+        self.region = region # autant créer une classe match non?
         self.ligue = ligue
         self.stage = stage
 
