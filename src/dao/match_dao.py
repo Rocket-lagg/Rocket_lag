@@ -144,6 +144,78 @@ class MatchDao(metaclass=Singleton):
         return liste_matchs
 
     @log
+    def trouver_id_match_par_equipe(self, equipe) ->List[str]:
+        """trouver l'id de match grâce au nom d'une équipe
+
+        Parameters
+        ----------
+        equipe : str
+            nom unique d'une équipe
+
+        Returns
+        -------
+        list_id_match : List[id_match: str]
+            renvoie une liste des id des matchs qu'a fait l'équipe
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_match                           "
+                        " FROM equipe                      "
+                        " WHERE equipe_nom = %(equipe)s;  ",
+                        {"equipe": equipe},
+                    )
+                    res = cursor.fetchall()
+        except Exception as e:
+            logging.info(e)
+            raise
+
+        list_id_match = None
+        if res:
+            for row in res:
+                list_id_match.append(row['id_match'])
+
+
+        return list_id_match
+
+    @log
+    def trouver_id_match_par_joueur(self, joueur) ->List[str]:
+        """trouver l'id de match grâce au nom d'un joueur
+
+        Parameters
+        ----------
+        joueur : str
+            nom unique d'une équipe
+
+        Returns
+        -------
+        list_id_match : List[id_match: str]
+            renvoie une liste des id des matchs qu'a fait l'équipe
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_match                           "
+                        " FROM joueur                     "
+                        " WHERE joueur_nom = %(joueur)s;  ",
+                        {"joueur": joueur},
+                    )
+                    res = cursor.fetchall()
+        except Exception as e:
+            logging.info(e)
+            raise
+
+        list_id_match = None
+        if res:
+            for row in res:
+                list_id_match.append(row['id_match'])
+
+
+        return list_id_match
+
+    @log
     def lister_tous(self) -> list[Match]:
         """lister tous les matchs
 

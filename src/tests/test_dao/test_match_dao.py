@@ -69,6 +69,57 @@ def test_trouver_par_date_non_existante():
     # THEN
     assert match is None
 
+def test_trouver_id_match_par_joueur_existant():
+    """Recherche par nom d'un joueur existant"""
+
+    # GIVEN
+    joueur = "Diaz"
+
+    # WHEN
+    list_id_match = MatchDao().trouver_id_match_par_joueur(joueur)
+
+    # THEN
+    assert list_id_match is not None
+
+
+def test_trouver_id_match_par joueur_non_existante():
+    """Recherche par nom d'un joueur n'existant pas"""
+
+    # GIVEN
+    joueur = "Diazopoooo"
+
+    # WHEN
+    list_id_match = MatchDao().trouver_id_match_par_joueur(joueur)
+
+    # THEN
+    assert list_id_match is None
+
+def test_trouver_id_match_par_equipe_existant():
+    """Recherche par nom d'un equipe existant"""
+
+    # GIVEN
+    equipe = "give me my money"
+
+    # WHEN
+    list_id_match = MatchDao().trouver_id_match_par_equipe(equipe)
+
+    # THEN
+    assert list_id_match is not None
+
+
+def test_trouver_id_match_par equipe_non_existante():
+    """Recherche par nom d'une equipe n'existant pas"""
+
+    # GIVEN
+    equipe = 'fake_ team_I_guess'
+
+    # WHEN
+    list_id_match = MatchDao().trouver_id_match_par_equipe(equipe)
+
+    # THEN
+    assert list_id_match is None
+
+
 def test_lister_tous():
     """Vérifie que la méthode renvoie une liste de Match
     de taille supérieure ou égale à 2
