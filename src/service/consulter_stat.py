@@ -1,9 +1,9 @@
-from src.utils.singleton import Singleton
-from src.dao.equipe_dao import EquipeDao
-from src.dao.joueur_dao import JoueurDao
-from src.dao.match_dao import MatchDao
+from utils.singleton import Singleton
+from dao.equipe_dao import EquipeDao
+from dao.joueur_dao import JoueurDao
+from dao.match_dao import MatchDao
 from sklearn.preprocessing import StandardScaler
-from src.business_object.joueur import Joueur
+from business_object.joueur import Joueur
 
 
 class ConsulterStats(metaclass=Singleton):
