@@ -40,9 +40,14 @@ CREATE TABLE Joueur (
     FOREIGN KEY (match_id) REFERENCES matches(match_id)  -- Clé étrangère qui fait référence à 'ligue_id' dans la table 'leagues'
 );
 
-CREATE TABLE matches (
+CREATE TABLE matchs (
     match_id VARCHAR(255) PRIMARY KEY,
-    date DATE,
-    ligue VARCHAR(255),
-    region VARCHAR(255)
+    equipe1 VARCHAR(255),
+    equipe2 VARCHAR(255),
+    score1 INT,
+    score2 INT,
+    date TIMESTAMP WITH TIME ZONE,
+    region VARCHAR(50)
+    ligue VARCHAR(255)
+    perso BOOL
 );
