@@ -1,4 +1,4 @@
-from Pari import Pari
+from business_object.Pari import Pari
 
 
 class Utilisateur:

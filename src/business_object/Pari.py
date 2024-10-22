@@ -1,5 +1,5 @@
-from Equipe import Equipe
-from Match import Match
+from business_object.Equipe import Equipe
+from business_object.Match import Match
 
 
 class Pari:
