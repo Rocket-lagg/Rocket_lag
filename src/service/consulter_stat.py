@@ -19,7 +19,7 @@ class ConsulterStats(metaclass=Singleton):
         assists = joueur.assists
         shots = joueur.shots
         saves = joueur.saves
-        # rating TODO
+        rating = joueur.score
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
         # indice offensif/défensif TODO
@@ -31,6 +31,7 @@ class ConsulterStats(metaclass=Singleton):
             f"Passes décisives : {assists}\n"
             f"Tirs : {shots}\n"
             f"Arrêts : {saves}\n"
+            f"Rating : {rating}\n"
             f"Pourcentage de tirs cadrés : {shooting_percentage}\n"
             f"Démolitions : {demolitions}"
         )
