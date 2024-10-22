@@ -1,5 +1,5 @@
-from Equipe import Equipe
-from Match import Match
+from business_object.Equipe import Equipe
+from business_object.Match import Match
 
 
 class Pari:
@@ -19,7 +19,7 @@ class Pari:
     id_vainqueur: Equipe
         Identifiant du joueur qui remporte le pari
 
-    cote_match: Match
+    cote_match: int
         Cote sur le match du pari
 
     statut: str
