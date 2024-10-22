@@ -61,3 +61,11 @@ class ConsulterStats(metaclass=Singleton):
             f"Pourcentage de tirs cadrés au cours de la saison : {shot_percentage}\n"
             f"Nombre de démolitions depuis le début de la saison : {demolitions}"
         )
+
+    def stats_matchs(self, nom_equipe="Non fourni", nom_joueur="Non fourni"):
+        if not isinstance(nom_equipe, str):
+            raise TypeError("'nom_equipe' doit être une instance de str.")
+        if not isinstance(nom_joueur, str):
+            raise TypeError("'nom_joueur' doit être une instance de str.")
+        if nom_equipe == "Non fourni" and nom_joueur == "Non fourni":
+            raise ValueError("Il faut renseigner au moins un des deux arguments de la fonction.")
