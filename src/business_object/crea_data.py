@@ -5,12 +5,9 @@ import os
 import dotenv
 from dao.joueur_dao import JoueurDao
 
-
-
-
-
 # Charger les variables d'environnement
 dotenv.load_dotenv()
+
 class API:
     def __init__(self, base_url):
         self.base_url = base_url
@@ -118,24 +115,25 @@ class MatchProcessor:
             joueur_core = joueur_stats['stats']['core']
 
             joueur_data = {
-                "match_id": match_data["_id"],
-                "equipe_nom": equipe_nom,
-                "joueur_nom": joueur_nom,
-                "nationalite": joueur_nationalite,
-                "shots": joueur_core['shots'],
-                "goals": joueur_core['goals'],
-                "saves": joueur_core['saves'],
-                "assists": joueur_core['assists'],
-                "score": joueur_core['score'],
-                "shooting_percentage": joueur_core['shootingPercentage'],
-                "demo_infligées": joueur_stats['stats']['demo']['inflicted'],
-                "demo_reçues": joueur_stats['stats']['demo']['taken'],
-                "goal_participation": joueur_stats['advanced']['goalParticipation'],
-                "rating": joueur_stats['advanced']['rating'],
-                "time_defensive_third": joueur_stats['stats']['positioning']['timeDefensiveThird'],
-                "time_neutral_third": joueur_stats['stats']['positioning']['timeNeutralThird'],
-                "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird']
-            }
+            "match_id": match_data["_id"],
+            "equipe_nom": equipe_nom,
+            "nom": joueur_nom,
+            "nationalite": joueur_nationalite,
+            "shots": joueur_core['shots'],
+            "goals": joueur_core['goals'],
+            "saves": joueur_core['saves'],
+            "assists": joueur_core['assists'],
+            "score": joueur_core['score'],
+            "shooting_percentage": joueur_core['shootingPercentage'],
+            "demo_infligees": joueur_stats['stats']['demo']['inflicted'],
+            "demo_recue": joueur_stats['stats']['demo']['taken'],
+            "goal_participation": joueur_stats['advanced']['goalParticipation'],
+            "rating": joueur_stats['advanced']['rating'],
+            "time_defensive_third": joueur_stats['stats']['positioning']['timeDefensiveThird'],
+            "time_neutral_third": joueur_stats['stats']['positioning']['timeNeutralThird'],
+            "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird'] }
+
+
             self.filtered_players.append(joueur_data)
             result = self.joueur_dao.creer(joueur_data)
 

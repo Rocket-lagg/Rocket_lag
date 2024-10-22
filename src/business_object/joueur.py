@@ -65,7 +65,6 @@ class Joueur(EntiteSportive):
     rating : float
         Note ou évaluation de la performance du joueur.
     """
-
     def __init__(
         self,
         match_id,
@@ -84,8 +83,7 @@ class Joueur(EntiteSportive):
         goal_participation,
         nom,
         nationalite,
-        region,
-        rating,
+        rating
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -114,8 +112,6 @@ class Joueur(EntiteSportive):
         # Initialisation des nouveaux attributs
         self.nom = nom
         self.nationalite = nationalite
-        self.region = region
-        self.rating = rating
 
     def __str__(self):
         """
