@@ -32,8 +32,7 @@ class MatchDao(metaclass=Singleton):
                             "date": match.date,
                             "region": match.region,
                             "ligue": match.ligue,
-                            "perso": match.perso
-
+                            "perso": match.perso,
                         },
                     )
 
@@ -79,19 +78,18 @@ class MatchDao(metaclass=Singleton):
         match = None
         if res:
             match = Match(
-                id_match = res["id_match"],
-                equipe1 = res["equipe1"],
-                equipe2 = res["equipe2"],
-                score1 = res["score1"],
-                score2 = res["score2"],
-                date = res["date"],
-                region = res["region"],
-                ligue = res["ligue"],
-                perso = res["perso"],
+                id_match=res["id_match"],
+                equipe1=res["equipe1"],
+                equipe2=res["equipe2"],
+                score1=res["score1"],
+                score2=res["score2"],
+                date=res["date"],
+                region=res["region"],
+                ligue=res["ligue"],
+                perso=res["perso"],
             )
 
         return match
-
 
     @log
     def trouver_par_date(self, id_date) -> Match:
@@ -128,15 +126,15 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    id_match = res["id_match"],
-                    equipe1 = res["equipe1"],
-                    equipe2 = res["equipe2"],
-                    score1 = res["score1"],
-                    score2 = res["score2"],
-                    date = res["date"],
-                    region = res["region"],
-                    ligue = res["ligue"],
-                    perso = res["perso"],
+                    id_match=res["id_match"],
+                    equipe1=res["equipe1"],
+                    equipe2=res["equipe2"],
+                    score1=res["score1"],
+                    score2=res["score2"],
+                    date=res["date"],
+                    region=res["region"],
+                    ligue=res["ligue"],
+                    perso=res["perso"],
                 )
 
                 liste_matchs.append(match)
@@ -144,7 +142,7 @@ class MatchDao(metaclass=Singleton):
         return liste_matchs
 
     @log
-    def trouver_id_match_par_equipe(self, equipe) ->List[str]:
+    def trouver_id_match_par_equipe(self, equipe) -> list[str]:
         """trouver l'id de match grâce au nom d'une équipe
 
         Parameters
@@ -174,13 +172,12 @@ class MatchDao(metaclass=Singleton):
         list_id_match = None
         if res:
             for row in res:
-                list_id_match.append(row['id_match'])
-
+                list_id_match.append(row["id_match"])
 
         return list_id_match
 
     @log
-    def trouver_id_match_par_joueur(self, joueur) ->List[str]:
+    def trouver_id_match_par_joueur(self, joueur) -> list[str]:
         """trouver l'id de match grâce au nom d'un joueur
 
         Parameters
@@ -210,8 +207,7 @@ class MatchDao(metaclass=Singleton):
         list_id_match = None
         if res:
             for row in res:
-                list_id_match.append(row['id_match'])
-
+                list_id_match.append(row["id_match"])
 
         return list_id_match
 
@@ -246,15 +242,15 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    id_match = res["id_match"],
-                    equipe1 = res["equipe1"],
-                    equipe2 = res["equipe2"],
-                    score1 = res["score1"],
-                    score2 = res["score2"],
-                    date = res["date"],
-                    region = res["region"],
-                    ligue = res["ligue"],
-                    perso = res["perso"],
+                    id_match=res["id_match"],
+                    equipe1=res["equipe1"],
+                    equipe2=res["equipe2"],
+                    score1=res["score1"],
+                    score2=res["score2"],
+                    date=res["date"],
+                    region=res["region"],
+                    ligue=res["ligue"],
+                    perso=res["perso"],
                 )
 
                 liste_matchs.append(match)

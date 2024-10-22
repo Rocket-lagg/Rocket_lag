@@ -8,7 +8,7 @@ from utils.securite import hash_password
 
 from dao.match_dao import MatchDao
 
-from business_object.match import Match
+from business_object.Match import Match
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -44,11 +44,12 @@ def test_trouver_par_id_non_existant():
     # THEN
     assert match is None
 
+
 def test_trouver_par_date_existant():
     """Recherche par id d'un match existant"""
 
     # GIVEN
-    date = '2024-10-08'
+    date = "2024-10-08"
 
     # WHEN
     match = MatchDao().trouver_par_date(date)
@@ -61,13 +62,14 @@ def test_trouver_par_date_non_existante():
     """Recherche par une date de match n'existant pas"""
 
     # GIVEN
-    date = '1024-10-08T22:00:00Z'
+    date = "1024-10-08T22:00:00Z"
 
     # WHEN
     match = MatchDao().trouver_par_date(date)
 
     # THEN
     assert match is None
+
 
 def test_trouver_id_match_par_joueur_existant():
     """Recherche par nom d'un joueur existant"""
@@ -82,7 +84,7 @@ def test_trouver_id_match_par_joueur_existant():
     assert list_id_match is not None
 
 
-def test_trouver_id_match_par joueur_non_existante():
+def test_trouver_id_match_par_joueur_non_existante():
     """Recherche par nom d'un joueur n'existant pas"""
 
     # GIVEN
@@ -93,6 +95,7 @@ def test_trouver_id_match_par joueur_non_existante():
 
     # THEN
     assert list_id_match is None
+
 
 def test_trouver_id_match_par_equipe_existant():
     """Recherche par nom d'un equipe existant"""
@@ -107,11 +110,11 @@ def test_trouver_id_match_par_equipe_existant():
     assert list_id_match is not None
 
 
-def test_trouver_id_match_par equipe_non_existante():
+def test_trouver_id_match_par_equipe_non_existante():
     """Recherche par nom d'une equipe n'existant pas"""
 
     # GIVEN
-    equipe = 'fake_ team_I_guess'
+    equipe = "fake_ team_I_guess"
 
     # WHEN
     list_id_match = MatchDao().trouver_id_match_par_equipe(equipe)
@@ -142,15 +145,15 @@ def test_creer_ok():
 
     # GIVEN
     match = Match(
-        id_match = 13223,
-        equipe1 = 'LOS',
-        equipe2 = 'ROI',
-        score1 = 1,
-        score2 = 10,
-        date = 2024-10-10,
-        region = 'France',
-        ligue = 'USBG',
-        perso = False,
+        id_match=13223,
+        equipe1="LOS",
+        equipe2="ROI",
+        score1=1,
+        score2=10,
+        date=2024 - 10 - 10,
+        region="France",
+        ligue="USBG",
+        perso=False,
     )
 
     # WHEN
@@ -166,15 +169,15 @@ def test_creer_ko():
 
     # GIVEN
     match = Match(
-        id_match = 13223,
-        equipe1 = 'LOS',
-        equipe2 = 'ROI',
-        score1 = 1,
-        score2 = 10,
-        date = 2024-10-10,
-        region = 'France',
-        ligue = 'USBG',
-        perso = False,
+        id_match=13223,
+        equipe1="LOS",
+        equipe2="ROI",
+        score1=1,
+        score2=10,
+        date=2024 - 10 - 10,
+        region="France",
+        ligue="USBG",
+        perso=False,
     )
 
     # WHEN
@@ -182,7 +185,6 @@ def test_creer_ko():
 
     # THEN
     assert not creation_ok
-
 
 
 if __name__ == "__main__":

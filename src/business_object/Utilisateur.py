@@ -1,4 +1,4 @@
-from Pari import Pari
+from business_object.Pari import Pari
 
 
 class Utilisateur:
@@ -45,7 +45,7 @@ class Utilisateur:
         self.mot_de_passe = mot_de_passe
         self.email = email
         self.tournois_crees = tournois_crees
-        self.paris = paris # regarder pour prendre les logs
+        self.paris = paris  # regarder pour prendre les logs
         self.points = points
 
     def __str__(self):
