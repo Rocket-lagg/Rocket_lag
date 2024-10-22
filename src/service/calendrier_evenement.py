@@ -1,4 +1,6 @@
 from service.MatchService import MatchService
+from datetime import datetime
+from dao.match_dao import MatchDao
 import calendar
 
 
@@ -6,7 +8,13 @@ class CalendrierEvenement():
 
     def dictionnaire_evenement(annee):
     # Dictionnaire des événements par jour (clé = (mois, jour), valeur = événement)
-    pass
+        all_matchs = MatchDao.lister_tous()
+        evenements = {}
+        for match in all_matchs:
+            date = datetime.fromisoformat(match['date'][:-1])
+            if date.year == annee:
+                evenements[(date.month, date.day)] = f"{match['ligue']}: {match['equipe1']} vs {match['equipe2']}"
+        return evenements
 
     # Fonction pour afficher un calendrier d'une année complète avec des événements
     def afficher_calendrier_annee(annee, evenements):
@@ -41,9 +49,13 @@ class CalendrierEvenement():
             print(f"{calendar.month_name[mois]} {jour} : {evenement}")
 
 
-
-    def afficher_match_date(date):
-        pass
-
     def rechercher_match_par_date(date):
-        pass
+        liste_match = MatchDao.trouver_par_date(date)
+        if liste_match == []:
+            print(f"Il n'y a aucun match le {date}")
+        else:
+
+            print(f"Match du {date}")
+            for i in liste_match:
+                date = datetime.fromisoformat(i['date'][:-1])
+                print(f"{match['ligue']}: {match['equipe1']} vs {match['equipe2']} à {date.hour} ")
