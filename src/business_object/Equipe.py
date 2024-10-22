@@ -111,6 +111,12 @@ class Equipe(EntiteSportive):
             goal_participation,
         )
 
+        assert isinstance(equipe_score, int), "equipe_score doit être un entier"
+        assert isinstance(equipe_winner, bool), "equipe_winner doit être un booléen"
+        assert isinstance(region, str), "region doit être une chaîne de caractères"
+        assert isinstance(ligue, str), "ligue doit être une chaîne de caractères"
+        assert isinstance(stage, str), "stage doit être une chaîne de caractères"
+
         # Initialisation des nouveaux attributs spécifiques à la classe Equipe
         self.equipe_score = equipe_score
         self.equipe_winner = equipe_winner
@@ -128,6 +134,3 @@ class Equipe(EntiteSportive):
             Représentation de l'équipe avec son nom, son score et sa région.
         """
         return f"Equipe({self.equipe_nom}, Score: {self.equipe_score}, Région: {self.region}, Vainqueur: {'Oui' if self.equipe_winner else 'Non'})"
-
-
-    

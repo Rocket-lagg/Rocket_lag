@@ -45,9 +45,10 @@ class Utilisateur:
         self.mot_de_passe = mot_de_passe
         self.email = email
         self.tournois_crees = tournois_crees
-        self.paris = paris # regarder pour prendre les logs
+        self.paris = paris  # regarder pour prendre les logs
         self.points = points
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"Joueur({self.nom_utilisateur}"
+        return f"identifiant:{self.nom_utilisateur}, mdp:{self.mot_de_passe}, email:{self.email}"
+        f"tournois:{self.tournois_crees}, paris:{self.paris}, points:{self.points})"

@@ -19,7 +19,7 @@ class Pari:
     id_vainqueur: Equipe
         Identifiant du joueur qui remporte le pari
 
-    cote_match: Match
+    cote_match: int
         Cote sur le match du pari
 
     statut: str
