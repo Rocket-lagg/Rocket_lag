@@ -39,7 +39,7 @@ class EquipeDao(metaclass=Singleton):
                         VALUES (%(match_id)s, %(equipe_nom)s, %(equipe_image)s, %(equipe_score)s, %(equipe_winner)s,
                                 %(shots)s, %(goals)s, %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(date)s,
                                 %(ligue)s, %(region)s, %(stage)s)
-                        
+
                         """,
                         {
                             "match_id": equipe.match_id,
@@ -59,7 +59,7 @@ class EquipeDao(metaclass=Singleton):
                             "stage": equipe.stage,
                         },
                     )
-                    
+
                     res = cursor.fetchone()
         except Exception as e:
             logging.info(e)
@@ -113,5 +113,3 @@ class EquipeDao(metaclass=Singleton):
                 liste_joueurs.append(joueur)
 
         return liste_joueurs
-
-    @log
