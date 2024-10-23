@@ -75,31 +75,69 @@ class EquipeDao(metaclass=Singleton):
             return False
 
 
-    @log
-    def lister_tous(self) -> list[Joueur]:
-        """lister tous les joueurs
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        liste_joueurs : list[Joueur]
-            renvoie la liste de tous les joueurs dans la base de données
-        """
-
+    def creer_table_equipe():
         try:
+            # Connexion à la base de données
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        "SELECT *                              "
-                        "  FROM joueur;                        "
-                    )
-                    res = cursor.fetchall()
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute("""
+                        DROP TABLE IF EXISTS Equipe;
+                        CREATE TABLE Equipe (
+                            equipe_id SERIAL PRIMARY KEY,
+                            match_id VARCHAR(50) NOT NULL,
+                            equipe_nom VARCHAR(100) NOT NULL,
+                            equipe_score INTEGER,
+                            boost_stole INTEGER,
+                            shots INTEGER,
+                            goals INTEGER,
+                            saves INTEGER,
+                            assists INTEGER,
+                            score INTEGER,
+                            shooting_percentage FLOAT,
+                            time_offensive_third FLOAT,
+                            time_defensive_third FLOAT,
+                            time_neutral_third FLOAT,
+                            demo_inflige INTEGER,
+                            demo_recu INTEGER,
+                            date DATE,  -- Le format de la date doit être 'YYYY-MM-DD'
+                            ligue VARCHAR(100),
+                            region VARCHAR(100),
+                            stage VARCHAR(100)
+                        );
+                    """)
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Equipe créée avec succès.")
         except Exception as e:
-            logging.info(e)
-            raise
+            logging.error(f"Erreur lors de la création de la table Equipe: {e}")
+
+    # Appel de la fonction pour créer la table
+
+        @log
+        def lister_tous(self) -> list[Joueur]:
+            """lister tous les joueurs
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            liste_joueurs : list[Joueur]
+                renvoie la liste de tous les joueurs dans la base de données
+            """
+
+            try:
+                with DBConnection().connection as connection:
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            "SELECT *                              "
+                            "  FROM joueur;                        "
+                        )
+                        res = cursor.fetchall()
+            except Exception as e:
+                logging.info(e)
+                raise
 
         liste_joueurs = []
 
