@@ -1,4 +1,5 @@
 from business_object.Pari import Pari
+from business_object.Tournoi import Tournoi
 
 
 class Utilisateur:
@@ -34,9 +35,9 @@ class Utilisateur:
             raise TypeError("mot_de_passe doit être de type str")
         if not isinstance(email, str):
             raise TypeError("email doit être de type str")
-        if not isinstance(tournois_crees, list):
+        if not isinstance(tournois_crees, list(Tournoi)):
             raise TypeError("tournois_crees doit être de type list")
-        if not isinstance(paris, Pari):
+        if not isinstance(paris, list(Pari)):
             raise TypeError("paris doit être de type Pari")
         if not isinstance(points, int):
             raise TypeError("points doit être de type int")
@@ -50,5 +51,13 @@ class Utilisateur:
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"identifiant:{self.nom_utilisateur}, mdp:{self.mot_de_passe}, email:{self.email}"
-        f"tournois:{self.tournois_crees}, paris:{self.paris}, points:{self.points})"
+        tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
+        paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
+        return (
+            f"identifiant:{self.nom_utilisateur}, "
+            f"mdp:{self.mot_de_passe}, "
+            f"email:{self.email}, "
+            f"tournois:[{tournois_str}], "
+            f"paris:[{paris_str}], "
+            f"points:{self.points}"
+        )

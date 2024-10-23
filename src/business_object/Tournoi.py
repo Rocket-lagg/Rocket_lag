@@ -24,4 +24,4 @@ class Tournoi:
         self.equipes.append(equipe)
         return self.equipes
 
-    def suivre_resultats(self,Match_preso)
+    def suivre_resultats(self,Match_preso):
