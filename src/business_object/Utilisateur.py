@@ -50,4 +50,5 @@ class Utilisateur:
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"Joueur({self.nom_utilisateur}"
+        return f"identifiant:{self.nom_utilisateur}, mdp:{self.mot_de_passe}, email:{self.email}"
+        f"tournois:{self.tournois_crees}, paris:{self.paris}, points:{self.points})"

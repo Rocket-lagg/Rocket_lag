@@ -113,5 +113,3 @@ class EquipeDao(metaclass=Singleton):
                 liste_joueurs.append(joueur)
 
         return liste_joueurs
-
-    @log

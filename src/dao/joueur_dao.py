@@ -33,14 +33,14 @@ class JoueurDao(metaclass=Singleton):
                         INSERT INTO Joueur (nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
                                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
                                             demo_inflige, demo_recu, goal_participation)
-                        VALUES (%(nom)s, %(nationalite)s, %(region)s, %(rating)s, %(match_id)s, %(shots)s, %(goals)s, %(saves)s,
-                                %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s, %(time_defensive_third)s,
-                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s, %(goal_participation)s,%(equipe_nom)s)
+                         VALUES (%(nom)s, %(nationalite)s,  %(rating)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
+                                %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
+                                %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
+                                %(goal_participation)s)
                         """,
                         {
-                            "nom": joueur.nom,
+                            "nom": joueur.joueur_nom,
                             "nationalite": joueur.nationalite,
-                            "region": joueur.region,
                             "rating": joueur.rating,
                             "match_id": joueur.match_id,
                             "equipe_nom": joueur.equipe_nom,
@@ -53,8 +53,8 @@ class JoueurDao(metaclass=Singleton):
                             "time_offensive_third": joueur.time_offensive_third,
                             "time_defensive_third": joueur.time_defensive_third,
                             "time_neutral_third": joueur.time_neutral_third,
-                            "demo_inflige": joueur.demo_inflige,
-                            "demo_recu": joueur.demo_recu,
+                            "demo_inflige": joueur.demo_infligees,
+                            "demo_recu": joueur.demo_recue,
                             "goal_participation": joueur.goal_participation,
                         },
                     )
@@ -120,6 +120,8 @@ class JoueurDao(metaclass=Singleton):
             return None
 
     @log
+    
+
     def mettre_a_jour(self, joueur: Joueur) -> bool:
         """Met à jour un joueur dans la base de données
 

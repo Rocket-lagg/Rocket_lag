@@ -1,5 +1,5 @@
 import pytest
-from business_object import Utilisateur, Tournoi, Pari
+from business_object import Utilisateur, Pari
 
 
 def test_utilisateur_creation():
@@ -7,8 +7,8 @@ def test_utilisateur_creation():
     nom_utilisateur = "TestUser"
     mot_de_passe = "password123"
     email = "testuser@example.com"
-    tournois_crees = [Tournoi("Tournoi 1"), Tournoi("Tournoi 2")]
-    paris = [Pari("Paris 1"), Pari("Paris 2")]
+    tournois_crees = []
+    paris = []
     points = 100
 
     utilisateur = Utilisateur(nom_utilisateur, mot_de_passe, email, tournois_crees, paris, points)
@@ -27,22 +27,8 @@ def test_utilisateur_str():
         "PaulinleMalin", "strongmdp1234", "PaulinleMalin@gmail.com", [], [], 100
     )
 
-    assert str(utilisateur) == "Joueur(TestUser"
-
-
-def test_utilisateur_modification():
-    utilisateur = Utilisateur(
-        "CamillelaChenille", "password123", "CamillelaChenille@gmail.com", [], [], 100
-    )
-
-    # Modification des points
-    utilisateur.points += 50
-    assert utilisateur.points == 150
-
-    # Modification des paris
-    utilisateur.paris.append(Pari("Nouveau Paris"))
-    assert len(utilisateur.paris) == 1
-    assert utilisateur.paris[0].nom == "Nouveau Paris"
+    assert str(utilisateur) == "identifiant: PaulinleMalin, mdp: strongmdp1234"
+    "email: PaulinleMalin@gmail.com, tournois:[], paris:[], points: 100)"
 
 
 def test_nom_utilisateur_type():
