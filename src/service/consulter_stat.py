@@ -44,6 +44,17 @@ class ConsulterStats(metaclass=Singleton):
         rating = joueur.score
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
+        off = (
+            (
+                goals / 1.05
+                + assists / 0.5
+                + shots / 3.29
+                + demolitions / 0.56
+                + tiers_offensif / 20.11
+            )
+            * 1
+            / n
+        )
         # indice offensif TODO -> besoin de la goal participation, du nombre de buts marqués, du temps passé dans le tiers offensif et du nombre de démolitions
         perf = (
             (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
@@ -65,7 +76,8 @@ class ConsulterStats(metaclass=Singleton):
             f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n}\n"
             f"Total de démolitions infligées : {demolitions}\n"
             f"Nombre moyen de démolitions infligées par match : {demolitions/n}\n"
-            f"Son indice de performance au cours de la saison est égal à : {perf}"
+            f"Son indice de performance au cours de la saison est égal à : {perf}\n"
+            f"Son indice offensif au cours de la saison est égal à : {off}"
         )
 
     def stats_equipe(self, nom_equipe):
