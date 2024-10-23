@@ -87,10 +87,12 @@ class JoueurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         SELECT nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
-                               shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                               demo_inflige, demo_recu, goal_participation
+                            shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
+                            demo_inflige, demo_recu, goal_participation
                         FROM Joueur
                         WHERE joueur_nom = %s
+                         AND DATE_PART('year', TO_TIMESTAMP(date_match, 'YYYY-MM-DD"T"HH24:MI:SS"Z"')) = 2024
+
                         """,
                         (joueur_nom,),
                     )
@@ -121,8 +123,6 @@ class JoueurDao(metaclass=Singleton):
             return None
 
     @log
-
-
     def mettre_a_jour(self, joueur: Joueur) -> bool:
         """Met à jour un joueur dans la base de données
 
