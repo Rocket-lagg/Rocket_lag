@@ -30,7 +30,7 @@ class JoueurDao(metaclass=Singleton):
                     # Requête d'insertion SQL
                     cursor.execute(
                         """
-                        INSERT INTO Joueur (nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
+                        INSERT INTO Joueur (nom, nationalite, rating, match_id, equipe_nom, shots, goals, saves, assists, score,
                                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
                                             demo_inflige, demo_recu, goal_participation)
                          VALUES (%(nom)s, %(nationalite)s,  %(rating)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
@@ -39,7 +39,7 @@ class JoueurDao(metaclass=Singleton):
                                 %(goal_participation)s)
                         """,
                         {
-                            "nom": joueur.joueur_nom,
+                            "nom": joueur.nom,
                             "nationalite": joueur.nationalite,
                             "rating": joueur.rating,
                             "match_id": joueur.match_id,
@@ -53,8 +53,8 @@ class JoueurDao(metaclass=Singleton):
                             "time_offensive_third": joueur.time_offensive_third,
                             "time_defensive_third": joueur.time_defensive_third,
                             "time_neutral_third": joueur.time_neutral_third,
-                            "demo_inflige": joueur.demo_infligees,
-                            "demo_recu": joueur.demo_recue,
+                            "demo_inflige": joueur.demo_inflige,
+                            "demo_recu": joueur.demo_recu,
                             "goal_participation": joueur.goal_participation,
                         },
                     )
@@ -120,7 +120,7 @@ class JoueurDao(metaclass=Singleton):
             return None
 
     @log
-    
+
 
     def mettre_a_jour(self, joueur: Joueur) -> bool:
         """Met à jour un joueur dans la base de données

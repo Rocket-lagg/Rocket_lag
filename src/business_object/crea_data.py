@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import dotenv
 from dao.joueur_dao import JoueurDao
-
+from business_object.joueur import Joueur
 # Charger les variables d'environnement
 dotenv.load_dotenv()
 
@@ -125,17 +125,17 @@ class MatchProcessor:
             "assists": joueur_core['assists'],
             "score": joueur_core['score'],
             "shooting_percentage": joueur_core['shootingPercentage'],
-            "demo_infligees": joueur_stats['stats']['demo']['inflicted'],
-            "demo_recue": joueur_stats['stats']['demo']['taken'],
+            "demo_inflige": joueur_stats['stats']['demo']['inflicted'],
+            "demo_recu": joueur_stats['stats']['demo']['taken'],
             "goal_participation": joueur_stats['advanced']['goalParticipation'],
             "rating": joueur_stats['advanced']['rating'],
             "time_defensive_third": joueur_stats['stats']['positioning']['timeDefensiveThird'],
             "time_neutral_third": joueur_stats['stats']['positioning']['timeNeutralThird'],
             "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird'] }
 
-
+            joueur = Joueur(**joueur_data)
             self.filtered_players.append(joueur_data)
-            result = self.joueur_dao.creer(joueur_data)
+            result = self.joueur_dao.creer(joueur)
 
 
 
@@ -144,10 +144,6 @@ class MatchProcessor:
         df_filtered_matches = pd.DataFrame(self.filtered_matches)
         df_filtered_players = pd.DataFrame(self.filtered_players)
         return df_filtered_matches, df_filtered_players
-
-
-
-
 
 
 
