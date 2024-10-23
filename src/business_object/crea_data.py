@@ -5,6 +5,8 @@ import os
 import dotenv
 from dao.joueur_dao import JoueurDao
 from business_object.joueur import Joueur
+from dao.equipe_dao import EquipeDao
+from business_object.Equipe import Equipe
 # Charger les variables d'environnement
 dotenv.load_dotenv()
 
@@ -31,8 +33,8 @@ class MatchProcessor:
         self.filtered_matches = []
         self.filtered_players = []
         self.joueur_dao = JoueurDao()
-        #self.matchdao = JoueurDao()
-        #self.joueur_dao = JoueurDao()
+        self.equipe_dao = EquipeDao()
+        #self.equipedao = JoueurDao()
 
 
 
@@ -64,22 +66,26 @@ class MatchProcessor:
                 print("Erreur : Match Unknown. Aucun traitement effectué.")
                 continue
 
+            ligue = match_data['event']['name']
+            region = match_data['event']['region']
+            stage = match_data['stage']['name']
+            date = match_data['date']
 
             # Process teams and players for each match
             for couleur in ['blue', 'orange']:
-                self.process_team(match_data, couleur)
-                self.process_players(match_data, couleur)
+                self.process_team(match_data, couleur,ligue,region,stage,date)
+                self.process_players(match_data, couleur,ligue,region,stage,date)
 
-    def process_team(self, match_data,couleur):
+    def process_team(self,match_data,couleur,ligue,region,stage,date):
         """Process team data for a given match and team color."""
         team_data = match_data.get(couleur, {})
 
         # Vérification de l'existence du score
         equipe_score = team_data.get('score')
-
         equipe_nom = match_data[couleur]['team']['team']['name']
 
         stats_core = match_data[couleur]['team']['stats']['core']
+
 
         equipe_stats = {
             "match_id": match_data["_id"],
@@ -90,21 +96,28 @@ class MatchProcessor:
             "saves": stats_core['saves'],
             "assists": stats_core['assists'],
             "score": stats_core['score'],
+            "demo_inflige": match_data[couleur]['team']['stats']['demo']['inflicted'],
+            "demo_recu": match_data[couleur]['team']['stats']['demo']['taken'],
+            "boost_stole":match_data[couleur]['team']['stats']['boost']["countStolenBig"],
             "shooting_percentage": stats_core['shootingPercentage'],
             "time_defensive_third": match_data[couleur]['team']['stats']['positioning']['timeDefensiveThird'],
             "time_neutral_third": match_data[couleur]['team']['stats']['positioning']['timeNeutralThird'],
-            "time_offensive_third": match_data[couleur]['team']['stats']['positioning']['timeOffensiveThird']
+            "time_offensive_third": match_data[couleur]['team']['stats']['positioning']['timeOffensiveThird'],
+            "date": date,
+            "region": region,
+            "stage": stage,
+            "ligue": ligue
         }
         self.filtered_matches.append(equipe_stats)
+        equipe = Equipe(**equipe_stats)
+
+        result_equipe = self.equipe_dao.creer(equipe)
 
 
-        ligue = match_data['event']['name']
-        region = match_data['event']['region']
-        stage = match_data['stage']['name']
-        date = match_data['date']
 
 
-    def process_players(self, match_data, couleur):
+
+    def process_players(self, match_data, couleur,ligue,region,stage,date):
         """Process player data for a given team."""
         equipe_nom = match_data[couleur]['team']['team']['name']
 
@@ -131,7 +144,12 @@ class MatchProcessor:
             "rating": joueur_stats['advanced']['rating'],
             "time_defensive_third": joueur_stats['stats']['positioning']['timeDefensiveThird'],
             "time_neutral_third": joueur_stats['stats']['positioning']['timeNeutralThird'],
-            "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird'] }
+            "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird'],
+            "date":date,
+            "region":region,
+            "stage":stage,
+            "ligue":ligue
+        }
 
             joueur = Joueur(**joueur_data)
             self.filtered_players.append(joueur_data)
@@ -153,13 +171,13 @@ match_processor = MatchProcessor(api)
 
 # Step 1: Get the matches
 t= match_processor.recup_matches(page=226, page_size=2)
-print(t)
+
 u=match_processor.recup_match_data()
-print(u)
+
 # Step 3: Process the match and player data
 match_processor.process_matches()
 
 # Step 4: Create DataFrames
 df_matches, df_players = match_processor.create_dataframes()
 
-print(df_matches,df_players)
+print(df_matches)

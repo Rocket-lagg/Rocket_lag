@@ -1,7 +1,7 @@
 CREATE TABLE Equipe (
     match_id VARCHAR(255),
     equipe_nom VARCHAR(255),
-    equipe_winner INT,
+    equipe_score INT,
     shots INT,
     goals INT,
     saves INT,
@@ -46,7 +46,7 @@ CREATE TABLE matchs (
     equipe2 VARCHAR(255),
     score1 INT,
     score2 INT,
-    date TIMESTAMP WITH TIME ZONE,
+    date VARCHAR(255),
     region VARCHAR(50)
     ligue VARCHAR(255)
     perso BOOL

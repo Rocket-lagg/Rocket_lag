@@ -80,7 +80,11 @@ class Joueur(EntiteSportive):
         goal_participation,
         nom,
         nationalite,
-        rating
+        rating,
+        date,
+        region,
+        ligue,
+        stage
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -98,7 +102,10 @@ class Joueur(EntiteSportive):
             time_neutral_third,
             demo_inflige,
             demo_recu,
-            goal_participation,
+            date,
+            region,
+            ligue,
+            stage,
         )
         # Vérifications des types pour les nouveaux attributs spécifiques à Joueur
         assert isinstance(nom, str), "nom doit être une chaîne de caractères"
@@ -110,6 +117,7 @@ class Joueur(EntiteSportive):
         self.nationalite = nationalite
         self.rating = rating
         self.demo_inflige = demo_inflige
+        self.goal_participation = goal_participation
 
     def __str__(self):
         """
