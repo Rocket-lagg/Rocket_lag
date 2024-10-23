@@ -113,16 +113,26 @@ class ConsulterStats(metaclass=Singleton):
             f"Nombre moyen de démolitions infligées par match : {demolitions/n}"
         )
 
-    def stats_matchs(self, nom_equipe="Non fourni", nom_joueur="Non fourni"):
+    def stats_matchs(self, nom_equipe="Non renseigné", nom_joueur="Non renseigné"):
         if not isinstance(nom_equipe, str):
             raise TypeError("'nom_equipe' doit être une instance de str.")
         if not isinstance(nom_joueur, str):
             raise TypeError("'nom_joueur' doit être une instance de str.")
-        if nom_equipe == "Non fourni" and nom_joueur == "Non fourni":
+        if nom_equipe == "Non renseigné" and nom_joueur == "Non renseigné":
             raise ValueError("Il faut renseigner au moins un des deux arguments de la fonction.")
-        match = MatchDao.trouverparequipejoueur(
-            nom_equipe, nom_joueur
-        )  # a modifier, but = avoir une ou des fonctions dao qui permettent d'avoir les matchs joués par une éuqipe ou par un joueur
+        id_matchs_equipe = None
+        id_matchs_joueur = None
+        if nom_equipe != "Non renseigné":
+            id_matchs_equipe = MatchDao.trouver_match_id_par_equipe(nom_equipe)
+        if nom_joueur != "Non renseigné":
+            id_matchs_joueur = MatchDao.trouver_match_id_par_joueur(nom_joueur)
+        if id_matchs_equipe is not None and id_matchs_joueur is not None:
+            if id_matchs_equipe == id_matchs_joueur:
+                id_matchs = id_matchs_equipe
+            else:
+                id_matchs = list(set(id_matchs_equipe + id_matchs_joueur))
+
+        # a modifier, but = avoir une ou des fonctions dao qui permettent d'avoir les matchs joués par une éuqipe ou par un joueur
         if not match:
             raise TypeError("Aucun match ne correspond au joueur et/ou à l'équipe sélectionnés.")
         # besoin du résultat du match, des buts, des assists, des arrêts, des ratings, des pourcentages de tirs, du temps passé dans le tiers offensif et des démolitions par équipe et par joueur
