@@ -2,8 +2,6 @@ from utils.singleton import Singleton
 from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
-from sklearn.preprocessing import StandardScaler
-from business_object.joueur import Joueur
 
 
 class ConsulterStats(metaclass=Singleton):
@@ -44,8 +42,23 @@ class ConsulterStats(metaclass=Singleton):
         rating = joueur.score
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
-        # indice offensif TODO -> besoin de la goal participation, du nombre de buts marqués, du temps passé dans le tiers offensif et du nombre de démolitions
-        # indice de performance TODO -> besoin du nombre de buts, du nombre d'assists, du nombre de saves, du nombre de tirs, du nombre de matchs joués
+        tiers_offensif = joueur.time_offensive_third
+        off = (
+            (
+                goals / 1.05
+                + assists / 0.5
+                + shots / 3.29
+                + demolitions / 0.56
+                + tiers_offensif / 20.11
+            )
+            * 1
+            / n
+        )
+        perf = (
+            (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
+            * (1 / n)
+            * regional_indice
+        )
         print(
             f"Statistiques pour le joueur {nom_joueur}, membre de l'équipe "
             f"{equipe}, depuis le début de la saison :\n"
@@ -60,7 +73,9 @@ class ConsulterStats(metaclass=Singleton):
             f"Rating moyen par match : {rating/n}\n"
             f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n}\n"
             f"Total de démolitions infligées : {demolitions}\n"
-            f"Nombre moyen de démolitions infligées par match : {demolitions/n}"
+            f"Nombre moyen de démolitions infligées par match : {demolitions/n}\n"
+            f"Son indice de performance au cours de la saison est égal à : {perf}\n"
+            f"Son indice offensif au cours de la saison est égal à : {off}"
         )
 
     def stats_equipe(self, nom_equipe):
@@ -98,17 +113,33 @@ class ConsulterStats(metaclass=Singleton):
             f"Nombre moyen de démolitions infligées par match : {demolitions/n}"
         )
 
-    def stats_matchs(self, nom_equipe="Non fourni", nom_joueur="Non fourni"):
+    def stats_matchs(self, nom_equipe="Non renseigné", nom_joueur="Non renseigné"):
         if not isinstance(nom_equipe, str):
             raise TypeError("'nom_equipe' doit être une instance de str.")
         if not isinstance(nom_joueur, str):
             raise TypeError("'nom_joueur' doit être une instance de str.")
-        if nom_equipe == "Non fourni" and nom_joueur == "Non fourni":
+        if nom_equipe == "Non renseigné" and nom_joueur == "Non renseigné":
             raise ValueError("Il faut renseigner au moins un des deux arguments de la fonction.")
-        match = MatchDao.trouverparequipejoueur(
-            nom_equipe, nom_joueur
-        )  # a modifier, but = avoir une ou des fonctions dao qui permettent d'avoir les matchs joués par une éuqipe ou par un joueur
-        if not match:
+        id_matchs_equipe = None
+        id_matchs_joueur = None
+        if nom_equipe != "Non renseigné":
+            id_matchs_equipe = MatchDao.trouver_match_id_par_equipe(nom_equipe)
+        if nom_joueur != "Non renseigné":
+            id_matchs_joueur = MatchDao.trouver_match_id_par_joueur(nom_joueur)
+        if id_matchs_equipe is not None and id_matchs_joueur is not None:
+            if id_matchs_equipe == id_matchs_joueur:
+                id_matchs = id_matchs_equipe
+            else:
+                id_matchs = list(set(id_matchs_equipe + id_matchs_joueur))
+        if id_matchs_equipe is None and id_matchs_joueur is None:
             raise TypeError("Aucun match ne correspond au joueur et/ou à l'équipe sélectionnés.")
+        # a modifier, but = avoir une ou des fonctions dao qui permettent d'avoir les matchs joués par une éuqipe ou par un joueur
+
         # besoin du résultat du match, des buts, des assists, des arrêts, des ratings, des pourcentages de tirs, du temps passé dans le tiers offensif et des démolitions par équipe et par joueur
         # aussi besoin des boosts volés par équipe
+
+
+# if __name__ == "__main__":
+#     consulter_stats = ConsulterStats()  # Création d'une instance de ConsulterStats
+#     nom_joueur = "Crispy"  # Remplacez par le nom du joueur que vous souhaitez
+#     consulter_stats.stats_joueurs(nom_joueur)  # Appel de la méthode

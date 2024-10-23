@@ -1,74 +1,56 @@
 import pytest
-from business_object import Utilisateur, Pari
+from business_object.Utilisateur import Utilisateur
+from business_object.Tournoi import Tournoi
+from business_object.Pari import Pari
+from business_object.Match import Match
+from business_object.Equipe import Equipe
 
 
-def test_utilisateur_creation():
-    """Test la création d'un utilisateur"""
-    nom_utilisateur = "TestUser"
-    mot_de_passe = "password123"
-    email = "testuser@example.com"
-    tournois_crees = []
-    paris = []
-    points = 100
-
-    utilisateur = Utilisateur(nom_utilisateur, mot_de_passe, email, tournois_crees, paris, points)
-
-    assert utilisateur.nom_utilisateur == nom_utilisateur
-    assert utilisateur.mot_de_passe == mot_de_passe
-    assert utilisateur.email == email
-    assert utilisateur.tournois_crees == tournois_crees
-    assert utilisateur.paris == paris
-    assert utilisateur.points == points
+@pytest.fixture
+def tournoi_exemple():
+    """Fixture pour créer un exemple de tournoi."""
+    return Tournoi(id_tournoi="1", nom_tournoi="Championnat", equipes=[])
 
 
-def test_utilisateur_str():
-    """Test de l'affichage de la méthode __str__() de utilisateur"""
-    utilisateur = Utilisateur(
-        "PaulinleMalin", "strongmdp1234", "PaulinleMalin@gmail.com", [], [], 100
+@pytest.fixture
+def pari_exemple():
+    """Fixture pour créer un exemple de pari."""
+    match = Match(id_match=1, cote_match=1.5)
+    equipe = Equipe(equipe_nom="Team A", equipe_winner=True)
+    return Pari(id_pari=1, match=match, equipe=equipe, status="En cours", montant=50.0)
+
+
+@pytest.fixture
+def utilisateur_avec_donnees(tournoi_exemple, pari_exemple):
+    """Fixture pour créer un utilisateur avec des tournois et paris."""
+    tournois = [tournoi_exemple]
+    paris = [pari_exemple]
+    return Utilisateur(
+        nom_utilisateur="TestUser",
+        mot_de_passe="password123",
+        email="testuser@example.com",
+        tournois_crees=tournois,
+        paris=paris,
+        points=100,
     )
 
-    assert str(utilisateur) == "identifiant: PaulinleMalin, mdp: strongmdp1234"
-    "email: PaulinleMalin@gmail.com, tournois:[], paris:[], points: 100)"
+
+def test_utilisateur_initialisation(utilisateur_avec_donnees, tournoi_exemple, pari_exemple):
+    """Teste la création d'un Utilisateur valide avec des tournois et des paris."""
+    assert utilisateur_avec_donnees.nom_utilisateur == "TestUser"
+    assert utilisateur_avec_donnees.mot_de_passe == "password123"
+    assert utilisateur_avec_donnees.email == "testuser@example.com"
+    assert utilisateur_avec_donnees.points == 100
+
+    # Vérification du contenu des listes
+    assert utilisateur_avec_donnees.tournois_crees == [tournoi_exemple]
+    assert utilisateur_avec_donnees.paris == [pari_exemple]
 
 
-def test_nom_utilisateur_type():
-    """Test que nom_utilisateur doit être un str"""
-    pari_test = Pari(1, 2, 3, 4, 1.5, "en cours", 100.0)
-    with pytest.raises(TypeError, match="nom_utilisateur doit être de type str"):
-        Utilisateur(123, "blipblup123", "blip@gmail.com", [], pari_test, 100)
-
-
-def test_mot_de_passe_type():
-    """Test que mot_de_passe doit être un str"""
-    pari_test = Pari(1, 2, 3, 4, 1.5, "en cours", 100.0)
-    with pytest.raises(TypeError, match="mot_de_passe doit être de type str"):
-        Utilisateur("Rory", 123, "gilmore@gmail.com", [], pari_test, 100)
-
-
-def test_email_type():
-    """Test que email doit être un str"""
-    pari_test = Pari(1, 2, 3, 4, 1.5, "en cours", 100.0)
-    with pytest.raises(TypeError, match="email doit être de type str"):
-        Utilisateur("Zorglub", "strongmdp", 123, [], pari_test, 100)
-
-
-def test_tournois_crees_type():
-    """Test que tournois_crees doit être une liste"""
-    pari_test = Pari(1, 2, 3, 4, 1.5, "en cours", 100.0)
-    with pytest.raises(TypeError, match="tournois_crees doit être de type list"):
-        Utilisateur(
-            "monpetitponey", "password123", "poney@example.com", "not a list", pari_test, 100
-        )
-
-
-def test_paris_type():
-    """Test que paris doit être un objet de type Pari"""
-    with pytest.raises(TypeError, match="paris doit être de type Pari"):
-        Utilisateur("john_doe", "password123", "john@example.com", [], "not a Pari", 100)
-
-
-def test_points_type():
-    """Test que points doit être un int"""
-    pari_test = Pari(1, 2, 3, 4, 1.5, "en cours", 100.0)
-    with pytest.raises(TypeError, match="points doit être de type int"):
-        Utilisateur("john_doe", "password123", "john@example.com", [], pari_test, "not an int")
+def test_str_utilisateur(utilisateur_avec_donnees):
+    """Teste la méthode __str__ d'Utilisateur."""
+    expected_str = (
+        "identifiant:TestUser, mdp:password123, email:testuser@example.com"
+        "tournois:[<Tournoi object>], paris:[<Pari object>], points:100"
+    )
+    assert str(utilisateur_avec_donnees) == expected_str

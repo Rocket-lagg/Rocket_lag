@@ -67,22 +67,23 @@ class EntiteSportive(ABC):
         time_neutral_third,
         demo_inflige,
         demo_recu,
-        goal_participation,
+        date,
+        region,
+        ligue,
+        stage,
     ):
-        assert isinstance(match_id, int), "match_id doit être un entier"
         assert isinstance(equipe_nom, str), "equipe_nom doit être une chaîne de caractères"
         assert isinstance(shots, int), "shots doit être un entier"
         assert isinstance(goals, int), "goals doit être un entier"
         assert isinstance(saves, int), "saves doit être un entier"
         assert isinstance(assists, int), "assists doit être un entier"
         assert isinstance(score, int), "score doit être un entier"
-        assert isinstance(shooting_percentage, float), "shooting_percentage doit être un flottant"
         assert isinstance(time_offensive_third, float), "time_offensive_third doit être un flottant"
         assert isinstance(time_defensive_third, float), "time_defensive_third doit être un flottant"
         assert isinstance(time_neutral_third, float), "time_neutral_third doit être un flottant"
         assert isinstance(demo_inflige, int), "demo_inflige doit être un entier"
         assert isinstance(demo_recu, int), "demo_recu doit être un entier"
-        assert isinstance(goal_participation, float), "goal_participation doit être un flottant"
+
 
         self.match_id = match_id
         self.equipe_nom = equipe_nom
@@ -97,7 +98,10 @@ class EntiteSportive(ABC):
         self.time_neutral_third = time_neutral_third
         self.demo_inflige = demo_inflige
         self.demo_recu = demo_recu
-        self.goal_participation = goal_participation
+        self.date=date
+        self.region=region
+        self.ligue=ligue
+        self.stage=stage
 
     @abstractmethod
     def __str__(self):

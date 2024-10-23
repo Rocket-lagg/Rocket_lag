@@ -1,5 +1,5 @@
 import pytest
-from Equipe import Equipe
+from business_object.Equipe import Equipe
 
 # Dictionnaire contenant les valeurs valides pour chaque attribut
 valid_values = {

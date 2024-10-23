@@ -1,4 +1,5 @@
 from business_object.Pari import Pari
+from business_object.Tournoi import Tournoi
 
 
 class Utilisateur:
@@ -49,5 +50,13 @@ class Utilisateur:
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"identifiant:{self.pseudo}, mdp:{self.mdp}, mail:{self.mail}"
-        f"tournois:{self.tournois_crees}, paris:{self.paris}, points:{self.points})"
+        tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
+        paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
+        return (
+            f"identifiant:{self.pseudo}, "
+            f"mdp:{self.mdp}, "
+            f"email:{self.mail}, "
+            f"tournois:[{tournois_str}], "
+            f"paris:[{paris_str}], "
+            f"points:{self.points}"
+        )

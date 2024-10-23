@@ -9,7 +9,7 @@ class JoueurDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
     @log
-    def creer(self, joueur: Joueur) -> bool:
+    def creer(self, joueur) -> bool:
         """Création d'un joueur dans la base de données
 
         Parameters
@@ -30,16 +30,17 @@ class JoueurDao(metaclass=Singleton):
                     # Requête d'insertion SQL
                     cursor.execute(
                         """
-                        INSERT INTO Joueur (nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
+                        INSERT INTO Joueur (nom, nationalite, rating, match_id, equipe_nom, shots, goals, saves, assists, score,
                                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                                            demo_inflige, demo_recu, goal_participation)
+                                            demo_inflige, demo_recu, goal_participation, date, ligue, region, stage )
                          VALUES (%(nom)s, %(nationalite)s,  %(rating)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
                                 %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
                                 %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
-                                %(goal_participation)s)
+                                %(goal_participation)s, %(date)s, %(ligue)s, %(region)s, %(stage)s)
+                         RETURNING nom;
                         """,
                         {
-                            "nom": joueur.joueur_nom,
+                            "nom": joueur.nom,
                             "nationalite": joueur.nationalite,
                             "rating": joueur.rating,
                             "match_id": joueur.match_id,
@@ -53,9 +54,13 @@ class JoueurDao(metaclass=Singleton):
                             "time_offensive_third": joueur.time_offensive_third,
                             "time_defensive_third": joueur.time_defensive_third,
                             "time_neutral_third": joueur.time_neutral_third,
-                            "demo_inflige": joueur.demo_infligees,
-                            "demo_recu": joueur.demo_recue,
+                            "demo_inflige": joueur.demo_inflige,
+                            "demo_recu": joueur.demo_recu,
                             "goal_participation": joueur.goal_participation,
+                            "date": joueur.date,
+                            "ligue": joueur.ligue,
+                            "region": joueur.region,
+                            "stage": joueur.stage
                         },
                     )
                     # Récupérer l'ID du joueur créé
@@ -86,10 +91,12 @@ class JoueurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         SELECT nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
-                               shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                               demo_inflige, demo_recu, goal_participation
+                            shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
+                            demo_inflige, demo_recu, goal_participation
                         FROM Joueur
                         WHERE joueur_nom = %s
+                         AND DATE_PART('year', TO_TIMESTAMP(date_match, 'YYYY-MM-DD"T"HH24:MI:SS"Z"')) = 2024
+
                         """,
                         (joueur_nom,),
                     )
@@ -120,8 +127,6 @@ class JoueurDao(metaclass=Singleton):
             return None
 
     @log
-    
-
     def mettre_a_jour(self, joueur: Joueur) -> bool:
         """Met à jour un joueur dans la base de données
 

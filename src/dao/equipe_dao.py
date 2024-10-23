@@ -34,19 +34,22 @@ class EquipeDao(metaclass=Singleton):
                     # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
                     cursor.execute(
                         """
-                        INSERT INTO Equipe (match_id, equipe_nom, equipe_image, equipe_score, equipe_winner,
-                                        shots, goals, saves, assists, score, shooting_percentage, date, ligue, region, stage)
-                        VALUES (%(match_id)s, %(equipe_nom)s, %(equipe_image)s, %(equipe_score)s, %(equipe_winner)s,
-                                %(shots)s, %(goals)s, %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(date)s,
-                                %(ligue)s, %(region)s, %(stage)s)
+                        INSERT INTO Equipe (match_id, equipe_nom, equipe_score, boost_stole,
+                                        shots, goals, saves, assists, score, shooting_percentage,
+                                         date, ligue, region, stage, time_offensive_third, time_defensive_third,
+                                         time_neutral_third, demo_inflige, demo_recu )
+                        VALUES (%(match_id)s, %(equipe_nom)s, %(equipe_score)s, %(boost_stole)s,
+                                %(shots)s, %(goals)s, %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s,
+                                 %(date)s, %(ligue)s, %(region)s, %(stage)s, %(time_offensive_third)s, %(time_defensive_third)s,
+                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s)
+                        RETURNING equipe_nom;
 
                         """,
                         {
                             "match_id": equipe.match_id,
                             "equipe_nom": equipe.equipe_nom,
-                            "equipe_image": equipe.equipe_image,
                             "equipe_score": equipe.equipe_score,
-                            "equipe_winner": equipe.equipe_winner,
+                            "boost_stole": equipe.boost_stole,
                             "shots": equipe.shots,
                             "goals": equipe.goals,
                             "saves": equipe.saves,
@@ -57,19 +60,20 @@ class EquipeDao(metaclass=Singleton):
                             "ligue": equipe.ligue,
                             "region": equipe.region,
                             "stage": equipe.stage,
-                        },
+                            "time_offensive_third": equipe.time_offensive_third,
+                            "time_defensive_third": equipe.time_defensive_third,
+                            "time_neutral_third": equipe.time_neutral_third,
+                            "demo_inflige": equipe.demo_inflige,
+                            "demo_recu": equipe.demo_recu
+                         },
                     )
-
+                    # Récupérer l'ID du joueur créé
                     res = cursor.fetchone()
+            return res is not None
         except Exception as e:
-            logging.info(e)
+            logging.error(f"Erreur lors de la création d'equipe : {e}")
+            return False
 
-        created = False
-        if res:
-            equipe.match_id = res["match_id"]  # Si un ID est retourné, on le met à jour
-            created = True
-
-        return created
 
     @log
     def lister_tous(self) -> list[Joueur]:
