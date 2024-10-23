@@ -6,3 +6,7 @@ INSERT INTO utilisateur(id_utilisateur, pseudo, mdp, age, mail, fan_pokemon) VAL
 (995, 'miguel',     'abcd',     23,      'miguel@projet.fr',     true),
 (994, 'gilbert',    'toto',     21,      'gilbert@projet.fr',    false),
 (993, 'junior',     'aaaa',     15,      'junior@projet.fr',     true);
+
+
+
+

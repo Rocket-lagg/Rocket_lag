@@ -59,13 +59,9 @@ class Joueur(EntiteSportive):
     nationalite : str
         Nationalité du joueur.
 
-    region : str
-        Région à laquelle le joueur appartient.
-
     rating : float
         Note ou évaluation de la performance du joueur.
     """
-
     def __init__(
         self,
         match_id,
@@ -84,8 +80,7 @@ class Joueur(EntiteSportive):
         goal_participation,
         nom,
         nationalite,
-        region,
-        rating,
+        rating
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -108,14 +103,13 @@ class Joueur(EntiteSportive):
         # Vérifications des types pour les nouveaux attributs spécifiques à Joueur
         assert isinstance(nom, str), "nom doit être une chaîne de caractères"
         assert isinstance(nationalite, str), "nationalite doit être une chaîne de caractères"
-        assert isinstance(region, str), "region doit être une chaîne de caractères"
         assert isinstance(rating, float), "rating doit être un flottant"
 
         # Initialisation des nouveaux attributs
         self.nom = nom
         self.nationalite = nationalite
-        self.region = region
         self.rating = rating
+        self.demo_inflige = demo_inflige
 
     def __str__(self):
         """
@@ -126,4 +120,4 @@ class Joueur(EntiteSportive):
         str :
             Représentation du joueur avec son nom et d'autres informations personnelles.
         """
-        return f"Joueur({self.nom}, Nationalité: {self.nationalite}, Région: {self.region}, Rating: {self.rating})"
+        return f"Joueur({self.nom}, Nationalité: {self.nationalite})"

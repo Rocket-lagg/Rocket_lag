@@ -19,26 +19,26 @@ CREATE TABLE Equipe (
 );
 
 CREATE TABLE Joueur (
-    match_id VARCHAR(255),
-    equipe_nom VARCHAR(255),
-    joueur_nom VARCHAR(255),
-    nationalite VARCHAR(50),
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    nationalite VARCHAR(100) NOT NULL,
+    rating FLOAT,
+    match_id VARCHAR(100) NOT NULL,
+    equipe_nom VARCHAR(255) NOT NULL,
     shots INT,
     goals INT,
     saves INT,
     assists INT,
     score INT,
     shooting_percentage FLOAT,
-    demo_infligées INT,
-    demo_reçues INT,
-    goal_participation FLOAT,
-    rating FLOAT,
+    time_offensive_third FLOAT,
     time_defensive_third FLOAT,
     time_neutral_third FLOAT,
-    time_offensive_third FLOAT,
-    PRIMARY KEY (match_id, joueur_nom),  -- Clé primaire composée
-    FOREIGN KEY (match_id) REFERENCES matches(match_id)  -- Clé étrangère qui fait référence à 'ligue_id' dans la table 'leagues'
+    demo_inflige INT,
+    demo_recu INT,
+    goal_participation FLOAT
 );
+
 
 CREATE TABLE matchs (
     match_id VARCHAR(255) PRIMARY KEY,

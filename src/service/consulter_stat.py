@@ -1,9 +1,9 @@
-from src.utils.singleton import Singleton
-from src.dao.equipe_dao import EquipeDao
-from src.dao.joueur_dao import JoueurDao
-from src.dao.match_dao import MatchDao
+from utils.singleton import Singleton
+from dao.equipe_dao import EquipeDao
+from dao.joueur_dao import JoueurDao
+from dao.match_dao import MatchDao
 from sklearn.preprocessing import StandardScaler
-from src.business_object.joueur import Joueur
+from business_object.joueur import Joueur
 
 
 class ConsulterStats(metaclass=Singleton):
@@ -16,11 +16,27 @@ class ConsulterStats(metaclass=Singleton):
         joueur = JoueurDao.obtenir_par_nom(nom_joueur)
         if not joueur:
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
-        # créer un indice régional TODO
-        région = joueur.région
+        id_matchs = MatchDao.trouver_id_match_par_joueur(nom_joueur)
+        n = len(id_matchs)
+        region = joueur.region
+        if region == "EU":
+            regional_indice = 1
+        elif region == "NA":
+            regional_indice = 1
+        elif region == "SAM":
+            regional_indice = 0.9
+        elif region == "MENA":
+            regional_indice = 0.9
+        elif region == "OCE":
+            regional_indice = 0.5
+        elif region == "APAC":
+            regional_indice = 0.5
+        elif region == "SSA":
+            regional_indice = 0.3
+        else:
+            raise ValueError("La région du joueur est inconnue.")
         equipe = joueur.equipe
         goals = joueur.goals
-        # n = nombre de matchs joués depuis le début de la saison
         # résultat TODO -> donner le nombre de défaites et de victoires au cours de l'année
         assists = joueur.assists
         shots = joueur.shots
@@ -29,17 +45,27 @@ class ConsulterStats(metaclass=Singleton):
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
         # indice offensif TODO -> besoin de la goal participation, du nombre de buts marqués, du temps passé dans le tiers offensif et du nombre de démolitions
-        # indice de performance TODO -> besoin du nombre de buts, du nombre d'assists, du nombre de saves, du nombre de tirs, du nombre de matchs joués
+        perf = (
+            (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
+            * (1 / n)
+            * regional_indice
+        )
         print(
             f"Statistiques pour le joueur {nom_joueur}, membre de l'équipe "
             f"{equipe}, depuis le début de la saison :\n"
-            f"Buts : {goals}\n"
-            f"Passes décisives : {assists}\n"
-            f"Tirs : {shots}\n"
-            f"Arrêts : {saves}\n"
-            f"Rating : {rating}\n"
-            f"Pourcentage de tirs cadrés : {shooting_percentage}\n"
-            f"Démolitions : {demolitions}"
+            f"Total de buts : {goals}\n"
+            f"Nombre moyen de buts par matchs : {goals/n}\n"
+            f"Total de passes décisives : {assists}\n"
+            f"Nombre de passes décisives moyen par match : {assists/n}\n"
+            f"Total de tirs : {shots}\n"
+            f"Nombre moyen de tirs par match : {shots/n}\n"
+            f"Total d'arrêts : {saves}\n"
+            f"Nombre moyen d'arrêts par match : {saves/n}\n"
+            f"Rating moyen par match : {rating/n}\n"
+            f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n}\n"
+            f"Total de démolitions infligées : {demolitions}\n"
+            f"Nombre moyen de démolitions infligées par match : {demolitions/n}\n"
+            f"Son indice de performance au cours de la saison est égal à : {perf}"
         )
 
     def stats_equipe(self, nom_equipe):
@@ -48,8 +74,9 @@ class ConsulterStats(metaclass=Singleton):
         equipe = EquipeDao.obtenir_par_nom(nom_equipe)
         if not equipe:
             raise ValueError(f"Aucune equipe nommée {nom_equipe} n'a été trouvée.")
+        id_matchs = MatchDao.trouver_id_match_par_equipe(nom_equipe)
         joueurs = equipe.joueurs
-        # n = nombre de matchs joués depuis le début de l'année
+        n = len(id_matchs)
         goals = equipe.goals
         # résultats TODO
         assists = equipe.assists
@@ -62,13 +89,18 @@ class ConsulterStats(metaclass=Singleton):
         print(
             f"Statistiques de l'équipe {nom_equipe}, constituée de {joueurs}, "
             f"depuis le début de la saison :\n"
-            f"Nombre de buts marqués : {goals}\n"
-            f"Nombre de passes décisives : {assists}\n"
-            f"Nombre de tirs : {shots}\n"
-            f"Nombre d'arrêts : {saves}\n"
-            f"Rating moyen au cours de la saison : {rating}\n"
-            f"Pourcentage de tirs cadrés au cours de la saison : {shot_percentage}\n"
-            f"Nombre de démolitions depuis le début de la saison : {demolitions}"
+            f"Total des buts marqués : {goals}\n"
+            f"Nombre moyen de buts marqués par match : {goals/n}\n"
+            f"Total des passes décisives : {assists}\n"
+            f"Nombre moyen de passes décisives par match : {assists/n}\n"
+            f"Total des tirs : {shots}\n"
+            f"Nombre moyen de tirs par match : {shots/n}\n"
+            f"Total d'arrêts : {saves}\n"
+            f"Nombre moyen d'arrêts par match : {saves/n}\n"
+            f"Rating moyen au cours de la saison : {rating/n}\n"
+            f"Pourcentage de tirs cadrés au cours de la saison : {shot_percentage/n}\n"
+            f"Total des démolitions infligées : {demolitions}\n"
+            f"Nombre moyen de démolitions infligées par match : {demolitions/n}"
         )
 
     def stats_matchs(self, nom_equipe="Non fourni", nom_joueur="Non fourni"):

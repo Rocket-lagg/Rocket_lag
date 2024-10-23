@@ -20,11 +20,11 @@ class MatchDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO match(id_match, equipe1, equipe2, score1, score2, date, region, ligue, perso) VALUES        "
-                        "(%(id_match)s, %(equipe1)s, %(equipe2)s, %(score1)s, %(score2)s, %(date)s, %(region)s, %(ligue)s, %(perso)s)             "
-                        "  RETURNING id_match;                                                ",
+                        "INSERT INTO match(match_id, equipe1, equipe2, score1, score2, date, region, ligue, perso) VALUES        "
+                        "(%(match_id)s, %(equipe1)s, %(equipe2)s, %(score1)s, %(score2)s, %(date)s, %(region)s, %(ligue)s, %(perso)s)             "
+                        "  RETURNING match_id;                                                ",
                         {
-                            "id_match": match.id_match,
+                            "match_id": match.match_id,
                             "equipe1": match.equipe1,
                             "equipe2": match.equipe2,
                             "score1": match.score1,
@@ -42,18 +42,18 @@ class MatchDao(metaclass=Singleton):
 
         created = False
         if res:
-            match.id_match = res["id_match"]
+            match.match_id = res["match_id"]
             created = True
 
         return created
 
     @log
-    def trouver_par_id(self, id_match) -> Match:
+    def trouver_par_id(self, match_id) -> Match:
         """trouver un match grace à son id
 
         Parameters
         ----------
-        id_match : int
+        match_id : int
             numéro id du match que l'on souhaite trouver
 
         Returns
@@ -67,8 +67,8 @@ class MatchDao(metaclass=Singleton):
                     cursor.execute(
                         "SELECT *                           "
                         "  FROM match                      "
-                        " WHERE id_match = %(id_match)s;  ",
-                        {"id_match": id_match},
+                        " WHERE match_id = %(match_id)s;  ",
+                        {"match_id": match_id},
                     )
                     res = cursor.fetchone()
         except Exception as e:
@@ -78,7 +78,7 @@ class MatchDao(metaclass=Singleton):
         match = None
         if res:
             match = Match(
-                id_match=res["id_match"],
+                match_id=res["match_id"],
                 equipe1=res["equipe1"],
                 equipe2=res["equipe2"],
                 score1=res["score1"],
@@ -126,7 +126,7 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    id_match=res["id_match"],
+                    match_id=res["match_id"],
                     equipe1=res["equipe1"],
                     equipe2=res["equipe2"],
                     score1=res["score1"],
@@ -142,7 +142,7 @@ class MatchDao(metaclass=Singleton):
         return liste_matchs
 
     @log
-    def trouver_id_match_par_equipe(self, equipe) -> list[str]:
+    def trouver_match_id_par_equipe(self, equipe) -> list[str]:
         """trouver l'id de match grâce au nom d'une équipe
 
         Parameters
@@ -152,14 +152,14 @@ class MatchDao(metaclass=Singleton):
 
         Returns
         -------
-        list_id_match : List[id_match: str]
+        list_match_id : List[match_id: str]
             renvoie une liste des id des matchs qu'a fait l'équipe
         """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT id_match                           "
+                        "SELECT match_id                           "
                         " FROM equipe                      "
                         " WHERE equipe_nom = %(equipe)s;  ",
                         {"equipe": equipe},
@@ -169,15 +169,15 @@ class MatchDao(metaclass=Singleton):
             logging.info(e)
             raise
 
-        list_id_match = None
+        list_match_id = None
         if res:
             for row in res:
-                list_id_match.append(row["id_match"])
+                list_match_id.append(row["match_id"])
 
-        return list_id_match
+        return list_match_id
 
     @log
-    def trouver_id_match_par_joueur(self, joueur) -> list[str]:
+    def trouver_match_id_par_joueur(self, joueur) -> list[str]:
         """trouver l'id de match grâce au nom d'un joueur
 
         Parameters
@@ -187,14 +187,14 @@ class MatchDao(metaclass=Singleton):
 
         Returns
         -------
-        list_id_match : List[id_match: str]
+        list_match_id : List[match_id: str]
             renvoie une liste des id des matchs qu'a fait l'équipe
         """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT id_match                           "
+                        "SELECT match_id                           "
                         " FROM joueur                     "
                         " WHERE joueur_nom = %(joueur)s;  ",
                         {"joueur": joueur},
@@ -204,12 +204,12 @@ class MatchDao(metaclass=Singleton):
             logging.info(e)
             raise
 
-        list_id_match = None
+        list_match_id = None
         if res:
             for row in res:
-                list_id_match.append(row["id_match"])
+                list_match_id.append(row["match_id"])
 
-        return list_id_match
+        return list_match_id
 
     @log
     def lister_tous(self) -> list[Match]:
@@ -242,7 +242,7 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    id_match=res["id_match"],
+                    match_id=res["match_id"],
                     equipe1=res["equipe1"],
                     equipe2=res["equipe2"],
                     score1=res["score1"],

@@ -6,18 +6,18 @@ from utils.log_decorator import log
 from dao.db_connection import DBConnection
 
 from business_object.Equipe import Equipe
-
+from business_object.joueur import Joueur
 
 class EquipeDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
     @log
-    def creer(self, Equipe) -> bool:
+    def creer(self, equipe) -> bool:
         """Creation d'un joueur dans la base de données
 
         Parameters
         ----------
-        Equipe : Equipe
+        equipe : Equipe
 
         Returns
         -------
@@ -39,7 +39,7 @@ class EquipeDao(metaclass=Singleton):
                         VALUES (%(match_id)s, %(equipe_nom)s, %(equipe_image)s, %(equipe_score)s, %(equipe_winner)s,
                                 %(shots)s, %(goals)s, %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(date)s,
                                 %(ligue)s, %(region)s, %(stage)s)
-                        
+
                         """,
                         {
                             "match_id": equipe.match_id,
@@ -59,7 +59,7 @@ class EquipeDao(metaclass=Singleton):
                             "stage": equipe.stage,
                         },
                     )
-                    
+
                     res = cursor.fetchone()
         except Exception as e:
             logging.info(e)
@@ -113,5 +113,3 @@ class EquipeDao(metaclass=Singleton):
                 liste_joueurs.append(joueur)
 
         return liste_joueurs
-
-    @log
