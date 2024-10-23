@@ -1,5 +1,4 @@
-
-import requests,json # truc à importer
+import requests,json # truc à importer  #la docu en roue libre donc...
 import pandas as pd
 import os
 import dotenv
