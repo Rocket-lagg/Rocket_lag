@@ -2,8 +2,6 @@ from utils.singleton import Singleton
 from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
-from sklearn.preprocessing import StandardScaler
-from business_object.joueur import Joueur
 
 
 class ConsulterStats(metaclass=Singleton):
