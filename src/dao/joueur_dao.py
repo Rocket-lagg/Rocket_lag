@@ -9,7 +9,7 @@ class JoueurDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
     @log
-    def creer(self, joueur: Joueur) -> bool:
+    def creer(self, joueur) -> bool:
         """Création d'un joueur dans la base de données
 
         Parameters
@@ -37,6 +37,7 @@ class JoueurDao(metaclass=Singleton):
                                 %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
                                 %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
                                 %(goal_participation)s)
+                         RETURNING nom;
                         """,
                         {
                             "nom": joueur.nom,
