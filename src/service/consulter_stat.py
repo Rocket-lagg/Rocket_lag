@@ -42,6 +42,7 @@ class ConsulterStats(metaclass=Singleton):
         rating = joueur.score
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
+        tiers_offensif = joueur.time_offensive_third
         off = (
             (
                 goals / 1.05
