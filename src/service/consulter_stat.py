@@ -55,7 +55,6 @@ class ConsulterStats(metaclass=Singleton):
             * 1
             / n
         )
-        # indice offensif TODO -> besoin de la goal participation, du nombre de buts marqués, du temps passé dans le tiers offensif et du nombre de démolitions
         perf = (
             (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
             * (1 / n)
@@ -129,3 +128,9 @@ class ConsulterStats(metaclass=Singleton):
             raise TypeError("Aucun match ne correspond au joueur et/ou à l'équipe sélectionnés.")
         # besoin du résultat du match, des buts, des assists, des arrêts, des ratings, des pourcentages de tirs, du temps passé dans le tiers offensif et des démolitions par équipe et par joueur
         # aussi besoin des boosts volés par équipe
+
+
+# if __name__ == "__main__":
+#     consulter_stats = ConsulterStats()  # Création d'une instance de ConsulterStats
+#     nom_joueur = "Crispy"  # Remplacez par le nom du joueur que vous souhaitez
+#     consulter_stats.stats_joueurs(nom_joueur)  # Appel de la méthode
