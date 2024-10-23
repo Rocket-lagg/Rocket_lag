@@ -20,8 +20,8 @@ class MatchDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO match(match_id, equipe1, equipe2, score1, score2, date, region, ligue, perso) VALUES        "
-                        "(%(match_id)s, %(equipe1)s, %(equipe2)s, %(score1)s, %(score2)s, %(date)s, %(region)s, %(ligue)s, %(perso)s)             "
+                        "INSERT INTO matchs(match_id, equipe1, equipe2, score1, score2, dates, region, ligue, perso) VALUES        "
+                        "(%(match_id)s, %(equipe1)s, %(equipe2)s, %(score1)s, %(score2)s, %(dates)s, %(region)s, %(ligue)s, %(perso)s)             "
                         "  RETURNING match_id;                                                ",
                         {
                             "match_id": match.match_id,
@@ -29,7 +29,7 @@ class MatchDao(metaclass=Singleton):
                             "equipe2": match.equipe2,
                             "score1": match.score1,
                             "score2": match.score2,
-                            "date": match.date,
+                            "dates": match.dates,
                             "region": match.region,
                             "ligue": match.ligue,
                             "perso": match.perso,
@@ -66,7 +66,7 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM match                      "
+                        "  FROM matchs                      "
                         " WHERE match_id = %(match_id)s;  ",
                         {"match_id": match_id},
                     )
@@ -83,7 +83,7 @@ class MatchDao(metaclass=Singleton):
                 equipe2=res["equipe2"],
                 score1=res["score1"],
                 score2=res["score2"],
-                date=res["date"],
+                dates=res["dates"],
                 region=res["region"],
                 ligue=res["ligue"],
                 perso=res["perso"],
@@ -92,28 +92,28 @@ class MatchDao(metaclass=Singleton):
         return match
 
     @log
-    def trouver_par_date(self, id_date) -> Match:
-        """trouver un match grace à sa date
+    def trouver_par_dates(self, id_dates) -> Match:
+        """trouver un match grace à sa dates
 
         Parameters
         ----------
-        date : DATE
-            date du match que l'on souhaite trouver
+        dates : dates
+            dates du match que l'on souhaite trouver
 
         Returns
         -------
         liste_matchs : list[Match]
-            renvoie la liste de tous les matchs à la date donnée
+            renvoie la liste de tous les matchs à la dates donnée
         """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM match                      "
-                        " WHERE date::DATE = %(date)s             "
+                        "  FROM matchs                      "
+                        " WHERE dates::dates = %(dates)s             "
                         " AND perso = FALSE;  ",
-                        {"date": date},
+                        {"dates": dates},
                     )
                     res = cursor.fetchall()
         except Exception as e:
@@ -131,7 +131,7 @@ class MatchDao(metaclass=Singleton):
                     equipe2=res["equipe2"],
                     score1=res["score1"],
                     score2=res["score2"],
-                    date=res["date"],
+                    dates=res["dates"],
                     region=res["region"],
                     ligue=res["ligue"],
                     perso=res["perso"],
@@ -230,7 +230,7 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                              "
-                        "  FROM match;                        "
+                        "  FROM matchs;                        "
                     )
                     res = cursor.fetchall()
         except Exception as e:
@@ -247,7 +247,7 @@ class MatchDao(metaclass=Singleton):
                     equipe2=res["equipe2"],
                     score1=res["score1"],
                     score2=res["score2"],
-                    date=res["date"],
+                    dates=res["dates"],
                     region=res["region"],
                     ligue=res["ligue"],
                     perso=res["perso"],

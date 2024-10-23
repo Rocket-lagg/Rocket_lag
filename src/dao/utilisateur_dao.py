@@ -32,15 +32,16 @@ class UtilisateurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO utilisateur(pseudo, mdp, age, mail, fan_pokemon) VALUES        "
-                        "(%(pseudo)s, %(mdp)s, %(age)s, %(mail)s, %(fan_pokemon)s)             "
+                        "INSERT INTO utilisateur(pseudo, mdp, mail, tournois_crees, points, paris) VALUES        "
+                        "(%(pseudo)s, %(mdp)s, %(mail)s, %(tournois_crees)s, %(points)s, %(paris)s)             "
                         "  RETURNING id_utilisateur;                                                ",
                         {
                             "pseudo": utilisateur.pseudo,
                             "mdp": utilisateur.mdp,
-                            "age": utilisateur.age,
                             "mail": utilisateur.mail,
-                            "fan_pokemon": utilisateur.fan_pokemon,
+                            "tournois_crees": utilisateur.tournois_crees,
+                            "points": utilisateur.points,
+                            "paris": utilisateur.paris
                         },
                     )
                     res = cursor.fetchone()
@@ -85,11 +86,13 @@ class UtilisateurDao(metaclass=Singleton):
         utilisateur = None
         if res:
             utilisateur = Utilisateur(
-                pseudo=res["pseudo"],
-                age=res["age"],
-                mail=res["mail"],
-                fan_pokemon=res["fan_pokemon"],
                 id_utilisateur=res["id_utilisateur"],
+                pseudo=res["pseudo"],
+                mdp=res["mdp"],
+                mail=res["mail"],
+                tournois_crees=res["tournois_crees"],
+                points=res['points'],
+                paris=res['paris']
             )
 
         return utilisateur
@@ -128,9 +131,10 @@ class UtilisateurDao(metaclass=Singleton):
                     id_utilisateur=row["id_utilisateur"],
                     pseudo=row["pseudo"],
                     mdp=row["mdp"],
-                    age=row["age"],
                     mail=row["mail"],
-                    fan_pokemon=row["fan_pokemon"],
+                    tournois_crees=row["tournois_crees"],
+                    points=row['points'],
+                    paris=row['paris']
                 )
 
                 liste_utilisateurs.append(utilisateur)
@@ -161,16 +165,18 @@ class UtilisateurDao(metaclass=Singleton):
                         "UPDATE utilisateur                                      "
                         "   SET pseudo      = %(pseudo)s,                   "
                         "       mdp         = %(mdp)s,                      "
-                        "       age         = %(age)s,                      "
                         "       mail        = %(mail)s,                     "
-                        "       fan_pokemon = %(fan_pokemon)s               "
+                        "       tournois_crees = %(tournois_crees)s,        "
+                        "       points = %(points)s,                        "
+                        "       paris = %(paris)s,                          "
                         " WHERE id_utilisateur = %(id_utilisateur)s;                  ",
                         {
                             "pseudo": utilisateur.pseudo,
                             "mdp": utilisateur.mdp,
-                            "age": utilisateur.age,
                             "mail": utilisateur.mail,
-                            "fan_pokemon": utilisateur.fan_pokemon,
+                            "tournois_crees": utilisateur.tournois_crees,
+                            "points": utilisateur.points,
+                            "paris": utilisateur.paris,
                             "id_utilisateur": utilisateur.id_utilisateur,
                         },
                     )
@@ -245,12 +251,13 @@ class UtilisateurDao(metaclass=Singleton):
 
         if res:
             utilisateur = Utilisateur(
+                id_utilisateur=res["id_utilisateur"],
                 pseudo=res["pseudo"],
                 mdp=res["mdp"],
-                age=res["age"],
                 mail=res["mail"],
-                fan_pokemon=res["fan_pokemon"],
-                id_utilisateur=res["id_utilisateur"],
+                tournois_crees=res["tournois_crees"],
+                points=res['points'],
+                paris=res['paris']
             )
 
         return utilisateur
