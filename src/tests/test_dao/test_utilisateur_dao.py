@@ -8,7 +8,7 @@ from utils.securite import hash_password
 
 from dao.utilisateur_dao import UtilisateurDao
 
-from business_object.utilisateur import Utilisateur
+from business_object.Utilisateur import Utilisateur
 
 
 @pytest.fixture(scope="session", autouse=True)

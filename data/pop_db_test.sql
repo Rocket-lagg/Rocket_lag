@@ -6,3 +6,10 @@ INSERT INTO utilisateur(id_utilisateur, pseudo, mdp, age, mail, fan_pokemon) VAL
 (995, 'miguel',     'abcd',     23,      'miguel@projet.fr',     true),
 (994, 'gilbert',    'toto',     21,      'gilbert@projet.fr',    false),
 (993, 'junior',     'aaaa',     15,      'junior@projet.fr',     true);
+
+
+
+INSERT INTO match(match_id, equipe1, equipe2, score1, score2, date, region, ligue, perso) VALUES
+('admin1','0000','001',1, 2, 2024-10-08T22:00:00Z, 'FRance', 'ligue1', false),
+('admin2','0200','001',1, 2, 2024-10-08T22:00:00Z, 'FRance', 'ligue1', false),
+('admin3','0300','001',1, 2, 2024-12-08T22:00:00Z, 'FRance', 'ligue1', false);
