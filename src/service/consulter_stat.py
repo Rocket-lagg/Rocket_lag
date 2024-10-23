@@ -45,7 +45,11 @@ class ConsulterStats(metaclass=Singleton):
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
         # indice offensif TODO -> besoin de la goal participation, du nombre de buts marqués, du temps passé dans le tiers offensif et du nombre de démolitions
-        # indice de performance TODO -> besoin du nombre de buts, du nombre d'assists, du nombre de saves, du nombre de tirs, du nombre de matchs joués
+        perf = (
+            (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
+            * (1 / n)
+            * regional_indice
+        )
         print(
             f"Statistiques pour le joueur {nom_joueur}, membre de l'équipe "
             f"{equipe}, depuis le début de la saison :\n"
@@ -60,7 +64,8 @@ class ConsulterStats(metaclass=Singleton):
             f"Rating moyen par match : {rating/n}\n"
             f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n}\n"
             f"Total de démolitions infligées : {demolitions}\n"
-            f"Nombre moyen de démolitions infligées par match : {demolitions/n}"
+            f"Nombre moyen de démolitions infligées par match : {demolitions/n}\n"
+            f"Son indice de performance au cours de la saison est égal à : {perf}"
         )
 
     def stats_equipe(self, nom_equipe):
