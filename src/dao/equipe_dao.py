@@ -6,7 +6,7 @@ from utils.log_decorator import log
 from dao.db_connection import DBConnection
 
 from business_object.Equipe import Equipe
-from business_object.Joueur import Joueur
+from business_object.joueur import Joueur
 
 class EquipeDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
