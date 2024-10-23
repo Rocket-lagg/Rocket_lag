@@ -18,8 +18,23 @@ class ConsulterStats(metaclass=Singleton):
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
         id_matchs = MatchDao.trouver_id_match_par_joueur(nom_joueur)
         n = len(id_matchs)
-        # créer un indice régional TODO
         region = joueur.region
+        if region == "EU":
+            regional_indice = 1
+        elif region == "NA":
+            regional_indice = 1
+        elif region == "SAM":
+            regional_indice = 0.9
+        elif region == "MENA":
+            regional_indice = 0.9
+        elif region == "OCE":
+            regional_indice = 0.5
+        elif region == "APAC":
+            regional_indice = 0.5
+        elif region == "SSA":
+            regional_indice = 0.3
+        else:
+            raise ValueError("La région du joueur est inconnue.")
         equipe = joueur.equipe
         goals = joueur.goals
         # résultat TODO -> donner le nombre de défaites et de victoires au cours de l'année
