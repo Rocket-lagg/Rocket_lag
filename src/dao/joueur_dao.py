@@ -9,7 +9,7 @@ class JoueurDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
     @log
-    def creer(self, joueur: Joueur) -> bool:
+    def creer(self, joueur) -> bool:
         """Création d'un joueur dans la base de données
 
         Parameters
@@ -37,6 +37,7 @@ class JoueurDao(metaclass=Singleton):
                                 %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
                                 %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
                                 %(goal_participation)s)
+                         RETURNING nom;
                         """,
                         {
                             "nom": joueur.nom,
@@ -86,10 +87,12 @@ class JoueurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         SELECT nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
-                               shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                               demo_inflige, demo_recu, goal_participation
+                            shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
+                            demo_inflige, demo_recu, goal_participation
                         FROM Joueur
                         WHERE joueur_nom = %s
+                         AND DATE_PART('year', TO_TIMESTAMP(date_match, 'YYYY-MM-DD"T"HH24:MI:SS"Z"')) = 2024
+
                         """,
                         (joueur_nom,),
                     )
@@ -120,8 +123,6 @@ class JoueurDao(metaclass=Singleton):
             return None
 
     @log
-
-
     def mettre_a_jour(self, joueur: Joueur) -> bool:
         """Met à jour un joueur dans la base de données
 
