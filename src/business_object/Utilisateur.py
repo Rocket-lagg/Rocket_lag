@@ -27,7 +27,9 @@ class Utilisateur:
         Nombre de points de l'utilisateur (pour faire des paris)
     """
 
-    def __init__(self, nom_utilisateur, mot_de_passe, email, tournois_crees, paris, points):
+    def __init__(
+        self, nom_utilisateur, mot_de_passe, email, tournois_crees=None, paris=None, points=0
+    ):
         """Constructeur"""
         if not isinstance(nom_utilisateur, str):
             raise TypeError("nom_utilisateur doit être de type str")
@@ -35,10 +37,18 @@ class Utilisateur:
             raise TypeError("mot_de_passe doit être de type str")
         if not isinstance(email, str):
             raise TypeError("email doit être de type str")
-        if not isinstance(tournois_crees, list(Tournoi)):
-            raise TypeError("tournois_crees doit être de type list")
-        if not isinstance(paris, list(Pari)):
-            raise TypeError("paris doit être de type Pari")
+        if tournois_crees:
+            if not isinstance(tournois_crees, list):
+                raise TypeError("tournois_crees doit être de type list")
+            for tournoi in tournois_crees:
+                if not isinstance(tournoi, Tournoi):
+                    raise TypeError("tournoi doit être de type Tournoi")
+        if paris:
+            if not isinstance(paris, list):
+                raise TypeError("paris doit être de type list")
+            for i in paris:
+                if not isinstance(i, Pari):
+                    raise TypeError("chaque pari doit être de type Pari")
         if not isinstance(points, int):
             raise TypeError("points doit être de type int")
 

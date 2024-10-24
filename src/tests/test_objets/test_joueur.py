@@ -1,5 +1,5 @@
 import pytest
-from business_object.Joueur import Joueur
+from business_object.joueur import Joueur
 
 # Dictionnaire contenant les valeurs valides pour chaque attribut
 valid_values = {

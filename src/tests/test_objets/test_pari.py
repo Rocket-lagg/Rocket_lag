@@ -7,7 +7,27 @@ from business_object.Equipe import Equipe
 @pytest.fixture
 def equipe_valide():
     """Fixture pour créer une équipe valide."""
-    return Equipe(equipe_nom="Équipe A", equipe_winner=True)
+    return Equipe(
+        match_id=1,
+        equipe_nom="Equipe A",
+        shots=10,
+        goals=3,
+        saves=5,
+        assists=2,
+        score=1500,
+        shooting_percentage=30.0,
+        time_offensive_third=120.5,
+        time_defensive_third=80.2,
+        time_neutral_third=60.1,
+        demo_inflige=4,
+        demo_recu=3,
+        goal_participation=0.75,
+        equipe_score=3,
+        equipe_winner=True,
+        region="Europe",
+        ligue="Division 1",
+        stage="Quart de finale",
+    )
 
 
 @pytest.fixture
@@ -61,12 +81,12 @@ def test_pari_initialisation_valide(pari_valide):
                 "Personnage Y",
                 1.5,
             ),
-            Equipe("Équipe A", True),
+            equipe_valide,
             "En cours",
             100.0,
             "id_pari doit être de type int",
         ),
-        (1, None, Equipe("Équipe A", True), "En cours", 100.0, "match doit être de type Match"),
+        (1, None, equipe_valide, "En cours", 100.0, "match doit être de type Match"),
         (
             1,
             Match(
@@ -100,7 +120,7 @@ def test_pari_initialisation_valide(pari_valide):
                 "Personnage Y",
                 1.5,
             ),
-            Equipe("Équipe A", True),
+            equipe_valide,
             None,
             100.0,
             "status doit être de type str",
@@ -119,7 +139,7 @@ def test_pari_initialisation_valide(pari_valide):
                 "Personnage Y",
                 1.5,
             ),
-            Equipe("Équipe A", True),
+            equipe_valide,
             "En cours",
             None,
             "montant doit être de type float",

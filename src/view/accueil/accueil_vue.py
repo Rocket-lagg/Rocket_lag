@@ -36,7 +36,7 @@ class AccueilVue(VueAbstraite):
 
         match choix:
             case "Quitter":
-                pass
+                exit()
 
             case "Se connecter":
                 from view.accueil.connexion_vue import ConnexionVue

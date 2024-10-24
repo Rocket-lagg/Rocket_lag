@@ -1,6 +1,5 @@
 class Match:
-    def __init__(self, id_match, equipe1, equipe2, score1, score2, date, ligue, region, perso, cote_match):
-        
+    def __init__(self, id_match, equipe1, equipe2, score1, score2, date, ligue, region, perso, cote_match):       
         assert isinstance(id_match, int), "id_match doit être un entier"
         assert isinstance(equipe1, str) and equipe1, "equipe1 doit être une chaîne non vide"
         assert isinstance(equipe2, str) and equipe2, "equipe2 doit être une chaîne non vide"

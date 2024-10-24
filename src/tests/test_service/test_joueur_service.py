@@ -4,7 +4,7 @@ from service.utilisateur_service import UtilisateurService
 
 from dao.utilisateur_dao import UtilisateurDao
 
-from business_object.utilisateur import Utilisateur
+from business_object.Utilisateur import Utilisateur
 
 
 liste_utilisateurs = [
