@@ -62,12 +62,7 @@ class Equipe(EntiteSportive):
     region : str
         Région géographique à laquelle l'équipe appartient.
 
-    ligue : str
-        Ligue ou division dans laquelle l'équipe évolue.
 
-    stage : str
-        Étape du tournoi ou de la compétition où se situe l'équipe
-        (ex : poule, quart de finale, etc.).
     """
 
     def __init__(
@@ -85,12 +80,12 @@ class Equipe(EntiteSportive):
         time_neutral_third,
         demo_inflige,
         demo_recu,
-        goal_participation,
         equipe_score,
-        equipe_winner,
+        boost_stole,
+        date,
         region,
         ligue,
-        stage,
+        stage
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -108,21 +103,21 @@ class Equipe(EntiteSportive):
             time_neutral_third,
             demo_inflige,
             demo_recu,
-            goal_participation,
+            date,
+            region,
+            ligue,
+            stage
+
+
         )
 
-        assert isinstance(equipe_score, int), "equipe_score doit être un entier"
-        assert isinstance(equipe_winner, bool), "equipe_winner doit être un booléen"
         assert isinstance(region, str), "region doit être une chaîne de caractères"
         assert isinstance(ligue, str), "ligue doit être une chaîne de caractères"
         assert isinstance(stage, str), "stage doit être une chaîne de caractères"
 
         # Initialisation des nouveaux attributs spécifiques à la classe Equipe
         self.equipe_score = equipe_score
-        self.equipe_winner = equipe_winner
-        self.region = region # autant créer une classe match non?
-        self.ligue = ligue
-        self.stage = stage
+        self.boost_stole = boost_stole
 
     def __str__(self):
         """
@@ -133,4 +128,4 @@ class Equipe(EntiteSportive):
         str :
             Représentation de l'équipe avec son nom, son score et sa région.
         """
-        return f"Equipe({self.equipe_nom}, Score: {self.equipe_score}, Région: {self.region}, Vainqueur: {'Oui' if self.equipe_winner else 'Non'})"
+        return f"Equipe({self.equipe_nom}, Score: {self.equipe_score}, Région: {self.region})"

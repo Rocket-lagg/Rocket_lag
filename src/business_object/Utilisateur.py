@@ -8,7 +8,7 @@ class Utilisateur:
 
     Attributs
     ----------
-    nom_utilisateur : str
+    pseudo : str
         Pseudo de l'utilisateur
 
     mot_de_passe : str
@@ -64,9 +64,9 @@ class Utilisateur:
         tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
         paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
         return (
-            f"identifiant:{self.nom_utilisateur}, "
-            f"mdp:{self.mot_de_passe}, "
-            f"email:{self.email}, "
+            f"identifiant:{self.pseudo}, "
+            f"mdp:{self.mdp}, "
+            f"email:{self.mail}, "
             f"tournois:[{tournois_str}], "
             f"paris:[{paris_str}], "
             f"points:{self.points}"

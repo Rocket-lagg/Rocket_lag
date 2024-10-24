@@ -32,11 +32,11 @@ class JoueurDao(metaclass=Singleton):
                         """
                         INSERT INTO Joueur (nom, nationalite, rating, match_id, equipe_nom, shots, goals, saves, assists, score,
                                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                                            demo_inflige, demo_recu, goal_participation)
+                                            demo_inflige, demo_recu, goal_participation, date, ligue, region, stage )
                          VALUES (%(nom)s, %(nationalite)s,  %(rating)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
                                 %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
                                 %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
-                                %(goal_participation)s)
+                                %(goal_participation)s, %(date)s, %(ligue)s, %(region)s, %(stage)s)
                          RETURNING nom;
                         """,
                         {
@@ -57,6 +57,10 @@ class JoueurDao(metaclass=Singleton):
                             "demo_inflige": joueur.demo_inflige,
                             "demo_recu": joueur.demo_recu,
                             "goal_participation": joueur.goal_participation,
+                            "date": joueur.date,
+                            "ligue": joueur.ligue,
+                            "region": joueur.region,
+                            "stage": joueur.stage
                         },
                     )
                     # Récupérer l'ID du joueur créé
@@ -65,6 +69,43 @@ class JoueurDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création du joueur : {e}")
             return False
+    def creer_table_joueur():
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Joueur
+                    cursor.execute("""
+                        DROP TABLE IF EXISTS Joueur;
+                        CREATE TABLE Joueur (
+                            joueur_id SERIAL PRIMARY KEY,
+                            nom VARCHAR(100) NOT NULL,
+                            nationalite VARCHAR(50),
+                            rating FLOAT,
+                            match_id VARCHAR(50) NOT NULL,
+                            equipe_nom VARCHAR(100),
+                            shots INTEGER,
+                            goals INTEGER,
+                            saves INTEGER,
+                            assists INTEGER,
+                            score INTEGER,
+                            shooting_percentage FLOAT,
+                            time_offensive_third FLOAT,
+                            time_defensive_third FLOAT,
+                            time_neutral_third FLOAT,
+                            demo_inflige INTEGER,
+                            demo_recu INTEGER,
+                            goal_participation FLOAT,
+                            date DATE,                 -- Date du match
+                            region VARCHAR(50),        -- Région du match
+                            ligue VARCHAR(100),        -- Ligue à laquelle appartient le match
+                            stage VARCHAR(100)         -- Étape ou phase du tournoi ou du match
+                        );
+                    """)
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Joueur créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Joueur: {e}")
 
     @log
     def obtenir_par_nom(self, joueur_nom: str) -> Joueur:

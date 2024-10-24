@@ -67,7 +67,10 @@ class EntiteSportive(ABC):
         time_neutral_third,
         demo_inflige,
         demo_recu,
-        goal_participation,
+        date,
+        region,
+        ligue,
+        stage,
     ):
         assert isinstance(equipe_nom, str), "equipe_nom doit être une chaîne de caractères"
         assert isinstance(shots, int), "shots doit être un entier"
@@ -80,7 +83,7 @@ class EntiteSportive(ABC):
         assert isinstance(time_neutral_third, float), "time_neutral_third doit être un flottant"
         assert isinstance(demo_inflige, int), "demo_inflige doit être un entier"
         assert isinstance(demo_recu, int), "demo_recu doit être un entier"
-  
+
 
         self.match_id = match_id
         self.equipe_nom = equipe_nom
@@ -95,7 +98,10 @@ class EntiteSportive(ABC):
         self.time_neutral_third = time_neutral_third
         self.demo_inflige = demo_inflige
         self.demo_recu = demo_recu
-        self.goal_participation = goal_participation
+        self.date=date
+        self.region=region
+        self.ligue=ligue
+        self.stage=stage
 
     @abstractmethod
     def __str__(self):

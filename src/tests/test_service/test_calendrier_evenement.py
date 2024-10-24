@@ -3,12 +3,7 @@ import pytest
 
 from unittest.mock import patch
 
-from utils.reset_database import ResetDatabase
-from utils.securite import hash_password
-
-from dao.utilisateur_dao import UtilisateurDao
-
-from business_object.Utilisateur import Utilisateur
+from service.calendrier_evenement import CalendrierEvenement
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -23,7 +18,7 @@ def test_trouver_par_id_existant():
     """Recherche par id d'un utilisateur existant"""
 
     # GIVEN
-    id_utilisateur = 997
+    id_utilisateur = 998
 
     # WHEN
     utilisateur = UtilisateurDao().trouver_par_id(id_utilisateur)
@@ -66,7 +61,7 @@ def test_creer_ok():
     """Création de Utilisateur réussie"""
 
     # GIVEN
-    utilisateur = Utilisateur(pseudo="test", mdp="1234", mail="test@mail.fr", tournois_crees=[], points=10, paris=[])
+    utilisateur = Utilisateur(pseudo="gg", age=44, mail="test@test.io")
 
     # WHEN
     creation_ok = UtilisateurDao().creer(utilisateur)
@@ -77,10 +72,10 @@ def test_creer_ok():
 
 
 def test_creer_ko():
-    """Création de Utilisateur échouée (mail incorrects)"""
+    """Création de Utilisateur échouée (age et mail incorrects)"""
 
     # GIVEN
-    utilisateur = Utilisateur(pseudo="zerty", mdp="1234", mail=12, tournois_crees=[], points=0, paris=[])
+    utilisateur = Utilisateur(pseudo="gg", age="chaine de caractere", mail=12)
 
     # WHEN
     creation_ok = UtilisateurDao().creer(utilisateur)
@@ -94,7 +89,7 @@ def test_modifier_ok():
 
     # GIVEN
     new_mail = "maurice@mail.com"
-    utilisateur = Utilisateur(id_utilisateur=997, pseudo="maurice", mdp ='1234', mail=new_mail, tournois_crees=[], points=666, paris=[])
+    utilisateur = Utilisateur(id_utilisateur=997, pseudo="maurice", age=20, mail=new_mail)
 
     # WHEN
     modification_ok = UtilisateurDao().modifier(utilisateur)
@@ -107,7 +102,7 @@ def test_modifier_ko():
     """Modification de Utilisateur échouée (id inconnu)"""
 
     # GIVEN
-    utilisateur = Utilisateur(id_utilisateur=8888, pseudo="test", mdp="1234", mail="test@mail.fr", tournois_crees=[], points=666, paris=[])
+    utilisateur = Utilisateur(id_utilisateur=8888, pseudo="id inconnu", age=1, mail="no@mail.com")
 
     # WHEN
     modification_ok = UtilisateurDao().modifier(utilisateur)
@@ -120,7 +115,7 @@ def test_supprimer_ok():
     """Suppression de Utilisateur réussie"""
 
     # GIVEN
-    utilisateur = Utilisateur(id_utilisateur=995, pseudo="miguel", mail="miguel@projet.fr")
+    utilisateur = Utilisateur(id_utilisateur=995, pseudo="miguel", age=1, mail="miguel@projet.fr")
 
     # WHEN
     suppression_ok = UtilisateurDao().supprimer(utilisateur)
@@ -133,7 +128,7 @@ def test_supprimer_ko():
     """Suppression de Utilisateur échouée (id inconnu)"""
 
     # GIVEN
-    utilisateur = Utilisateur(id_utilisateur=8888, pseudo="id inconnu", mdp="1234", mail="jp@mail.fr", tournois_crees=[], points=0, paris=[])
+    utilisateur = Utilisateur(id_utilisateur=8888, pseudo="id inconnu", age=1, mail="no@z.fr")
 
     # WHEN
     suppression_ok = UtilisateurDao().supprimer(utilisateur)
@@ -150,10 +145,10 @@ def test_se_connecter_ok():
     mdp = "9876"
 
     # WHEN
-    utilisateur = UtilisateurDao().se_connecter(pseudo, mdp)  #hash_password(mdp, pseudo)
+    utilisateur = UtilisateurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
 
     # THEN
-    assert isinstance(utilisateur, Utilisateur)
+    assert isinstance(utilisateur, utilisateur)
 
 
 def test_se_connecter_ko():

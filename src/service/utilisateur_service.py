@@ -11,15 +11,16 @@ class UtilisateurService:
     """Classe contenant les méthodes de service des utilisateurs"""
 
     @log
-    def creer(self, pseudo, mdp, age, mail, fan_pokemon) -> Utilisateur:
+    def creer(self, pseudo, mdp, mail, tournois_crees, points, paris) -> Utilisateur:
         """Création d'un utilisateur à partir de ses attributs"""
 
         nouveau_utilisateur = Utilisateur(
             pseudo=pseudo,
             mdp=hash_password(mdp, pseudo),
-            age=age,
             mail=mail,
-            fan_pokemon=fan_pokemon,
+            tournois_crees=tournois_crees,
+            points=points,
+            paris=paris
         )
 
         return nouveau_utilisateur if UtilisateurDao().creer(nouveau_utilisateur) else None

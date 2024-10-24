@@ -8,9 +8,9 @@ from business_object.Utilisateur import Utilisateur
 
 
 liste_utilisateurs = [
-    Utilisateur(pseudo="jp", age="10", mail="jp@mail.fr", mdp="1234"),
-    Utilisateur(pseudo="lea", age="10", mail="lea@mail.fr", mdp="0000"),
-    Utilisateur(pseudo="gg", age="10", mail="gg@mail.fr", mdp="abcd"),
+    Utilisateur(pseudo="jp", mdp="1234", mail="jp@mail.fr", tournois_crees=[], points=0, paris=[]),
+    Utilisateur(pseudo="léa", mdp="10", mail="lea@mail.fr", tournois_crees=[], points=0, paris=[]),
+    Utilisateur(pseudo="clément", mdp="10", mail="cory@mail.fr", tournois_crees=[], points=10, paris=[]),
 ]
 
 
@@ -18,11 +18,11 @@ def test_creer_ok():
     """ "Création de Utilisateur réussie"""
 
     # GIVEN
-    pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
-    utilisateurDao().creer = MagicMock(return_value=True)
+    pseudo, mdp, mail, tournois_crees, points, paris = "jp", "1234", "z@mail.oo", [], 13, []
+    UtilisateurDao().creer = MagicMock(return_value=True)
 
     # WHEN
-    utilisateur = UtilisateurService().creer(pseudo, mdp, age, mail, fan_pokemon)
+    utilisateur = UtilisateurService().creer(pseudo, mdp, mail, tournois_crees, points, paris)
 
     # THEN
     assert utilisateur.pseudo == pseudo
@@ -33,11 +33,11 @@ def test_creer_echec():
     (car la méthode UtilisateurDao().creer retourne False)"""
 
     # GIVEN
-    pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
+    pseudo, mdp, mail, tournois_crees, points, paris= "jp", "1234", "z@mail.oo", [], 13, []
     UtilisateurDao().creer = MagicMock(return_value=False)
 
     # WHEN
-    utilisateur = UtilisateurService().creer(pseudo, mdp, age, mail, fan_pokemon)
+    utilisateur = UtilisateurService().creer(pseudo, mdp, mail, tournois_crees, points, paris)
 
     # THEN
     assert utilisateur is None
@@ -77,7 +77,7 @@ def test_pseudo_deja_utilise_oui():
     """Le pseudo est déjà utilisé dans liste_utilisateurs"""
 
     # GIVEN
-    pseudo = "lea"
+    pseudo = "léa"
 
     # WHEN
     UtilisateurDao().lister_tous = MagicMock(return_value=liste_utilisateurs)

@@ -23,10 +23,10 @@ def test_trouver_par_id_existant():
     """Recherche par id d'un match existant"""
 
     # GIVEN
-    id_match = 998
+    match_id = 998
 
     # WHEN
-    match = MatchDao().trouver_par_id(id_match)
+    match = MatchDao().trouver_par_id(match_id)
 
     # THEN
     assert match is not None
@@ -36,91 +36,91 @@ def test_trouver_par_id_non_existant():
     """Recherche par id d'un match n'existant pas"""
 
     # GIVEN
-    id_match = 9999999999999
+    match_id = 9999999999999
 
     # WHEN
-    match = MatchDao().trouver_par_id(id_match)
+    match = MatchDao().trouver_par_id(match_id)
 
     # THEN
     assert match is None
 
 
-def test_trouver_par_date_existant():
+def test_trouver_par_dates_existant():
     """Recherche par id d'un match existant"""
 
     # GIVEN
-    date = "2024-10-08"
+    dates = "2024-10-08"
 
     # WHEN
-    match = MatchDao().trouver_par_date(date)
+    match = MatchDao().trouver_par_dates(dates)
 
     # THEN
     assert match is not None
 
 
-def test_trouver_par_date_non_existante():
-    """Recherche par une date de match n'existant pas"""
+def test_trouver_par_dates_non_existante():
+    """Recherche par une dates de match n'existant pas"""
 
     # GIVEN
-    date = "1024-10-08T22:00:00Z"
+    dates = "1024-10-08T22:00:00Z"
 
     # WHEN
-    match = MatchDao().trouver_par_date(date)
+    match = MatchDao().trouver_par_dates(dates)
 
     # THEN
     assert match is None
 
 
-def test_trouver_id_match_par_joueur_existant():
+def test_trouver_match_id_par_joueur_existant():
     """Recherche par nom d'un joueur existant"""
 
     # GIVEN
     joueur = "Diaz"
 
     # WHEN
-    list_id_match = MatchDao().trouver_id_match_par_joueur(joueur)
+    list_match_id = MatchDao().trouver_match_id_par_joueur(joueur)
 
     # THEN
-    assert list_id_match is not None
+    assert list_match_id is not None
 
 
-def test_trouver_id_match_par_joueur_non_existante():
+def test_trouver_match_id_par_joueur_non_existante():
     """Recherche par nom d'un joueur n'existant pas"""
 
     # GIVEN
     joueur = "Diazopoooo"
 
     # WHEN
-    list_id_match = MatchDao().trouver_id_match_par_joueur(joueur)
+    list_match_id = MatchDao().trouver_match_id_par_joueur(joueur)
 
     # THEN
-    assert list_id_match is None
+    assert list_match_id is None
 
 
-def test_trouver_id_match_par_equipe_existant():
+def test_trouver_match_id_par_equipe_existant():
     """Recherche par nom d'un equipe existant"""
 
     # GIVEN
     equipe = "give me my money"
 
     # WHEN
-    list_id_match = MatchDao().trouver_id_match_par_equipe(equipe)
+    list_match_id = MatchDao().trouver_match_id_par_equipe(equipe)
 
     # THEN
-    assert list_id_match is not None
+    assert list_match_id is not None
 
 
-def test_trouver_id_match_par_equipe_non_existante():
+def test_trouver_match_id_par_equipe_non_existante():
     """Recherche par nom d'une equipe n'existant pas"""
 
     # GIVEN
     equipe = "fake_ team_I_guess"
 
     # WHEN
-    list_id_match = MatchDao().trouver_id_match_par_equipe(equipe)
+    list_match_id = MatchDao().trouver_match_id_par_equipe(equipe)
 
     # THEN
-    assert list_id_match is None
+    assert list_match_id is None
 
 
 def test_lister_tous():
@@ -145,12 +145,12 @@ def test_creer_ok():
 
     # GIVEN
     match = Match(
-        id_match=13223,
+        match_id=13223,
         equipe1="LOS",
         equipe2="ROI",
         score1=1,
         score2=10,
-        date=2024 - 10 - 10,
+        dates=2024 - 10 - 10,
         region="France",
         ligue="USBG",
         perso=False,
@@ -161,7 +161,7 @@ def test_creer_ok():
 
     # THEN
     assert creation_ok
-    assert match.id_match
+    assert match.match_id
 
 
 def test_creer_ko():
@@ -169,12 +169,12 @@ def test_creer_ko():
 
     # GIVEN
     match = Match(
-        id_match=13223,
+        match_id=13223,
         equipe1="LOS",
         equipe2="ROI",
         score1=1,
         score2=10,
-        date=2024 - 10 - 10,
+        dates=2024 - 10 - 10,
         region="France",
         ligue="USBG",
         perso=False,
