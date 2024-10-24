@@ -1,64 +1,67 @@
 import regex
-
-from InquirerPy import inquirer
+from InquirerPy import prompt
 from InquirerPy.validator import PasswordValidator, EmptyInputValidator
-
 from prompt_toolkit.validation import ValidationError, Validator
-
-
 from view.vue_abstraite import VueAbstraite
-from service.utilisateur_service import UtilisateurService
+from service.utilisateur_service import utilisateur_service
 
 
-class InscriptionVue(VueAbstraite):
-    def choisir_menu(self):
-        # Demande à l'utilisateur de saisir pseudo, mot de passe...
-        pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
+class Inscriptionview(VueAbstraite):
+    def __init__(self):
+        self.__questions = [
+            {
+                "type": "input",
+                "name": "pseudo",
+                "message": "Choisissez un pseudo : ",
+            },
+            {
+                "type": "password",  # permet de cacher le mdp
+                "name": "mot_de_passe",
+                "message": "Choisissez un mot de passe: ",
+            },
+            {
+                "type": "password",
+                "name": "confirmation_mot_de_passe",
+                "message": "Confirmez votre mot de passe",
+            },
+            {
+                "type": "input",
+                "name": "email",
+                "message": "Entrez votre email"
+            }
+        ]
 
-        if UtilisateurService().pseudo_deja_utilise(pseudo):
-            from view.accueil.accueil_vue import AccueilVue
+    def message_info(self):
+        print("Bonjour,choisissez votre pseudo et votre mot de passe s'il vous plait")
 
-            return AccueilVue(f"Le pseudo {pseudo} est déjà utilisé.")
+    def make_choice(self):
+        reponse = prompt(self.__questions)
 
-        mdp = inquirer.secret(
-            message="Entrez votre mot de passe : ",
-            validate=PasswordValidator(
-                length=8,
-                cap=True,
-                number=True,
-                message="Au moins 8 caractères, incluant une majuscule et un chiffre",
-            ),
-        ).execute()
+        if reponse["mot_de_passe"] != reponse["confirmation_mot_de_passe"]:
+            print("Les mots de passe ne correspondent pas. Veuillez réessayer.")
+            return self  # ramène au mot de passe
 
-        age = inquirer.number(
-            message="Entrez votre age : ",
-            min_allowed=0,
-            max_allowed=120,
-            validate=EmptyInputValidator(),
-        ).execute()
+        pseudo = reponse["pseudo"]
+        mot_de_passe = reponse["mot_de_passe"]
 
-        mail = inquirer.text(message="Entrez votre mail : ", validate=MailValidator()).execute()
+        compte = utilisateur_service()
 
-        fan_pokemon = inquirer.confirm(
-            message="Etes-vous fan de pokemons : ",
-            confirm_letter="o",
-            reject_letter="n",
-        ).execute()
+        try:
+            result = compte.creer_utilisateur(pseudo, mot_de_passe)
+            if result == 0:
+                print("Compte créé avec succès ! ")
+            elif result == 1:
+                print("Mauvaise création")
+            else:
+                print("Compte déjà existant")
 
-        # Appel du service pour créer le utilisateur
-        utilisateur = UtilisateurService().creer(pseudo, mdp, age, mail, fan_pokemon)
+        except Exception as e:
+            print(f"Erreur lors de la création du compte : {e}")
+            return self
 
-        # Si le utilisateur a été créé
-        if utilisateur:
-            message = (
-                f"Votre compte {utilisateur.pseudo} a été créé. Vous pouvez maintenant vous connecter."
-            )
-        else:
-            message = "Erreur de connexion (pseudo ou mot de passe invalide)"
+        from view.LogView import LogView
 
-        from view.accueil.accueil_vue import AccueilVue
-
-        return AccueilVue(message)
+        return LogView()
 
 
 class MailValidator(Validator):

@@ -9,6 +9,10 @@ from view.session import Session
 class AccueilVue(VueAbstraite):
     """Vue d'accueil de l'application"""
 
+    def message_info(self):
+        with open("src/graphical_asset/nom.txt", "r", encoding="utf-8") as asset:
+            print(asset.read())
+
     def choisir_menu(self):
         """Choix du menu suivant
 
@@ -27,8 +31,7 @@ class AccueilVue(VueAbstraite):
                 "Créer un compte",
                 "Consulter les statistiques de match",
                 "Consulter les statistiques de joueur/équipe",
-                "Consulter le calendrier"
-                "Ré-initialiser la base de données",
+                "Consulter le calendrier" "Ré-initialiser la base de données",
                 "Infos de session",
                 "Quitter",
             ],
