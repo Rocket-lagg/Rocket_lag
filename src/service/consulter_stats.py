@@ -11,10 +11,12 @@ class ConsulterStats(metaclass=Singleton):
         """Une fonction qui permet d'afficher les statistiques par joueur"""
         if not isinstance(nom_joueur, str):
             raise TypeError("nom_joueur doit être une instance de str")
-        joueur = JoueurDao.obtenir_par_nom(nom_joueur)
+        joueurdao = JoueurDao()
+        joueur = joueurdao.obtenir_par_nom(nom_joueur)
         if not joueur:
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
-        id_matchs = MatchDao.trouver_id_match_par_joueur(nom_joueur)
+        matchdao = MatchDao()
+        id_matchs = matchdao.trouver_id_match_par_joueur(nom_joueur)
         n = len(id_matchs)
         region = joueur.region
         if region == "EU":
@@ -43,7 +45,7 @@ class ConsulterStats(metaclass=Singleton):
         shooting_percentage = joueur.shooting_percentage
         demolitions = joueur.demo_inflige
         tiers_offensif = joueur.time_offensive_third
-        off = (
+        off = round(
             (
                 goals / 1.05
                 + assists / 0.5
@@ -51,13 +53,14 @@ class ConsulterStats(metaclass=Singleton):
                 + demolitions / 0.56
                 + tiers_offensif / 20.11
             )
-            * 1
-            / n
+            * (1 / n),
+            2,
         )
-        perf = (
+        perf = round(
             (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
             * (1 / n)
-            * regional_indice
+            * regional_indice,
+            2,
         )
         print(
             f"Statistiques pour le joueur {nom_joueur}, membre de l'équipe "
@@ -71,7 +74,7 @@ class ConsulterStats(metaclass=Singleton):
             f"Total d'arrêts : {saves}\n"
             f"Nombre moyen d'arrêts par match : {saves/n}\n"
             f"Rating moyen par match : {rating/n}\n"
-            f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n}\n"
+            f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n} %\n"
             f"Total de démolitions infligées : {demolitions}\n"
             f"Nombre moyen de démolitions infligées par match : {demolitions/n}\n"
             f"Son indice de performance au cours de la saison est égal à : {perf}\n"
@@ -139,7 +142,7 @@ class ConsulterStats(metaclass=Singleton):
         # aussi besoin des boosts volés par équipe
 
 
-# if __name__ == "__main__":
-#     consulter_stats = ConsulterStats()  # Création d'une instance de ConsulterStats
-#     nom_joueur = "Crispy"  # Remplacez par le nom du joueur que vous souhaitez
-#     consulter_stats.stats_joueurs(nom_joueur)  # Appel de la méthode
+if __name__ == "__main__":
+    consulter_stats = ConsulterStats()  # Création d'une instance de ConsulterStats
+    nom_joueur = "Crispy"  # Remplacez par le nom du joueur que vous souhaitez
+    consulter_stats.stats_joueurs(nom_joueur)  # Appel de la méthode

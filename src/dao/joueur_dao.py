@@ -60,7 +60,7 @@ class JoueurDao(metaclass=Singleton):
                             "date": joueur.date,
                             "ligue": joueur.ligue,
                             "region": joueur.region,
-                            "stage": joueur.stage
+                            "stage": joueur.stage,
                         },
                     )
                     # Récupérer l'ID du joueur créé
@@ -69,13 +69,15 @@ class JoueurDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création du joueur : {e}")
             return False
+
     def creer_table_joueur():
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     # Commande SQL pour supprimer et recréer la table Joueur
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         DROP TABLE IF EXISTS Joueur;
                         CREATE TABLE Joueur (
                             joueur_id SERIAL PRIMARY KEY,
@@ -101,7 +103,8 @@ class JoueurDao(metaclass=Singleton):
                             ligue VARCHAR(100),        -- Ligue à laquelle appartient le match
                             stage VARCHAR(100)         -- Étape ou phase du tournoi ou du match
                         );
-                    """)
+                    """
+                    )
                     connection.commit()  # Confirmer les modifications
                     logging.info("Table Joueur créée avec succès.")
         except Exception as e:
@@ -131,7 +134,7 @@ class JoueurDao(metaclass=Singleton):
                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
                             demo_inflige, demo_recu, goal_participation
                         FROM Joueur
-                        WHERE joueur_nom = %s
+                        WHERE nom = %s
                          AND DATE_PART('year', TO_TIMESTAMP(date_match, 'YYYY-MM-DD"T"HH24:MI:SS"Z"')) = 2024
 
                         """,
@@ -160,7 +163,7 @@ class JoueurDao(metaclass=Singleton):
                             goal_participation=row[16],
                         )
         except Exception as e:
-            logging.error(f"Erreur lors de la récupération du joueur avec l'ID {joueur_id} : {e}")
+            logging.error(f"Erreur lors de la récupération du joueur avec l'ID {joueur_nom} : {e}")
             return None
 
     @log
