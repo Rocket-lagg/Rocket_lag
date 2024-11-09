@@ -61,12 +61,18 @@ class Utilisateur:
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
-        paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
+        if self.tournois_crees:
+            tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
+        else:
+            tournois_str = "Aucun"
+        if self.paris:
+            paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
+        else:
+            paris_str = "Aucun"
         return (
-            f"identifiant:{self.pseudo}, "
-            f"mdp:{self.mdp}, "
-            f"email:{self.mail}, "
+            f"identifiant:{self.nom_utilisateur}, "
+            f"mdp:{self.mot_de_passe}, "
+            f"email:{self.email}, "
             f"tournois:[{tournois_str}], "
             f"paris:[{paris_str}], "
             f"points:{self.points}"

@@ -11,30 +11,32 @@ class UtilisateurService:
     """Classe contenant les méthodes de service des utilisateurs"""
 
     @log
-    def creer(self, pseudo, mdp, mail, tournois_crees, points, paris) -> Utilisateur:
+    def creer_utilisateur(
+        self, nom_utilisateur, mot_de_passe, email, tournois_crees=None, points=0, paris=None
+    ) -> Utilisateur:
         """Création d'un utilisateur à partir de ses attributs"""
 
         nouveau_utilisateur = Utilisateur(
-            pseudo=pseudo,
-            mdp=hash_password(mdp, pseudo),
-            mail=mail,
+            nom_utilisateur=nom_utilisateur,
+            mot_de_passe=hash_password(mot_de_passe, nom_utilisateur),
+            email=email,
             tournois_crees=tournois_crees,
             points=points,
-            paris=paris
+            paris=paris,
         )
 
         return nouveau_utilisateur if UtilisateurDao().creer(nouveau_utilisateur) else None
 
     @log
-    def lister_tous(self, inclure_mdp=False) -> list[Utilisateur]:
+    def lister_tous(self, inclure_mot_de_passe=False) -> list[Utilisateur]:
         """Lister tous les utilisateurs
-        Si inclure_mdp=True, les mots de passe seront inclus
-        Par défaut, tous les mdp des utilisateurs sont à None
+        Si inclure_mot_de_passe=True, les mots de passe seront inclus
+        Par défaut, tous les mot_de_passe des utilisateurs sont à None
         """
         utilisateurs = UtilisateurDao().lister_tous()
-        if not inclure_mdp:
+        if not inclure_mot_de_passe:
             for j in utilisateurs:
-                j.mdp = None
+                j.mot_de_passe = None
         return utilisateurs
 
     @log
@@ -46,7 +48,9 @@ class UtilisateurService:
     def modifier(self, utilisateur) -> Utilisateur:
         """Modification d'un utilisateur"""
 
-        utilisateur.mdp = hash_password(utilisateur.mdp, utilisateur.pseudo)
+        utilisateur.mot_de_passe = hash_password(
+            utilisateur.mot_de_passe, utilisateur.nom_utilisateur
+        )
         return utilisateur if UtilisateurDao().modifier(utilisateur) else None
 
     @log
@@ -59,12 +63,12 @@ class UtilisateurService:
         """Afficher tous les utilisateurs
         Sortie : Une chaine de caractères mise sous forme de tableau
         """
-        entetes = ["pseudo", "age", "mail", "est fan de Pokemon"]
+        entetes = ["nom_utilisateur", "age", "email", "est fan de Pokemon"]
 
         utilisateurs = UtilisateurDao().lister_tous()
 
         for j in utilisateurs:
-            if j.pseudo == "admin":
+            if j.nom_utilisateur == "admin":
                 utilisateurs.remove(j)
 
         utilisateurs_as_list = [j.as_list() for j in utilisateurs]
@@ -84,13 +88,15 @@ class UtilisateurService:
         return str_utilisateurs
 
     @log
-    def se_connecter(self, pseudo, mdp) -> Utilisateur:
-        """Se connecter à partir de pseudo et mdp"""
-        return UtilisateurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
+    def se_connecter(self, nom_utilisateur, mot_de_passe) -> Utilisateur:
+        """Se connecter à partir de nom_utilisateur et mot_de_passe"""
+        return UtilisateurDao().se_connecter(
+            nom_utilisateur, hash_password(mot_de_passe, nom_utilisateur)
+        )
 
     @log
-    def pseudo_deja_utilise(self, pseudo) -> bool:
-        """Vérifie si le pseudo est déjà utilisé
-        Retourne True si le pseudo existe déjà en BDD"""
+    def nom_utilisateur_deja_utilise(self, nom_utilisateur) -> bool:
+        """Vérifie si le nom_utilisateur est déjà utilisé
+        Retourne True si le nom_utilisateur existe déjà en BDD"""
         utilisateurs = UtilisateurDao().lister_tous()
-        return pseudo in [j.pseudo for j in utilisateurs]
+        return nom_utilisateur in [j.nom_utilisateur for j in utilisateurs]

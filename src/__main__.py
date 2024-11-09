@@ -16,9 +16,11 @@ if __name__ == "__main__":
     nb_erreurs = 0
 
     while vue_courante:
+        """
         if nb_erreurs > 100:
             print("Le programme recense trop d'erreurs et va s'arrêter")
             break
+        """
         # Affichage du menu
         vue_courante.afficher()
         vue_courante.message_info()

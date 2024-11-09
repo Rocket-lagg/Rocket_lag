@@ -23,19 +23,36 @@ class AccueilVue(VueAbstraite):
         """
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
-
-        choix = inquirer.select(
-            message="Faites votre choix : ",
-            choices=[
-                "Se connecter",
-                "Créer un compte",
-                "Consulter les statistiques de match",
-                "Consulter les statistiques de joueur/équipe",
-                "Consulter le calendrier" "Ré-initialiser la base de données",
-                "Infos de session",
-                "Quitter",
-            ],
-        ).execute()
+        if Session().utilisateur:
+            choix = inquirer.select(
+                message="Faites votre choix : ",
+                choices=[
+                    "Consulter les statistiques de match",
+                    "Consulter les statistiques de joueur/équipe",
+                    "Consulter le calendrier",
+                    "Parier",
+                    "Participer à un tournoi",
+                    "Envoyer invitation à un tournoi",
+                    "Ré-initialiser la base de données",
+                    "Infos de session",
+                    "Se déconnecter",
+                    "Quitter",
+                ],
+            ).execute()
+        else:
+            choix = inquirer.select(
+                message="Faites votre choix : ",
+                choices=[
+                    "Se connecter",
+                    "Créer un compte",
+                    "Consulter les statistiques de match",
+                    "Consulter les statistiques de joueur/équipe",
+                    "Consulter le calendrier",
+                    "Ré-initialiser la base de données",
+                    "Infos de session",
+                    "Quitter",
+                ],
+            ).execute()
 
         match choix:
             case "Quitter":
@@ -51,20 +68,20 @@ class AccueilVue(VueAbstraite):
 
                 return InscriptionVue("Création de compte utilisateur")
 
-            case "Consulter les statistiques de match":
-                from view.accueil.inscription_vue import InscriptionVue
-
-                return InscriptionVue("Création de compte utilisateur")
-
             case "Consulter les statistiques de joueur/équipe":
-                from view.accueil.inscription_vue import InscriptionVue
+                from view.statistique.stat_vue import VueConsulterStats
 
-                return InscriptionVue("Création de compte utilisateur")
+                return VueConsulterStats("Consulter les statistiques de joueur/équipe")
+
+            case "Consulter les statistiques de match":
+                from view.statistique.match_vue import MatchVue
+
+                return MatchVue("Consultation des statistiques de match")
 
             case "Consulter le calendrier":
-                from view.accueil.inscription_vue import InscriptionVue
+                from view.statistique.calendrier_vue import CalendrierVue
 
-                return InscriptionVue("Création de compte utilisateur")
+                return CalendrierVue("Création de compte utilisateur")
 
             case "Infos de session":
                 return AccueilVue(Session().afficher())
