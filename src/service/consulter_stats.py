@@ -2,6 +2,7 @@ from utils.singleton import Singleton
 from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
+from business_object.joueur import Joueur
 
 
 class ConsulterStats(metaclass=Singleton):
@@ -13,6 +14,7 @@ class ConsulterStats(metaclass=Singleton):
             raise TypeError("nom_joueur doit être une instance de str")
         joueurdao = JoueurDao()
         joueur = joueurdao.obtenir_par_nom(nom_joueur)
+        stats = Joueur()
         if not joueur:
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
         matchdao = MatchDao()
@@ -35,51 +37,40 @@ class ConsulterStats(metaclass=Singleton):
             regional_indice = 0.3
         else:
             raise ValueError("La région du joueur est inconnue.")
-        equipe = joueur.equipe
-        goals = joueur.goals
+        stats.equipe_nom = joueur.equipe
+        stats.goals = joueur.goals
         # résultat TODO -> donner le nombre de défaites et de victoires au cours de l'année
-        assists = joueur.assists
-        shots = joueur.shots
-        saves = joueur.saves
-        rating = joueur.score
-        shooting_percentage = joueur.shooting_percentage
-        demolitions = joueur.demo_inflige
-        tiers_offensif = joueur.time_offensive_third
-        off = round(
+        stats.assists = joueur.assists
+        stats.shots = joueur.shots
+        stats.saves = joueur.saves
+        stats.score = joueur.score
+        stats.shooting_percentage = joueur.shooting_percentage
+        stats.demo_inflige = joueur.demo_inflige
+        stats.time_offensive_third = joueur.time_offensive_third
+        stats.indice_offensif = round(
             (
-                goals / 1.05
-                + assists / 0.5
-                + shots / 3.29
-                + demolitions / 0.56
-                + tiers_offensif / 20.11
+                stats.goals / 1.05
+                + stats.assists / 0.5
+                + stats.shots / 3.29
+                + stats.demolitions_inflige / 0.56
+                + stats.time_offensive_third / 20.11
             )
             * (1 / n),
             2,
         )
-        perf = round(
-            (goals * 1 + assists * 0.75 + saves * 0.6 + shots * 0.4 + (goals / shots) * 0.5)
+        stats.indice_performance = round(
+            (
+                stats.goals * 1
+                + stats.assists * 0.75
+                + stats.saves * 0.6
+                + stats.shots * 0.4
+                + (stats.goals / stats.shots) * 0.5
+            )
             * (1 / n)
             * regional_indice,
             2,
         )
-        print(
-            f"Statistiques pour le joueur {nom_joueur}, membre de l'équipe "
-            f"{equipe}, depuis le début de la saison :\n"
-            f"Total de buts : {goals}\n"
-            f"Nombre moyen de buts par matchs : {goals/n}\n"
-            f"Total de passes décisives : {assists}\n"
-            f"Nombre de passes décisives moyen par match : {assists/n}\n"
-            f"Total de tirs : {shots}\n"
-            f"Nombre moyen de tirs par match : {shots/n}\n"
-            f"Total d'arrêts : {saves}\n"
-            f"Nombre moyen d'arrêts par match : {saves/n}\n"
-            f"Rating moyen par match : {rating/n}\n"
-            f"Pourcentage de tirs cadrés moyen par match : {shooting_percentage/n} %\n"
-            f"Total de démolitions infligées : {demolitions}\n"
-            f"Nombre moyen de démolitions infligées par match : {demolitions/n}\n"
-            f"Son indice de performance au cours de la saison est égal à : {perf}\n"
-            f"Son indice offensif au cours de la saison est égal à : {off}"
-        )
+        return stats
 
     def stats_equipe(self, nom_equipe):
         if not isinstance(str, nom_equipe):
