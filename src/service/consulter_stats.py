@@ -162,7 +162,6 @@ class ConsulterStats(metaclass=Singleton):
         joueurs = equipe.joueurs
         n = len(id_matchs)
         goals = equipe.goals
-        # résultats TODO
         assists = equipe.assists
         shots = equipe.shots
         saves = equipe.saves
