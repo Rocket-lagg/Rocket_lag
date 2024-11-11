@@ -36,6 +36,7 @@ class Utilisateur:
         if not isinstance(tournois_crees, list):
             raise TypeError("tournois_crees doit être de type list")
         if not isinstance(paris, list):
+        if not isinstance(paris, list(Pari)):
             raise TypeError("paris doit être de type Pari")
         if not isinstance(points, int):
             raise TypeError("points doit être de type int")
@@ -53,10 +54,12 @@ class Utilisateur:
         tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
         paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
         return (
-            f"identifiant:{self.pseudo}, "
-            f"mdp:{self.mdp}, "
-            f"email:{self.mail}, "
+            f"identifiant:{self.nom_utilisateur}, "
+            f"mdp:{self.mot_de_passe}, "
+            f"email:{self.email}, "
             f"tournois:[{tournois_str}], "
             f"paris:[{paris_str}], "
             f"points:{self.points}"
         )
+        return f"identifiant:{self.pseudo}, mdp:{self.mdp}, mail:{self.mail}"
+        f"tournois:{self.tournois_crees}, paris:{self.paris}, points:{self.points})"
