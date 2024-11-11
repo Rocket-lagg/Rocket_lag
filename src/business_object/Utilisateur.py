@@ -11,11 +11,11 @@ class Utilisateur:
     pseudo : str
         Pseudo de l'utilisateur
 
-    mdp : str
+    mot_de_passe : str
         Mot de passe de l'utilisateur
 
-    mail : str
-        mail de l'utilisateur
+    email : str
+        Email de l'utilisateur
 
     tournois_crées: list[Tournoi]
         Liste des tournois créés par l'utilisateur"
@@ -28,31 +28,47 @@ class Utilisateur:
     """
 
     def __init__(
-        self, pseudo, mail, tournois_crees=[], paris=[], points=10, id_utilisateur=None, mdp=None
+        self, nom_utilisateur, mot_de_passe, email, tournois_crees=None, paris=None, points=0
     ):
         """Constructeur"""
-        if not isinstance(pseudo, str):
-            raise TypeError("pseudo doit être de type str")
-        if not isinstance(tournois_crees, list):
-            raise TypeError("tournois_crees doit être de type list")
-        if not isinstance(paris, list):
-        if not isinstance(paris, list(Pari)):
-            raise TypeError("paris doit être de type Pari")
+        if not isinstance(nom_utilisateur, str):
+            raise TypeError("nom_utilisateur doit être de type str")
+        if not isinstance(mot_de_passe, str):
+            raise TypeError("mot_de_passe doit être de type str")
+        if not isinstance(email, str):
+            raise TypeError("email doit être de type str")
+        if tournois_crees:
+            if not isinstance(tournois_crees, list):
+                raise TypeError("tournois_crees doit être de type list")
+            for tournoi in tournois_crees:
+                if not isinstance(tournoi, Tournoi):
+                    raise TypeError("tournoi doit être de type Tournoi")
+        if paris:
+            if not isinstance(paris, list):
+                raise TypeError("paris doit être de type list")
+            for i in paris:
+                if not isinstance(i, Pari):
+                    raise TypeError("chaque pari doit être de type Pari")
         if not isinstance(points, int):
             raise TypeError("points doit être de type int")
 
-        self.id_utilisateur = id_utilisateur
-        self.pseudo = pseudo
-        self.mdp = mdp
-        self.mail = mail
+        self.nom_utilisateur = nom_utilisateur
+        self.mot_de_passe = mot_de_passe
+        self.email = email
         self.tournois_crees = tournois_crees
         self.paris = paris  # regarder pour prendre les logs
         self.points = points
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
-        paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
+        if self.tournois_crees:
+            tournois_str = ", ".join([tournoi.nom_tournoi for tournoi in self.tournois_crees])
+        else:
+            tournois_str = "Aucun"
+        if self.paris:
+            paris_str = ", ".join([f"{pari.id_pari}" for pari in self.paris])
+        else:
+            paris_str = "Aucun"
         return (
             f"identifiant:{self.nom_utilisateur}, "
             f"mdp:{self.mot_de_passe}, "

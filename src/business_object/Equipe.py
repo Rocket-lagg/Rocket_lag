@@ -70,22 +70,28 @@ class Equipe(EntiteSportive):
         match_id,
         equipe_nom,
         shots,
+        shots_par_match,
         goals,
+        goals_par_match,
         saves,
+        saves_par_match,
         assists,
+        assists_par_match,
         score,
+        score_par_match,
         shooting_percentage,
         time_offensive_third,
         time_defensive_third,
         time_neutral_third,
         demo_inflige,
+        demo_inflige_par_match,
         demo_recu,
         equipe_score,
         boost_stole,
         date,
         region,
         ligue,
-        stage
+        stage,
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -106,9 +112,7 @@ class Equipe(EntiteSportive):
             date,
             region,
             ligue,
-            stage
-
-
+            stage,
         )
 
         assert isinstance(region, str), "region doit être une chaîne de caractères"
