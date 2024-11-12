@@ -48,45 +48,34 @@ class MatchDao(metaclass=Singleton):
         return created
 
     @log
-    def trouver_par_id(self, match_id) -> Match:
-        """trouver un match grace à son id
-
-        Parameters
-        ----------
-        match_id : int
-            numéro id du match que l'on souhaite trouver
-
-        Returns
-        -------
-        match : Match
-            renvoie le match que l'on cherche par id
-        """
+    def trouver_par_id_match(id_match):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT *                           "
-                        "  FROM matchs                      "
-                        " WHERE match_id = %(match_id)s;  ",
-                        {"match_id": match_id},
+                        """
+                                SELECT i.*
+                                FROM "RocketLag".info_match i
+                                WHERE i.id_match = %(id_match)s;
+                                """,
+                        {"id_match": id_match},
                     )
-                    res = cursor.fetchone()
+            res_match = cursor.fetchone()
         except Exception as e:
-            logging.info(e)
-            raise
+            print(e)
 
         match = None
-        if res:
+        if res_match:
             match = Match(
-                match_id=res["match_id"],
-                equipe1=res["equipe1"],
-                equipe2=res["equipe2"],
-                score1=res["score1"],
-                score2=res["score2"],
-                dates=res["dates"],
-                region=res["region"],
-                ligue=res["ligue"],
-                perso=res["perso"],
+                match_id=res_match["match_id"],
+                equipe1=res_match["equipe1"],
+                equipe2=res_match["equipe2"],
+                score1=res_match["score1"],
+                score2=res_match["score2"],
+                dates=res_match["dates"],
+                region=res_match["region"],
+                ligue=res_match["ligue"],
+                perso=res_match["perso"],
             )
 
         return match

@@ -11,7 +11,66 @@ from business_object.Utilisateur import Utilisateur
 class UtilisateurDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux utilisateurs de la base de données"""
 
-    @log
+    def trouver_paris_par_utilisateur(id_utilisateur):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                                SELECT p.*
+                                FROM "RocketLag".paris p
+                                JOIN "RocketLag".paris_utilisateur pu ON p.id_pari = pu.id_pari
+                                WHERE pu.id_utilisateur = %(id_utilisateur)s;
+                                """,
+                        {"id_utilisateur": id_utilisateur},
+                    )
+            paris_res = cursor.fetchall()
+            return paris_res
+        except Exception as e:
+            print(e)
+
+    def trouver_tournois_par_utilisateur(id_utilisateur):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT t.*
+                        FROM "RocketLag".tournoi t
+                        JOIN "RocketLag".tournois_utilisateur tu ON t.id_tournoi = tu.id_tournoi
+                        WHERE tu.id_utilisateur = %(id_utilisateur)s;
+                        """,
+                        {"id_utilisateur": id_utilisateur},
+                    )
+            tournois_res = cursor.fetchall()
+            return tournois_res
+        except Exception as e:
+            print(e)
+
+    def instancier(self, utilisateur_bdd) -> Utilisateur:
+        """Instancie un utilisateur avec ses tournois créés et ses paris.
+
+        Parameters
+        ----------
+        id_utilisateur : int
+            L'ID de l'utilisateur à récupérer.
+
+        Returns
+        -------
+        utilisateur : Utilisateur
+            Utilisateur enrichi avec ses tournois créés et ses paris.
+        """
+
+        utilisateur = Utilisateur(
+            nom_utilisateur=utilisateur_bdd["pseudo"],
+            mot_de_passe=utilisateur_bdd["mdp"],
+            email=utilisateur_bdd["mail"],
+            tournois_crees=[],
+            points=utilisateur_bdd["points"],
+            paris=[],
+        )
+        return utilisateur
+
     def creer(self, utilisateur) -> bool:
         """Creation d'un utilisateur dans la base de données
 
@@ -32,27 +91,25 @@ class UtilisateurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO utilisateur(pseudo, mdp, mail, tournois_crees, points, paris) VALUES        "
-                        "(%(pseudo)s, %(mdp)s, %(mail)s, %(tournois_crees)s, %(points)s, %(paris)s)             "
-                        "  RETURNING id_utilisateur;                                                ",
+                        """
+                        INSERT INTO "RocketLag".utilisateur(pseudo, mdp, mail, points)
+                        VALUES(%(pseudo)s, %(mdp)s, %(mail)s, 0)
+                        RETURNING id_utilisateur;
+                        """,
                         {
-                            "pseudo": utilisateur.pseudo,
-                            "mdp": utilisateur.mdp,
-                            "mail": utilisateur.mail,
-                            "tournois_crees": utilisateur.tournois_crees,
-                            "points": utilisateur.points,
-                            "paris": utilisateur.paris
+                            "pseudo": utilisateur.nom_utilisateur,
+                            "mdp": utilisateur.mot_de_passe,
+                            "mail": utilisateur.email,
                         },
                     )
                     res = cursor.fetchone()
         except Exception as e:
-            logging.info(e)
+            print(e)
 
         created = False
         if res:
-            utilisateur.id_utilisateur = res["id_utilisateur"]
-            created = True
-
+            if isinstance(res["id_utilisateur"], int):
+                created = True
         return created
 
     @log
@@ -73,9 +130,11 @@ class UtilisateurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT *                           "
-                        "  FROM utilisateur                      "
-                        " WHERE id_utilisateur = %(id_utilisateur)s;  ",
+                        """
+                        SELECT *
+                        FROM "RocketLag".utilisateur
+                        WHERE id_utilisateur = %(id_utilisateur)s;
+                        """,
                         {"id_utilisateur": id_utilisateur},
                     )
                     res = cursor.fetchone()
@@ -85,16 +144,9 @@ class UtilisateurDao(metaclass=Singleton):
 
         utilisateur = None
         if res:
-            utilisateur = Utilisateur(
-                id_utilisateur=res["id_utilisateur"],
-                pseudo=res["pseudo"],
-                mdp=res["mdp"],
-                mail=res["mail"],
-                tournois_crees=res["tournois_crees"],
-                points=res['points'],
-                paris=res['paris']
-            )
-
+            utilisateur = self.instancier(
+                res
+            )  # res est le nom de la variable dans laquelle on a stocké l'utilisateur de la dao
         return utilisateur
 
     @log
@@ -133,8 +185,8 @@ class UtilisateurDao(metaclass=Singleton):
                     mdp=row["mdp"],
                     mail=row["mail"],
                     tournois_crees=row["tournois_crees"],
-                    points=row['points'],
-                    paris=row['paris']
+                    points=row["points"],
+                    paris=row["paris"],
                 )
 
                 liste_utilisateurs.append(utilisateur)
@@ -256,8 +308,8 @@ class UtilisateurDao(metaclass=Singleton):
                 mdp=res["mdp"],
                 mail=res["mail"],
                 tournois_crees=res["tournois_crees"],
-                points=res['points'],
-                paris=res['paris']
+                points=res["points"],
+                paris=res["paris"],
             )
 
         return utilisateur

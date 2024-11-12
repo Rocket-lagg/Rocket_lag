@@ -7,6 +7,7 @@ class Pari:
     Définit un pari pour un joueur
     Parameters:
     ---------------
+
     id_pari: int
         Identifiant du pari
 
