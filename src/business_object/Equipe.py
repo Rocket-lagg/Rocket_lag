@@ -66,25 +66,19 @@ class Equipe(EntiteSportive):
     """
 
     def __init__(
-        self,
+         self,
         match_id,
         equipe_nom,
         shots,
-        shots_par_match,
         goals,
-        goals_par_match,
         saves,
-        saves_par_match,
         assists,
-        assists_par_match,
         score,
-        score_par_match,
         shooting_percentage,
         time_offensive_third,
         time_defensive_third,
         time_neutral_third,
         demo_inflige,
-        demo_inflige_par_match,
         demo_recu,
         equipe_score,
         boost_stole,
@@ -92,6 +86,12 @@ class Equipe(EntiteSportive):
         region,
         ligue,
         stage,
+        shots_par_match=1,  # valeur par défaut 1
+        goals_par_match=1,  # valeur par défaut 1
+        saves_par_match=1,  # valeur par défaut 1
+        assists_par_match=1,  # valeur par défaut 1
+        score_par_match=1,  # valeur par défaut 1
+        demo_inflige_par_match=1,
     ):
 
         # Appel du constructeur parent (EntiteSportive)

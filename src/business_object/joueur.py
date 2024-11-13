@@ -68,21 +68,15 @@ class Joueur(EntiteSportive):
         match_id,
         equipe_nom,
         shots,
-        shots_par_match,
         goals,
-        goals_par_match,
         saves,
-        saves_par_match,
         assists,
-        assists_par_match,
         score,
-        score_par_match,
         shooting_percentage,
         time_offensive_third,
         time_defensive_third,
         time_neutral_third,
         demo_inflige,
-        demo_inflige_par_match,
         demo_recu,
         goal_participation,
         nom,
@@ -92,8 +86,16 @@ class Joueur(EntiteSportive):
         region,
         ligue,
         stage,
-        indice_offensif,
-        indice_performance,
+        # Paramètres avec valeurs par défaut pour les statistiques moyennes par match
+        shots_par_match=1,
+        goals_par_match=1,
+        saves_par_match=1,
+        assists_par_match=1,
+        score_par_match=1,
+        demo_inflige_par_match=1,
+        # Paramètres additionnels
+        indice_offensif=1,
+        indice_performance=1
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -101,28 +103,26 @@ class Joueur(EntiteSportive):
             match_id,
             equipe_nom,
             shots,
-            shots_par_match,
+
             goals,
-            goals_par_match,
+
             saves,
-            saves_par_match,
+
             assists,
-            assists_par_match,
+
             score,
-            score_par_match,
+
             shooting_percentage,
             time_offensive_third,
             time_defensive_third,
             time_neutral_third,
             demo_inflige,
-            demo_inflige_par_match,
             demo_recu,
             date,
             region,
             ligue,
             stage,
-            indice_offensif,
-            indice_performance,
+
         )
         # Vérifications des types pour les nouveaux attributs spécifiques à Joueur
         assert isinstance(nom, str), "nom doit être une chaîne de caractères"

@@ -11,7 +11,7 @@ CREATE TABLE utilisateur(
     points          INT,
     paris           INT[]
 );
-
+x
 DROP TABLE IF EXISTS matchs CASCADE;
 CREATE TABLE matchs (
     match_id VARCHAR(255) PRIMARY KEY,
