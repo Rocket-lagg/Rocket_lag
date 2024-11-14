@@ -13,7 +13,7 @@ class CalendrierEvenement():
         for match in all_matchs:
             date = datetime.fromisoformat(match['date'][:-1])
             if date.year == annee:
-                evenements[(date.month, date.day)] = f"{match['ligue']}: {match['equipe1']} vs {match['equipe2']}"
+                evenements[(date.month, date.day)] = f"{match['ligue']}: {match['equipe1']} vs {match['equipe2']} à {date.hour} "
         return evenements
 
     # Fonction pour afficher un calendrier d'une année complète avec des événements

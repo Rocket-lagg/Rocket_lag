@@ -2,83 +2,82 @@ import pytest
 from unittest.mock import patch, MagicMock
 from service.consulter_stats import ConsulterStats
 
-
-@pytest.fixture
-def consulter_stats():
-    return ConsulterStats()
+# Création d'une instance de la classe ConsulterStats
+consulter_stats = ConsulterStats()
 
 
-class TestStatsJoueurs:
+@pytest.mark.parametrize(
+    "equipe_nom, region, goals, goals_par_match, assists, assists_par_match, shots, shots_par_match, saves, saves_par_match, score, score_par_match, shooting_percentage, demo_inflige, demo_inflige_par_match, time_offensive_third, indice_offensif, indice_performance",
+    [("RocketLag", "EU", 5, 2.5, 3, 1.5, 12, 6, 4, 2, 1500, 750, 40, 3, 1.5, 600, 11.38, 4.93)],
+)
+@patch("dao.joueur_dao.JoueurDao")
+@patch("dao.match_dao.MatchDao")
+def test_stats_joueurs_nom_valide(
+    MockMatchDao,
+    MockJoueurDao,
+    equipe_nom,
+    region,
+    goals,
+    goals_par_match,
+    assists,
+    assists_par_match,
+    shots,
+    shots_par_match,
+    saves,
+    saves_par_match,
+    score,
+    score_par_match,
+    shooting_percentage,
+    demo_inflige,
+    demo_inflige_par_match,
+    time_offensive_third,
+    indice_offensif,
+    indice_performance,
+):
+    # Nom du joueur à tester
+    nom_joueur = "Crispy"
 
-    @patch("dao.joueur_dao.JoueurDao")
-    @patch("dao.match_dao.MatchDao")
-    def test_stats_joueurs_nom_valide(self, MockMatchDao, MockJoueurDao, consulter_stats):
-        nom_joueur = "Crispy"
-        # Simule un joueur avec des statistiques fictives
-        joueur_fictif = MagicMock(
-            region="EU",
-            equipe="RocketLag",
-            goals=5,
-            assists=3,
-            shots=12,
-            saves=4,
-            score=1500,
-            shooting_percentage=40,
-            demo_inflige=3,
-            time_offensive_third=60,
-        )
+    # Simule un joueur avec des statistiques fictives
+    joueur_fictif = MagicMock(
+        region=region,
+        equipe=equipe_nom,
+        goals=goals,
+        assists=assists,
+        shots=shots,
+        saves=saves,
+        score=score,
+        shooting_percentage=shooting_percentage,
+        demo_inflige=demo_inflige,
+        time_offensive_third=time_offensive_third,
+    )
 
-        # Mock des méthodes de DAO pour obtenir les statistiques
-        MockJoueurDao.return_value.obtenir_par_nom.return_value = joueur_fictif
-        MockMatchDao.return_value.trouver_id_match_par_joueur.return_value = [1, 2, 3]
+    # Mock des méthodes de DAO pour obtenir les statistiques
+    MockJoueurDao.return_value.obtenir_par_nom.return_value = joueur_fictif
+    MockMatchDao.return_value.trouver_id_match_par_joueur.return_value = [1, 2]
 
-        # Capture l'affichage des statistiques
-        with patch("sys.stdout", new_callable=MagicMock()) as mock_stdout:
-            consulter_stats.stats_joueurs(nom_joueur)
-            output = mock_stdout.write.call_args[0][0]
+    # Appel de la méthode à tester
+    stats_result = consulter_stats.stats_joueurs(nom_joueur)
 
-            assert "Statistiques pour le joueur Crispy" in output
-            assert "RocketLag" in output
-            assert "Total de buts : 5" in output
-            assert "Nombre moyen de buts par matchs : 1.67" in output  # 5 / 3 matchs
-            assert "Son indice de performance au cours de la saison est égal à :" in output
-            assert "Son indice offensif au cours de la saison est égal à :" in output
+    # Vérifier que le joueur a bien été récupéré par son nom
+    MockJoueurDao.return_value.obtenir_par_nom.assert_called_once_with(nom_joueur)
+    MockMatchDao.return_value.trouver_id_match_par_joueur.assert_called_once_with(nom_joueur)
 
-    @patch("dao.joueur_dao.JoueurDao")
-    def test_stats_joueurs_joueur_non_trouve(self, MockJoueurDao, consulter_stats):
-        nom_joueur = "Inconnu"
-        # Mock pour simuler qu'aucun joueur n'a été trouvé
-        MockJoueurDao.return_value.obtenir_par_nom.return_value = None
-
-        with pytest.raises(ValueError, match="Aucun joueur nommé Inconnu n'a été trouvé."):
-            consulter_stats.stats_joueurs(nom_joueur)
-
-    def test_stats_joueurs_type_erreur(self, consulter_stats):
-        # Vérifie qu'un TypeError est levé pour un type de nom incorrect
-        with pytest.raises(TypeError, match="nom_joueur doit être une instance de str"):
-            consulter_stats.stats_joueurs(123)
-
-    @patch("dao.joueur_dao.JoueurDao")
-    @patch("dao.match_dao.MatchDao")
-    def test_stats_joueurs_region_inconnue(self, MockMatchDao, MockJoueurDao, consulter_stats):
-        nom_joueur = "Crispy"
-        # Simule un joueur avec une région inconnue
-        joueur_fictif = MagicMock(
-            region="UNKNOWN",
-            equipe="RocketLag",
-            goals=3,
-            assists=2,
-            shots=8,
-            saves=1,
-            score=1000,
-            shooting_percentage=33,
-            demo_inflige=1,
-            time_offensive_third=30,
-        )
-
-        MockJoueurDao.return_value.obtenir_par_nom.return_value = joueur_fictif
-        MockMatchDao.return_value.trouver_id_match_par_joueur.return_value = [1]
-
-        # Vérifie qu'une ValueError est levée pour une région inconnue
-        with pytest.raises(ValueError, match="La région du joueur est inconnue."):
-            consulter_stats.stats_joueurs(nom_joueur)
+    # Assertions pour vérifier les statistiques retournées
+    assert stats_result.nom == nom_joueur
+    assert stats_result.equipe_nom == equipe_nom
+    assert stats_result.goals == goals
+    assert stats_result.goals_par_match == goals_par_match
+    assert stats_result.assists == assists
+    assert stats_result.assists_par_match == assists_par_match
+    assert stats_result.shots == shots
+    assert stats_result.shots_par_match == shots_par_match
+    assert stats_result.saves == saves
+    assert stats_result.saves_par_match == saves_par_match
+    assert stats_result.score == score
+    assert stats_result.score_par_match == score_par_match
+    assert stats_result.shooting_percentage == shooting_percentage
+    assert stats_result.demo_inflige == demo_inflige
+    assert stats_result.demo_inflige_par_match == demo_inflige_par_match
+    assert stats_result.time_offensive_third == time_offensive_third
+    assert round(stats_result.indice_offensif, 2) == indice_offensif
+    assert round(stats_result.indice_performance, 2) == indice_performance

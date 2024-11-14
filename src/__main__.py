@@ -15,6 +15,8 @@ if __name__ == "__main__":
     vue_courante = AccueilVue("Bienvenue dans")
     nb_erreurs = 0
 
+
+
     while vue_courante:
         """
         if nb_erreurs > 100:

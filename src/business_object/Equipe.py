@@ -66,7 +66,7 @@ class Equipe(EntiteSportive):
     """
 
     def __init__(
-        self,
+         self,
         match_id,
         equipe_nom,
         shots,
@@ -85,7 +85,13 @@ class Equipe(EntiteSportive):
         date,
         region,
         ligue,
-        stage
+        stage,
+        shots_par_match=1,  # valeur par défaut 1
+        goals_par_match=1,  # valeur par défaut 1
+        saves_par_match=1,  # valeur par défaut 1
+        assists_par_match=1,  # valeur par défaut 1
+        score_par_match=1,  # valeur par défaut 1
+        demo_inflige_par_match=1,
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -106,9 +112,7 @@ class Equipe(EntiteSportive):
             date,
             region,
             ligue,
-            stage
-
-
+            stage,
         )
 
         assert isinstance(region, str), "region doit être une chaîne de caractères"

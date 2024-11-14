@@ -84,7 +84,6 @@ class EntiteSportive(ABC):
         assert isinstance(demo_inflige, int), "demo_inflige doit être un entier"
         assert isinstance(demo_recu, int), "demo_recu doit être un entier"
 
-
         self.match_id = match_id
         self.equipe_nom = equipe_nom
         self.shots = shots
@@ -98,10 +97,10 @@ class EntiteSportive(ABC):
         self.time_neutral_third = time_neutral_third
         self.demo_inflige = demo_inflige
         self.demo_recu = demo_recu
-        self.date=date
-        self.region=region
-        self.ligue=ligue
-        self.stage=stage
+        self.date = date
+        self.region = region
+        self.ligue = ligue
+        self.stage = stage
 
     @abstractmethod
     def __str__(self):

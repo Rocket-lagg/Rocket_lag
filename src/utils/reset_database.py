@@ -1,63 +1,67 @@
 import os
 import logging
-import dotenv
+
 
 from unittest import mock
 
 from utils.log_decorator import log
 from utils.singleton import Singleton
 from dao.db_connection import DBConnection
-
 from service.utilisateur_service import UtilisateurService
+import dotenv
+dotenv.load_dotenv()  # Charger .env avant d'utiliser DBConnection ou ResetDatabase
 
 
 class ResetDatabase(metaclass=Singleton):
     """
-    Reinitialisation de la base de données
+    Classe pour gérer la réinitialisation de la base de données.
     """
 
-    @log
-    def lancer(self, test_dao=False):
-        """Lancement de la réinitialisation des données
-        Si test_dao = True : réinitialisation des données de test"""
-        if test_dao:
-            mock.patch.dict(os.environ, {"POSTGRES_SCHEMA": "projet_test_dao"}).start()
-            pop_data_path = "data/pop_db_test.sql"
-        else:
-            pop_data_path = "data/pop_db.sql"
-
-        dotenv.load_dotenv()
-
-        schema = os.environ["POSTGRES_SCHEMA"]
-
-        create_schema = f"DROP SCHEMA IF EXISTS {schema} CASCADE; CREATE SCHEMA {schema};"
-
-        init_db = open("data/init_db.sql", encoding="utf-8")
-        init_db_as_string = init_db.read()
-        init_db.close()
-
-        pop_db = open(pop_data_path, encoding="utf-8")
-        pop_db_as_string = pop_db.read()
-        pop_db.close()
-
+    def lancer(self):
+        """
+        Création de la table Joueur dans la base de données.
+        """
         try:
+            # Connexion à la base de données
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(create_schema)
-                    cursor.execute(init_db_as_string)
-                    cursor.execute(pop_db_as_string)
+                    # Commande SQL pour supprimer et recréer la table Joueur
+                    cursor.execute(
+                        """
+                        DROP TABLE IF EXISTS Joueur;
+                        CREATE TABLE Joueur (
+                            joueur_id SERIAL PRIMARY KEY,
+                            nom VARCHAR(100) NOT NULL,
+                            nationalite VARCHAR(50),
+                            rating FLOAT,
+                            match_id VARCHAR(50) NOT NULL,
+                            equipe_nom VARCHAR(100),
+                            shots INTEGER,
+                            goals INTEGER,
+                            saves INTEGER,
+                            assists INTEGER,
+                            score INTEGER,
+                            shooting_percentage FLOAT,
+                            time_offensive_third FLOAT,
+                            time_defensive_third FLOAT,
+                            time_neutral_third FLOAT,
+                            demo_inflige INTEGER,
+                            demo_recu INTEGER,
+                            goal_participation FLOAT,
+                            date DATE,                 -- Date du match
+                            region VARCHAR(50),        -- Région du match
+                            ligue VARCHAR(100),        -- Ligue à laquelle appartient le match
+                            stage VARCHAR(100)         -- Étape ou phase du tournoi ou du match
+                        );
+                        """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Joueur créée avec succès.")
         except Exception as e:
-            logging.info(e)
-            raise
-
-        # Appliquer le hashage des mots de passe à chaque utilisateur
-        utilisateur_service = UtilisateurService()
-        for j in utilisateur_service.lister_tous(inclure_mdp=True):
-            utilisateur_service.modifier(j)
-
-        return True
-
+            logging.error(f"Erreur lors de la création de la table Joueur: {e}")
 
 if __name__ == "__main__":
-    ResetDatabase().lancer()
-    ResetDatabase().lancer(True)
+    dotenv.load_dotenv()  # Charger les variables d'environnement
+    # Créer une instance de ResetDatabase et créer la table Joueur
+    reset_db = ResetDatabase()
+    reset_db.lancer()

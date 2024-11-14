@@ -77,3 +77,5 @@ class Utilisateur:
             f"paris:[{paris_str}], "
             f"points:{self.points}"
         )
+        return f"identifiant:{self.pseudo}, mdp:{self.mdp}, mail:{self.mail}"
+        f"tournois:{self.tournois_crees}, paris:{self.paris}, points:{self.points})"

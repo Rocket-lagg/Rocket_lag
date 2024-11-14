@@ -164,19 +164,16 @@ class MatchProcessor:
 
 
 
-# Example usage
-api = API(base_url="https://api.rlcstatistics.net")
-match_processor = MatchProcessor(api)
+if __name__ == "__main__":
+    # Step 1: Initialiser l'API et le processeur de match
+    api = API(base_url="https://api.rlcstatistics.net")
+    match_processor = MatchProcessor(api)
 
-# Step 1: Get the matches
-t= match_processor.recup_matches(page=226, page_size=2)
+    # Step 2: Récupérer les matchs
+    match_processor.recup_matches(page=265, page_size=10)
 
-u=match_processor.recup_match_data()
+    # Step 3: Récupérer les données des matchs
+    u = match_processor.recup_match_data()
 
-# Step 3: Process the match and player data
-match_processor.process_matches()
-
-# Step 4: Create DataFrames
-df_matches, df_players = match_processor.create_dataframes()
-
-print(df_matches)
+    # Step 4: Traiter les matchs et les joueurs
+    match_processor.process_matches()

@@ -62,6 +62,7 @@ class Joueur(EntiteSportive):
     rating : float
         Note ou évaluation de la performance du joueur.
     """
+
     def __init__(
         self,
         match_id,
@@ -84,7 +85,17 @@ class Joueur(EntiteSportive):
         date,
         region,
         ligue,
-        stage
+        stage,
+        # Paramètres avec valeurs par défaut pour les statistiques moyennes par match
+        shots_par_match=1,
+        goals_par_match=1,
+        saves_par_match=1,
+        assists_par_match=1,
+        score_par_match=1,
+        demo_inflige_par_match=1,
+        # Paramètres additionnels
+        indice_offensif=1,
+        indice_performance=1
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -92,10 +103,15 @@ class Joueur(EntiteSportive):
             match_id,
             equipe_nom,
             shots,
+
             goals,
+
             saves,
+
             assists,
+
             score,
+
             shooting_percentage,
             time_offensive_third,
             time_defensive_third,
@@ -106,6 +122,7 @@ class Joueur(EntiteSportive):
             region,
             ligue,
             stage,
+
         )
         # Vérifications des types pour les nouveaux attributs spécifiques à Joueur
         assert isinstance(nom, str), "nom doit être une chaîne de caractères"
