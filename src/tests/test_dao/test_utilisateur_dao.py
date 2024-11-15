@@ -12,11 +12,11 @@ from business_object.Utilisateur import Utilisateur
 
 
 @pytest.fixture(scope="session", autouse=True)
-def setup_test_environment():
-    """Initialisation des données de test"""
-    with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
-        ResetDatabase().lancer(test_dao=True)
-        yield
+#def setup_test_environment():
+#    """Initialisation des données de test"""
+#    with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
+#        ResetDatabase().lancer(test_dao=True)
+ #       yield
 
 
 def test_trouver_par_id_existant():
