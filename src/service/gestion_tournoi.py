@@ -1,4 +1,4 @@
-vimport sqlite3
+import sqlite3
 
 ############### on va définir ici la classe tornoi avec ses 3 fonctiuonnalitées et qui va me permettre de gérer
 ############### des tournois qui seront crées par mes utilisateurs viusiteurs ( uniquement). il est à noter que pour les matchs offiels,

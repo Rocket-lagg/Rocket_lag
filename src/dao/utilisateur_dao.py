@@ -18,8 +18,8 @@ class UtilisateurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                                 SELECT p.*
-                                FROM "RocketLag".paris p
-                                JOIN "RocketLag".paris_utilisateur pu ON p.id_pari = pu.id_pari
+                                FROM paris p
+                                JOIN paris_utilisateur pu ON p.id_pari = pu.id_pari
                                 WHERE pu.id_utilisateur = %(id_utilisateur)s;
                                 """,
                         {"id_utilisateur": id_utilisateur},
@@ -36,8 +36,8 @@ class UtilisateurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         SELECT t.*
-                        FROM "RocketLag".tournoi t
-                        JOIN "RocketLag".tournois_utilisateur tu ON t.id_tournoi = tu.id_tournoi
+                        FROM tournoi t
+                        JOIN tournois_utilisateur tu ON t.id_tournoi = tu.id_tournoi
                         WHERE tu.id_utilisateur = %(id_utilisateur)s;
                         """,
                         {"id_utilisateur": id_utilisateur},
@@ -92,7 +92,7 @@ class UtilisateurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-                        INSERT INTO "RocketLag".utilisateur(pseudo, mdp, mail, points)
+                        INSERT INTO utilisateur(pseudo, mdp, mail, points)
                         VALUES(%(pseudo)s, %(mdp)s, %(mail)s, 0)
                         RETURNING id_utilisateur;
                         """,
@@ -132,7 +132,7 @@ class UtilisateurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         SELECT *
-                        FROM "RocketLag".utilisateur
+                        FROM utilisateur
                         WHERE id_utilisateur = %(id_utilisateur)s;
                         """,
                         {"id_utilisateur": id_utilisateur},
