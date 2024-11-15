@@ -11,7 +11,7 @@ from service.utilisateur_service import UtilisateurService
 import dotenv
 dotenv.load_dotenv()  # Charger .env avant d'utiliser DBConnection ou ResetDatabase
 
-
+from business_object.crea_data import*
 
 class ResetDatabase(metaclass=Singleton):
     """
@@ -106,6 +106,18 @@ class ResetDatabase(metaclass=Singleton):
     def lancer(self):
         self.lancer_equipe()
         self.lancer_joueur()
+            # Step 1: Initialiser l'API et le processeur de match
+        api = API(base_url="https://api.rlcstatistics.net")
+        match_processor = MatchProcessor(api)
+
+            # Step 2: Récupérer les matchs
+        match_processor.recup_matches(page=265, page_size=4)
+
+            # Step 3: Récupérer les données des matchs
+        match_processor.recup_match_data()
+
+            # Step 4: Traiter les matchs et les joueurs
+        match_processor.process_matches()
 
 
 if __name__ == "__main__":
@@ -116,3 +128,4 @@ if __name__ == "__main__":
     # Créer une instance de ResetDatabase et créer les tables
     reset_db = ResetDatabase()
     reset_db.lancer()
+# mettre dans ain

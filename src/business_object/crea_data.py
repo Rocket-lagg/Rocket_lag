@@ -173,7 +173,7 @@ match_processor = MatchProcessor(api)
 match_processor.recup_matches(page=265, page_size=4)
 
     # Step 3: Récupérer les données des matchs
-u = match_processor.recup_match_data()
+match_processor.recup_match_data()
 
     # Step 4: Traiter les matchs et les joueurs
 match_processor.process_matches()

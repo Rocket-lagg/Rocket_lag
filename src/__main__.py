@@ -9,8 +9,16 @@ from view.accueil.accueil_vue import AccueilVue
 if __name__ == "__main__":
     # On charge les variables d'environnement
     dotenv.load_dotenv(override=True)
+    # Configuration du logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # Créer une instance de ResetDatabase et créer les tables
+    reset_db = ResetDatabase()
+    reset_db.lancer()
+
 
     initialiser_logs("Application")
+
 
     vue_courante = AccueilVue("Bienvenue dans")
     nb_erreurs = 0
