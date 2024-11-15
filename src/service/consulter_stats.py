@@ -82,6 +82,16 @@ class ConsulterStats(metaclass=Singleton):
         matchdao = MatchDao()
         id_matchs = matchdao.trouver_id_match_par_equipe(nom_equipe)
         n = len(id_matchs)
+        if n==0:
+            raise ValueError(f"Aucun match n'a été trouvé pour l'équipe {nom_equipe}.")
+        stats_par_match = lambda total: total / n if n > 0 else 0
+        equipe_data.goals_par_match = stats_par_matchs(equipe_data.goals)
+        equipe_data.assists_par_match = stats_par_matchs(equipe_data.assists)
+        equipe_data.shots_par_match = stats_par_match(equipe_data.shots)
+        equipe_data.score_par_match = stats_par_match(equipe_data.score)
+        equipe_data.demo_inflige_par_match = stats_par_match(demo_inflige)
+
+
         equipe = Equipe(
             match_id = equipe_data.match_id,
             equipe_nom = equipe_data.equipe_nom
