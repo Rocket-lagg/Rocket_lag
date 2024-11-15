@@ -164,16 +164,16 @@ class MatchProcessor:
 
 
 
-if __name__ == "__main__":
+
     # Step 1: Initialiser l'API et le processeur de match
-    api = API(base_url="https://api.rlcstatistics.net")
-    match_processor = MatchProcessor(api)
+api = API(base_url="https://api.rlcstatistics.net")
+match_processor = MatchProcessor(api)
 
     # Step 2: Récupérer les matchs
-    match_processor.recup_matches(page=265, page_size=10)
+match_processor.recup_matches(page=265, page_size=4)
 
     # Step 3: Récupérer les données des matchs
-    u = match_processor.recup_match_data()
+u = match_processor.recup_match_data()
 
     # Step 4: Traiter les matchs et les joueurs
-    match_processor.process_matches()
+match_processor.process_matches()
