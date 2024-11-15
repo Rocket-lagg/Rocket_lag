@@ -62,7 +62,7 @@ CREATE TABLE "RocketLag".info_match (
     date DATE,  -- Utilisation d'un type DATE pour les dates
     region VARCHAR(50),
     ligue VARCHAR(255),
-    perso BOOL
+    perso BOOL,
 );
 
 -- Correction de la création de la table utilisateur
@@ -78,8 +78,6 @@ CREATE TABLE "RocketLag".utilisateur (
 -- Correction de la création de la table tournoi
 CREATE TABLE "RocketLag".tournoi (
     id_tournoi SERIAL PRIMARY KEY,
-    id_createur INT REFERENCES "RocketLag".utilisateur(id_utilisateur),
-    nom VARCHAR(255),
     officiel BOOL
 );
 
@@ -93,7 +91,7 @@ CREATE TABLE "RocketLag".paris (
 
 -- Correction de la création de la table tournois_utilisateur
 CREATE TABLE "RocketLag".tournois_utilisateur (
-    id_utilisateur INT REFERENCES "RocketLag".utilisateur(id_utilisateur), 
+    id_utilisateur INT REFERENCES "RocketLag".utilisateur(id_utilisateur),
     id_tournoi INT REFERENCES "RocketLag".tournoi(id_tournoi),
     PRIMARY KEY (id_utilisateur, id_tournoi)  -- Ajout d'une clé primaire composée
 );

@@ -18,7 +18,8 @@ class CalendrierEvenement:
         return evenements
 
     # Fonction pour afficher un calendrier d'une année complète avec des événements
-    def afficher_calendrier_annee(annee, evenements):
+    def afficher_calendrier_annee(annee):
+        evenements = dictionnaire_evenement(annee)
         print(f"Calendrier pour l'année {annee} :\n")
         # Pour chaque mois de l'année
         for mois in range(1, 13):
