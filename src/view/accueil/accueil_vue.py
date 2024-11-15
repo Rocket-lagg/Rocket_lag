@@ -29,8 +29,7 @@ class AccueilVue(VueAbstraite):
                     "Consulter les statistiques de joueur/équipe",
                     "Consulter le calendrier",
                     "Parier",
-                    "Participer à un tournoi",
-                    "Envoyer invitation à un tournoi",
+                    "Gestion des tournois",
                     "Ré-initialiser la base de données",
                     "Infos de session",
                     "Se déconnecter",
@@ -79,7 +78,17 @@ class AccueilVue(VueAbstraite):
             case "Consulter le calendrier":
                 from view.statistique.calendrier_vue import CalendrierVue
 
-                return CalendrierVue("Création de compte utilisateur")
+                return CalendrierVue("")
+
+            case "Gestion des tournois":
+                from view.tournoi.tournoi_vue import TournoiVue
+
+                return TournoiVue("")
+
+            case "Parier":
+                from view.pari.pari_vue import PariVue
+
+                return PariVue("")
 
             case "Infos de session":
                 return AccueilVue(Session().afficher())

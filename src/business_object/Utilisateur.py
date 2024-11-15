@@ -8,7 +8,7 @@ class Utilisateur:
 
     Attributs
     ----------
-    pseudo : str
+    nom_utilisateur : str
         Pseudo de l'utilisateur
 
     mot_de_passe : str

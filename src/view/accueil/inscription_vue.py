@@ -13,7 +13,7 @@ class InscriptionVue(VueAbstraite):
             {
                 "type": "input",
                 "name": "pseudo",
-                "message": "Choisissez un pseudo : ",
+                "message": "Choisissez un pseudo: ",
             },
             {
                 "type": "password",  # permet de cacher le mdp
@@ -23,7 +23,7 @@ class InscriptionVue(VueAbstraite):
             {
                 "type": "password",
                 "name": "confirmation_mot_de_passe",
-                "message": "Confirmez votre mot de passe",
+                "message": "Confirmez votre mot de passe: ",
             },
             {"type": "input", "name": "email", "message": "Entrez votre email"},
         ]
