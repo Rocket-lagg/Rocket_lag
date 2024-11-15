@@ -92,7 +92,7 @@ class MatchDao(metaclass=Singleton):
         return match
 
     @log
-    def trouver_par_dates(self, id_dates) -> Match:
+    def trouver_par_dates(self, dates) -> Match:
         """trouver un match grace à sa dates
 
         Parameters
@@ -111,7 +111,7 @@ class MatchDao(metaclass=Singleton):
                     cursor.execute(
                         "SELECT *                           "
                         "  FROM matchs                      "
-                        " WHERE dates::dates = %(dates)s             "
+                        " WHERE dates = %(dates)s             "
                         " AND perso = FALSE;  ",
                         {"dates": dates},
                     )
