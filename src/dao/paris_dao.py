@@ -11,8 +11,8 @@ class ParisDao:
                     cursor.execute(
                         """
                                 SELECT p.*
-                                FROM "RocketLag".paris p
-                                JOIN "RocketLag".paris_utilisateur pu ON p.id_pari = pu.id_pari
+                                FROM paris p
+                                JOIN paris_utilisateur pu ON p.id_pari = pu.id_pari
                                 WHERE pu.nom_utilisateur = %(nom_utilisateur)s;
                                 """,
                         {"nom_utilisateur": nom_utilisateur},
