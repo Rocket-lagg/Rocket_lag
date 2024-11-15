@@ -16,7 +16,6 @@ if __name__ == "__main__":
     nb_erreurs = 0
 
 
-
     while vue_courante:
         """
         if nb_erreurs > 100:

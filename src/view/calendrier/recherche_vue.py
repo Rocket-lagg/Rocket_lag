@@ -24,9 +24,8 @@ class RechercheVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
-        annee = input("Quelle est l'année du match? ")
-        evenement = input("Durant quel évenement le match a eu lieu? ")
-        self.calendrier_evenement.afficher_calendrier_annee(annee, evenement)
+        date = input("A quelle date le match a-t-il eu lieu? (JJ/MM/AA): ")
+        self.calendrier_evenement.rechercher_match_par_date(date)
 
         choix = inquirer.select(
             message="",

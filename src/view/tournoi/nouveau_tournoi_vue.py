@@ -1,4 +1,4 @@
-from service.paris_service import ParisService
+from service.tournoi_service import TournoiService
 from view.vue_abstraite import VueAbstraite
 from InquirerPy import inquirer
 
@@ -8,10 +8,10 @@ class PariVue(VueAbstraite):
 
     def __init__(self, message=""):
         self.message = message
-        self.paris = ParisService()
+        self.tournoi = TournoiService()
 
     def message_info(self):
-        print("Paris de l'utilisateur")
+        print("Nouveau Tournoi")
 
     def choisir_menu(self):
         """Choix du menu suivant
@@ -24,12 +24,13 @@ class PariVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
-        self.paris.afficher_infos_paris()
+        joueurs = input("Qui voulez vous inviter dans votre tournoi?")
+        self.tournois.creer_tournoi(joueurs)
 
         choix = inquirer.select(
-            message="Souhaitez-vous faire un nouveau paris?",
+            message="Souhaitez-vous lancer un nouveau tournoi?",
             choices=[
-                "Parier sur un nouveau match",
+                "Créer un tournoi",
                 "Retour",
             ],
         ).execute()
@@ -41,6 +42,6 @@ class PariVue(VueAbstraite):
                 return AccueilVue()
 
             case "Paris":
-                from view.paris.nouveau_paris_vue import NouveauParisVue
+                from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
 
-                return NouveauParisVue()
+                return NouveauTournoiVue()
