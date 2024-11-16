@@ -71,7 +71,7 @@ CREATE TABLE "RocketLag".utilisateur (
     pseudo VARCHAR(30) UNIQUE,
     mdp VARCHAR(256),
     mail VARCHAR(50),
-    points INT,
+    points  INT,
     paris INT[]
 );
 

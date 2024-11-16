@@ -70,46 +70,6 @@ class JoueurDao(metaclass=Singleton):
             logging.error(f"Erreur lors de la création du joueur : {e}")
             return False
 
-    def creer_table_joueur():
-        try:
-            # Connexion à la base de données
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    # Commande SQL pour supprimer et recréer la table Joueur
-                    cursor.execute(
-                        """
-                        DROP TABLE IF EXISTS Joueur;
-                        CREATE TABLE Joueur (
-                            joueur_id SERIAL PRIMARY KEY,
-                            nom VARCHAR(100) NOT NULL,
-                            nationalite VARCHAR(50),
-                            rating FLOAT,
-                            match_id VARCHAR(50) NOT NULL,
-                            equipe_nom VARCHAR(100),
-                            shots INTEGER,
-                            goals INTEGER,
-                            saves INTEGER,
-                            assists INTEGER,
-                            score INTEGER,
-                            shooting_percentage FLOAT,
-                            time_offensive_third FLOAT,
-                            time_defensive_third FLOAT,
-                            time_neutral_third FLOAT,
-                            demo_inflige INTEGER,
-                            demo_recu INTEGER,
-                            goal_participation FLOAT,
-                            date DATE,                 -- Date du match
-                            region VARCHAR(50),        -- Région du match
-                            ligue VARCHAR(100),        -- Ligue à laquelle appartient le match
-                            stage VARCHAR(100)         -- Étape ou phase du tournoi ou du match
-                        );
-                    """
-                    )
-                    connection.commit()  # Confirmer les modifications
-                    logging.info("Table Joueur créée avec succès.")
-        except Exception as e:
-            logging.error(f"Erreur lors de la création de la table Joueur: {e}")
-
     @log
     def obtenir_par_nom(self, joueur_nom: str) -> Joueur:
         """Récupère un joueur de la base de données par son nom
@@ -130,12 +90,9 @@ class JoueurDao(metaclass=Singleton):
                     # Requête SQL pour obtenir un joueur par ID
                     cursor.execute(
                         """
-                        SELECT nom, nationalite, region, rating, match_id, shots, goals, saves, assists, score,
-                            shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                            demo_inflige, demo_recu, goal_participation
+                        SELECT*
                         FROM Joueur
                         WHERE nom = %s
-                         AND DATE_PART('year', TO_TIMESTAMP(date_match, 'YYYY-MM-DD"T"HH24:MI:SS"Z"')) = 2024
 
                         """,
                         (joueur_nom,),
@@ -144,24 +101,29 @@ class JoueurDao(metaclass=Singleton):
                     if row:
                         # Instancier et retourner le joueur
                         return Joueur(
-                            nom=row[0],
-                            nationalite=row[1],
-                            region=row[2],
-                            rating=row[3],
-                            match_id=row[4],
-                            shots=row[5],
-                            goals=row[6],
-                            saves=row[7],
-                            assists=row[8],
-                            score=row[9],
-                            shooting_percentage=row[10],
-                            time_offensive_third=row[11],
-                            time_defensive_third=row[12],
-                            time_neutral_third=row[13],
-                            demo_inflige=row[14],
-                            demo_recu=row[15],
-                            goal_participation=row[16],
-                        )
+                        nom=row["nom"],
+                        nationalite=row["nationalite"],
+                        rating=row["rating"],
+                        match_id=row["match_id"],
+                        shots=row["shots"],
+                        goals=row["goals"],
+                        saves=row["saves"],
+                        assists=row["assists"],
+                        score=row["score"],
+                        shooting_percentage=row["shooting_percentage"],
+                        time_offensive_third=row["time_offensive_third"],
+                        time_defensive_third=row["time_defensive_third"],
+                        time_neutral_third=row["time_neutral_third"],
+                        demo_inflige=row["demo_inflige"],
+                        demo_recu=row["demo_recu"],
+                        goal_participation=row["goal_participation"],
+                        date=row["date"],
+                        ligue=row["ligue"],
+                        region=row["region"],
+                        stage=row["stage"],
+                        equipe_nom=row["equipe_nom"],
+
+                    )
         except Exception as e:
             logging.error(f"Erreur lors de la récupération du joueur avec l'ID {joueur_nom} : {e}")
             return None
@@ -244,3 +206,31 @@ class JoueurDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la suppression du joueur avec l'ID {joueur_id} : {e}")
             return False
+
+
+    def nombre_match(self, joueur_nom: str) -> int:
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT COUNT(match_id) AS count
+                        FROM Joueur
+                        WHERE TRIM(LOWER(nom)) = TRIM(LOWER(%s));
+                        """,
+                        (joueur_nom,)
+                    )
+
+                    row = cursor.fetchone()
+
+                    if row and 'count' in row and row['count'] is not None:
+                        count = int(row['count'])  # Accéder à 'count' comme une clé de dictionnaire
+                        logging.info(f"Nombre de matchs pour le joueur '{joueur_nom}': {count}")
+                        return count
+                    else:
+                        logging.warning(f"Aucun match trouvé pour le joueur '{joueur_nom}'.")
+                        return 0
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des matchs pour le joueur '{joueur_nom}': {e}")
+            return 0
+
