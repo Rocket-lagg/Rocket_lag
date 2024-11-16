@@ -155,25 +155,3 @@ class MatchProcessor:
             result = self.joueur_dao.creer(joueur)
 
 
-
-    def create_dataframes(self):
-        """Create Pandas DataFrames from the filtered match and player data."""
-        df_filtered_matches = pd.DataFrame(self.filtered_matches)
-        df_filtered_players = pd.DataFrame(self.filtered_players)
-        return df_filtered_matches, df_filtered_players
-
-
-
-
-    # Step 1: Initialiser l'API et le processeur de match
-api = API(base_url="https://api.rlcstatistics.net")
-match_processor = MatchProcessor(api)
-
-    # Step 2: Récupérer les matchs
-match_processor.recup_matches(page=265, page_size=4)
-
-    # Step 3: Récupérer les données des matchs
-match_processor.recup_match_data()
-
-    # Step 4: Traiter les matchs et les joueurs
-match_processor.process_matches()

@@ -78,7 +78,7 @@ CREATE TABLE "RocketLag".utilisateur (
 -- Correction de la création de la table tournoi
 CREATE TABLE "RocketLag".tournoi (
     id_tournoi SERIAL PRIMARY KEY,
-    officiel BOOL
+    id_utilisateur INT REFERENCES "RocketLag".utilisateur(id_utilisateur),
 );
 
 -- Correction de la création de la table paris
@@ -91,7 +91,7 @@ CREATE TABLE "RocketLag".paris (
 
 -- Correction de la création de la table tournois_utilisateur
 CREATE TABLE "RocketLag".tournois_utilisateur (
-    id_utilisateur INT REFERENCES "RocketLag".utilisateur(id_utilisateur),
+
     id_tournoi INT REFERENCES "RocketLag".tournoi(id_tournoi),
     PRIMARY KEY (id_utilisateur, id_tournoi)  -- Ajout d'une clé primaire composée
 );

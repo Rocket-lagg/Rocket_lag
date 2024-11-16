@@ -1,5 +1,5 @@
 from dao.db_connection import DBConnection
-
+from business_object.Utilisateur import Utilisateur
 
 class ParisDao:
     """Classe contenant les méthodes pour accéder aux paris dans la base de données"""
@@ -28,7 +28,7 @@ class ParisDao:
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-                        INSERT INTO "RocketLag".paris(nom_utilisateur, match, equipe, montant, statut) 
+                        INSERT INTO "RocketLag".paris(nom_utilisateur, match, equipe, montant, statut)
                         VALUES (%(nom_utilisateur)s, %(match)s, %(equipe)s, %(montant)s, "En cours")
                         """,
                         {

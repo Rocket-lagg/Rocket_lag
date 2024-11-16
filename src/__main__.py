@@ -1,20 +1,23 @@
 import logging
 import dotenv
-
+from utils.reset_database import*
 from utils.log_init import initialiser_logs
 
 from view.accueil.accueil_vue import AccueilVue
-
+from dao.utilisateur_dao import UtilisateurDao
 
 if __name__ == "__main__":
     # On charge les variables d'environnement
     dotenv.load_dotenv(override=True)
     # Configuration du logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.info("Initialisation du script...")
 
     # Créer une instance de ResetDatabase et créer les tables
-    reset_db = ResetDatabase()
-    reset_db.lancer()
+    init_db = ResetDatabase()
+    init_db.lancer()
+    logging.info(" Téléchargement base de données terminée avec succès.")
+    UtilisateurDao.init()
 
 
     initialiser_logs("Application")
