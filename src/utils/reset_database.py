@@ -53,6 +53,8 @@ class ResetDatabase(metaclass=Singleton):
                             region VARCHAR(50),        -- Région du match
                             ligue VARCHAR(100),        -- Ligue à laquelle appartient le match
                             stage VARCHAR(100),        -- Étape ou phase du tournoi ou du match
+                            indice_offensif FLOAT,
+                            indice_performance FLOAT,
                             PRIMARY KEY (match_id, equipe_nom,nom)
                         );
                         """
@@ -94,6 +96,8 @@ class ResetDatabase(metaclass=Singleton):
                             region VARCHAR(50),                    -- Région du match
                             stage VARCHAR(100),                    -- Étape ou phase du tournoi ou du match
                             ligue VARCHAR(100),                    -- Ligue ou division du match
+                            indice_performance FLOAT,
+                            indice_de_pression FLOAT,
                             PRIMARY KEY (match_id, equipe_nom)     -- Clé primaire composée de match_id et equipe_nom
                         );
                         """
@@ -125,8 +129,11 @@ class ResetDatabase(metaclass=Singleton):
                             score2 INT,
                             date DATE,  -- Utilisation d'un type DATE pour les dates
                             region VARCHAR(50),
+                            stage VARCHAR(255),
                             ligue VARCHAR(255),
                             perso BOOL,
+                            cote_equipe1 FLOAT,
+                            cote_equipe2 FLOAT
                         );
                         """
                     )
@@ -135,10 +142,12 @@ class ResetDatabase(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table Match: {e}")
 
+
     def lancer(self):
 
         self.lancer_joueur()
         self.lancer_equipe()
+        self.lancer_match()
             # Step 1: Initialiser l'API et le processeur de match
         api = API(base_url="https://api.rlcstatistics.net")
         match_processor = MatchProcessor(api)
