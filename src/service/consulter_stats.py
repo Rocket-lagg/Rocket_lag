@@ -3,11 +3,16 @@ from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
 from business_object.joueur import Joueur
-from business_object.Equipe import Equipe
+from business_object.equipe import Equipe
 
 
 class ConsulterStats(metaclass=Singleton):
     """Une classe service qui affiche les statistiques par joueur, équipe et match"""
+
+    @staticmethod
+    def stats_par_match(total, n):
+        """Calculer la moyenne par match tout en évitant la division par zéro"""
+        return total / n if n > 0 else 0
 
     def stats_joueurs(self, nom_joueur):
         """Une fonction qui permet d'afficher les statistiques par joueur"""
@@ -22,15 +27,22 @@ class ConsulterStats(metaclass=Singleton):
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
 
         # Récupérer le nombre de matchs
-        n = joueurdao.nombre_match(nom_joueur)
+        matchdao = MatchDao()
+        id_matchs = matchdao.trouver_id_match_par_joueur(nom_joueur)
+        n = len(id_matchs)
 
         if n == 0:
             raise ValueError(f"Aucun match trouvé pour le joueur {nom_joueur}.")
 
         # Dictionnaire pour simplifier l'indice régional
         regional_indices = {
-            "EU": 1, "NA": 1, "SAM": 0.9, "MENA": 0.9,
-            "OCE": 0.5, "APAC": 0.5, "SSA": 0.3, "INT":1
+            "EU": 1,
+            "NA": 1,
+            "SAM": 0.9,
+            "MENA": 0.9,
+            "OCE": 0.5,
+            "APAC": 0.5,
+            "SSA": 0.3,
         }
 
         collonne = ["goals","assists","score","shots","shooting_percentage","demo_inflige","demo_recu","goal_participation","saves",
@@ -55,6 +67,10 @@ class ConsulterStats(metaclass=Singleton):
         )
 
 
+
+    # Note pour les vues : Les stats à afficher dans la vue sont : goals, goals par match, assists, assists par match,
+    # saves, saves par match, shots, shots par match, score, score par match, demo infligées, demo infligées par match,
+    # indice de performance, indice offensif, pourcentage de tirs
 
     def stats_equipe(self, nom_equipe):
         """Une fonction qui permet d'afficher les statistiques par équipe"""
