@@ -32,11 +32,13 @@ class JoueurDao(metaclass=Singleton):
                         """
                         INSERT INTO Joueur (nom, nationalite, rating, match_id, equipe_nom, shots, goals, saves, assists, score,
                                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
-                                            demo_inflige, demo_recu, goal_participation, date, ligue, region, stage )
+                                            demo_inflige, demo_recu, goal_participation, date, ligue, region, stage,indice_offensif,
+                                             indice_performance)
                          VALUES (%(nom)s, %(nationalite)s,  %(rating)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
                                 %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
                                 %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
-                                %(goal_participation)s, %(date)s, %(ligue)s, %(region)s, %(stage)s)
+                                %(goal_participation)s, %(date)s, %(ligue)s, %(region)s, %(stage)s, %(indice_offensif)s,
+                                %(indice_performance)s)
                          RETURNING nom;
                         """,
                         {
@@ -61,6 +63,8 @@ class JoueurDao(metaclass=Singleton):
                             "ligue": joueur.ligue,
                             "region": joueur.region,
                             "stage": joueur.stage,
+                            "indice_offensif": joueur.indice_offensif,
+                            "indice_performance": joueur.indice_performance
                         },
                     )
                     # Récupérer l'ID du joueur créé
@@ -122,6 +126,8 @@ class JoueurDao(metaclass=Singleton):
                         region=row["region"],
                         stage=row["stage"],
                         equipe_nom=row["equipe_nom"],
+                        indice_offensif= row["indice_offensif"],
+                        indice_performance=  row["indice_performance"]
 
                     )
         except Exception as e:
@@ -209,6 +215,19 @@ class JoueurDao(metaclass=Singleton):
 
 
     def nombre_match(self, joueur_nom: str) -> int:
+        """
+        Récupère le nombre de matchs joués par un joueur donné.
+
+        Parameters
+        ----------
+        joueur_nom : str
+            Le nom du joueur pour lequel récupérer le nombre de matchs.
+
+        Returns
+        -------
+        int
+            Le nombre de matchs joués par le joueur. Retourne 0 si aucun match n'est trouvé ou en cas d'erreur.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -233,4 +252,53 @@ class JoueurDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des matchs pour le joueur '{joueur_nom}': {e}")
             return 0
+
+
+    def moyennes_statistiques(self, joueur_nom: str, colonnes: list) -> dict:
+        """
+        Récupère les moyennes de plusieurs statistiques pour un joueur donné.
+
+        Parameters
+        ----------
+        joueur_nom : str
+            Le nom du joueur pour lequel récupérer les moyennes.
+        colonnes : list
+            Une liste des colonnes dont on veut calculer la moyenne (ex : ['score', 'rating', 'goals']).
+
+        Returns
+        -------
+        dict
+            Un dictionnaire contenant les moyennes des statistiques demandées.
+            Exemple : {'score': 500.0, 'rating': 4.5, 'goals': 1.2}
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Construire la partie SELECT de la requête avec les colonnes
+                    colonnes_sql = ", ".join([f"AVG({colonne}) AS {colonne}" for colonne in colonnes])
+
+                    # Requête SQL pour calculer les moyennes
+                    cursor.execute(
+                        f"""
+                        SELECT {colonnes_sql}
+                        FROM Joueur
+                        WHERE TRIM(LOWER(nom)) = TRIM(LOWER(%s));
+                        """,
+                        (joueur_nom,)
+                    )
+
+                    row = cursor.fetchone()
+
+                    if row:
+                        # Convertir les résultats en dictionnaire
+                        moyennes = {colonne: float(row[colonne]) if row[colonne] is not None else 0.0 for colonne in colonnes}
+                        logging.info(f"Moyennes pour le joueur '{joueur_nom}': {moyennes}")
+                        return moyennes
+                    else:
+                        logging.warning(f"Aucune donnée trouvée pour le joueur '{joueur_nom}'.")
+                        return {colonne: 0.0 for colonne in colonnes}
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des moyennes pour le joueur '{joueur_nom}': {e}")
+            return {colonne: 0.0 for colonne in colonnes}
+
 
