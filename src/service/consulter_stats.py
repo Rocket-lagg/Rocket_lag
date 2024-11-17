@@ -128,6 +128,33 @@ class ConsulterStats(metaclass=Singleton):
             f"Indice de pression moyen : {stat_affiché['indice_de_pression']}\n"
         )
 
+    def choix_match(nom_joueur):
+        if not isinstance(nom_joueur, str):
+            raise TypeError("'nom_joueur' doit être une instance de str.")
+
+        matchdao = MatchDao()
+        liste = matchdao.trouver_match_id_par_joueur(nom_joueur)
+
+        # Transformer la liste d'objets Match en un dictionnaire avec la forme souhaitée
+        match_dict = {}
+
+        for match in liste:
+            # Créer la clé sous la forme 'equipe1 vs equipe2 - Stage: stage, Date: date'
+            match_key = (
+                f"{match.equipe1} vs {match.equipe2} - Stage: {match.stage}, Date: {match.date}"
+            )
+
+            # Créer la valeur associée à cette clé, qui est l'ID du match
+            match_info = [match.match_id]
+
+            # Ajouter les informations dans le dictionnaire
+            if match_key in match_dict:
+                match_dict[match_key].append(match_info)
+            else:
+                match_dict[match_key] = match_info
+
+        return match_dict
+
     def stats_matchs_joueurs(self, nom_joueur):
         """Renvoie toutes les données par match pour un joueur spécifié, ainsi que celles des autres joueurs"""
         if not isinstance(nom_joueur, str):
