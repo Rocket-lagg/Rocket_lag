@@ -9,10 +9,8 @@ class Tournoi:
     def __init__(self, nom_tournoi, createur, officiel=False, db_name="tournois.db"):
         self.nom_tournoi = nom_tournoi
         self.createur = createur
-        self.officiel = officiel
         self.equipes = []
         self.matchs = []
-       
 
     def ajouter_equipes(self, liste_equipes):
         for equipe in liste_equipes:

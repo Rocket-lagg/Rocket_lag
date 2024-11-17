@@ -2,7 +2,7 @@ from view.session import Session
 from dao.tournoi_dao import TournoiDao
 from business_object.Tournoi import Tournoi
 from dao.utilisateur_dao import UtilisateurDao
-from dao.equipe_dao import EquipeDao
+from dao.equipe_tournoi_dao import EquipeDao
 from dao.match_dao import MatchDao
 from service.equipe_service import EquipeService
 from service.match_service import MatchService
@@ -12,27 +12,27 @@ class TournoiService:
 
     def __init__(self):
         self.utilisateur_dao = UtilisateurDao()
-        self.equipe_dao = EquipeDao()
-        self.match_dao = MatchDao()
+        self.equipe_dao = EquipeTournoiDao()
+        self.match_perso_dao = MatchDao()
 
     def instancier_tournoi(self, tournois_bdd):
         equipe_service = EquipeService()
         match_service = MatchService()
-        matchs = self.match_dao.trouver_par_id_tournoi(tournois_bdd["id_tournoi"])
+        matchs = self.match_perso_dao.trouver_par_id_tournoi(tournois_bdd["id_tournoi"]) #A coder
         equipes = []
         for match in matchs:
-            equipe = self.equipe_dao.trouver_par_id_match(match['match_id']) # A coder
+            equipe = self.equipe_tournoi_dao.trouver_par_id_tournoi(tournois_bdd["id_tournoi"]) # A coder
             for i in equipe:
                 equipes.append(i)
-                
-        equipe_service.instancier(equipe)
-        match_service.instancier(match)
+
+        equipe_tournoi_service.instancier(equipe)
+        match_perso_service.instancier(match)
         tournoi = Tournoi(
+            id_tournoi=tournois_bdd["id_tournoi"],
             nom_tournoi=tournois_bdd["nom_tournoi"],
             createur = tournois_bdd['createur'],
             equipes = equipe,
-            matchs = matchs,
-            officiel=tournois_bdd["officiel"]
+            matchs = matchs
         )
         return tournoi
 
@@ -49,31 +49,10 @@ class TournoiService:
             print(liste_tournois)
         return liste_tournois
 
-
-    def supprimer_paris(pari):
-        "Supprime un pari"
-        if not isinstance(pari, Pari):
-            raise TypeError("Le pari doit être de type Pari")
-        ParisDao().supprimer_paris(pari)
-
-    def ajouter_equipes(self, liste_equipes):
-        for equipe in liste_equipes:
-            self.equipes.append(equipe)
-            self.enregistrer_equipe_bdd(equipe)
-        print(f"Équipes ajoutées au tournoi {self.nom_tournoi}.")
-
     def inscrire_equipe(self, equipe):
-        if self.officiel:
-            print(f"Équipe {equipe.nom} inscrite dans un tournoi officiel.")
-            self.enregistrer_tournoi(self.nom_tournoi, True)
-        else:
-            print(f"Équipe {equipe.nom} inscrite dans un tournoi personnel.")
-            self.enregistrer_tournoi(self.nom_tournoi, False)
+        print(f"Équipe {equipe.nom} inscrite dans un tournoi personnel.")
+        self.equipe_dao.ajouter_equipe(self.id_tournoi)
 
-        self.equipes.append(equipe)
-
-    def enregistrer_tournoi(self, nom_tournoi, officiel):
-        print(f"Tournoi {nom_tournoi} enregistré avec officiel={officiel}.")
 
     def suivre_resultats(self, equipe1, equipe2, score1, score2):
         if equipe1 not in self.equipes or equipe2 not in self.equipes:
