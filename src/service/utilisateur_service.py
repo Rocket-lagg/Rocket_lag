@@ -5,17 +5,19 @@ from utils.securite import hash_password
 
 from business_object.Utilisateur import Utilisateur
 from dao.utilisateur_dao import UtilisateurDao
-
+from dao.match_dao import MatchDao
+from dao.tournoi_dao import TournoiDao
+from dao.paris_dao import ParisDao
 
 class UtilisateurService:
     """Classe contenant les méthodes de service des utilisateurs"""
 
 
     def __init__(self):
-        self.match_dao = MatchDao()
-        self.tournoi_dao = TournoiDao()
-        self.pari_dao = PariDao()
-        
+        self.match_dao = MatchDao() # créer ou enlever pour utilisateur
+        self.tournoi_dao = TournoiDao() # créer ou enlever pour utilisateur
+        self.pari_dao = ParisDao() # créer ou enlever pour utilisateur
+
     @log
     def creer_utilisateur(
         self, nom_utilisateur, mot_de_passe, email, tournois_crees=None, points=0, paris=None

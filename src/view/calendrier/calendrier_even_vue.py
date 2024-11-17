@@ -23,8 +23,9 @@ class EvenementVue(VueAbstraite):
         """
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
+        annee = input("Quel année?:")
 
-        self.calendrier_evenement.afficher_calendrier_annee()
+        self.calendrier_evenement.afficher_calendrier_annee(annee)
 
         choix = inquirer.select(
             message="",

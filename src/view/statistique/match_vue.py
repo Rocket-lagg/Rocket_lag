@@ -25,7 +25,7 @@ class MatchVue(VueAbstraite):
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
         reponse = input("Renseigner ou l'équipe ou la date du match: ")
-        self.consulter_stats.stats_match(reponse)
+        self.consulter_stats.stats_matchs(reponse)
 
         choix = inquirer.select(
             message="",

@@ -8,6 +8,7 @@ from dao.db_connection import DBConnection
 from business_object.Equipe import Equipe
 from business_object.joueur import Joueur
 
+
 class EquipeDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
@@ -37,11 +38,12 @@ class EquipeDao(metaclass=Singleton):
                         INSERT INTO Equipe (match_id, equipe_nom, equipe_score, boost_stole,
                                         shots, goals, saves, assists, score, shooting_percentage,
                                          date, ligue, region, stage, time_offensive_third, time_defensive_third,
-                                         time_neutral_third, demo_inflige, demo_recu )
+                                         time_neutral_third, demo_inflige, demo_recu,indice_performance,
+                                         indice_de_pression  )
                         VALUES (%(match_id)s, %(equipe_nom)s, %(equipe_score)s, %(boost_stole)s,
                                 %(shots)s, %(goals)s, %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s,
                                  %(date)s, %(ligue)s, %(region)s, %(stage)s, %(time_offensive_third)s, %(time_defensive_third)s,
-                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s)
+                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s, %(indice_performance)s, %(indice_de_pression)s)
                         RETURNING equipe_nom;
 
                         """,
@@ -64,7 +66,9 @@ class EquipeDao(metaclass=Singleton):
                             "time_defensive_third": equipe.time_defensive_third,
                             "time_neutral_third": equipe.time_neutral_third,
                             "demo_inflige": equipe.demo_inflige,
-                            "demo_recu": equipe.demo_recu
+                            "demo_recu": equipe.demo_recu,
+                            "indice_performance": equipe.indice_performance,
+                            "indice_de_pression": equipe.indice_de_pression
                          },
                     )
                     # Récupérer l'ID du joueur créé
@@ -72,86 +76,136 @@ class EquipeDao(metaclass=Singleton):
             return res is not None
         except Exception as e:
             logging.error(f"Erreur lors de la création d'equipe : {e}")
-            return False
+            return
 
+    @log
+    def obtenir_par_nom(self, equipe_nom: str) -> Equipe:
+        """Récupère un joueur de la base de données par son nom
 
-    def creer_table_equipe():
+        Parameters
+        ----------
+        joueur_id : int
+            L'ID du joueur à récupérer
+
+        Returns
+        -------
+        joueur : Joueur
+            Une instance du joueur récupéré
+        """
         try:
-            # Connexion à la base de données
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    # Commande SQL pour supprimer et recréer la table Equipe
-                    cursor.execute("""
-                        DROP TABLE IF EXISTS Equipe;
-                        CREATE TABLE Equipe (
-                            equipe_id SERIAL PRIMARY KEY,
-                            match_id VARCHAR(50) NOT NULL,
-                            equipe_nom VARCHAR(100) NOT NULL,
-                            equipe_score INTEGER,
-                            boost_stole INTEGER,
-                            shots INTEGER,
-                            goals INTEGER,
-                            saves INTEGER,
-                            assists INTEGER,
-                            score INTEGER,
-                            shooting_percentage FLOAT,
-                            time_offensive_third FLOAT,
-                            time_defensive_third FLOAT,
-                            time_neutral_third FLOAT,
-                            demo_inflige INTEGER,
-                            demo_recu INTEGER,
-                            date DATE,  -- Le format de la date doit être 'YYYY-MM-DD'
-                            ligue VARCHAR(100),
-                            region VARCHAR(100),
-                            stage VARCHAR(100)
-                        );
-                    """)
-                    connection.commit()  # Confirmer les modifications
-                    logging.info("Table Equipe créée avec succès.")
+                    # Requête SQL pour obtenir un joueur par ID
+                    cursor.execute(
+                        """
+                        SELECT*
+                        FROM Equipe
+                        WHERE equipe_nom = %s
+
+                        """,
+                        (equipe_nom,),
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        # Instancier et retourner le joueur
+                        return Equipe(
+                                            match_id=row["match_id"],
+                                            equipe_nom=row["equipe_nom"],
+                                            equipe_score=row["equipe_score"],
+                                            boost_stole=row["boost_stole"],
+                                            shots=row["shots"],
+                                            goals=row["goals"],
+                                            saves=row["saves"],
+                                            assists=row["assists"],
+                                            score=row["score"],
+                                            shooting_percentage=row["shooting_percentage"],
+                                            time_offensive_third=row["time_offensive_third"],
+                                            time_defensive_third=row["time_defensive_third"],
+                                            time_neutral_third=row["time_neutral_third"],
+                                            demo_inflige=row["demo_inflige"],
+                                            demo_recu=row["demo_recu"],
+                                            date=row["date"],
+                                            region=row["region"],
+                                            ligue=row["ligue"],
+                                            stage=row["stage"],
+                                            indice_performance=row["indice_performance"],
+                                            indice_de_pression=row["indice_de_pression"]
+                                        )
         except Exception as e:
-            logging.error(f"Erreur lors de la création de la table Equipe: {e}")
+            logging.error(f"Erreur lors de la récupération du joueur avec l'ID {equipe_nom} : {e}")
+            return None
 
-    # Appel de la fonction pour créer la table
 
-        @log
-        def lister_tous(self) -> list[Joueur]:
-            """lister tous les joueurs
+    def nombre_match(self, equipe_nom: str) -> int:
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT COUNT(match_id) AS count
+                        FROM Equipe
+                        WHERE TRIM(LOWER(equipe_nom)) = TRIM(LOWER(%s));
+                        """,
+                        (equipe_nom,)
+                    )
 
-            Parameters
-            ----------
-            None
+                    row = cursor.fetchone()
 
-            Returns
-            -------
-            liste_joueurs : list[Joueur]
-                renvoie la liste de tous les joueurs dans la base de données
-            """
+                    if row and 'count' in row and row['count'] is not None:
+                        count = int(row['count'])  # Accéder à 'count' comme une clé de dictionnaire
+                        logging.info(f"Nombre de matchs pour le joueur '{equipe_nom}': {count}")
+                        return count
+                    else:
+                        logging.warning(f"Aucun match trouvé pour le joueur '{equipe_nom}'.")
+                        return 0
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des matchs pour le joueur '{equipe_nom}': {e}")
+            return 0
 
-            try:
-                with DBConnection().connection as connection:
-                    with connection.cursor() as cursor:
-                        cursor.execute(
-                            "SELECT *                              "
-                            "  FROM joueur;                        "
-                        )
-                        res = cursor.fetchall()
-            except Exception as e:
-                logging.info(e)
-                raise
+    def moyennes_statistiques(self, equipe_nom: str, colonnes: list) -> dict:
+        """
+        Récupère les moyennes de plusieurs statistiques pour un joueur donné.
 
-        liste_joueurs = []
+        Parameters
+        ----------
+        joueur_nom : str
+            Le nom du joueur pour lequel récupérer les moyennes.
+        colonnes : list
+            Une liste des colonnes dont on veut calculer la moyenne (ex : ['score', 'rating', 'goals']).
 
-        if res:
-            for row in res:
-                joueur = Joueur(
-                    id_joueur=row["id_joueur"],
-                    pseudo=row["pseudo"],
-                    mdp=row["mdp"],
-                    age=row["age"],
-                    mail=row["mail"],
-                    fan_pokemon=row["fan_pokemon"],
-                )
+        Returns
+        -------
+        dict
+            Un dictionnaire contenant les moyennes des statistiques demandées.
+            Exemple : {'score': 500.0, 'rating': 4.5, 'goals': 1.2}
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Construire la partie SELECT de la requête avec les colonnes
+                    colonnes_sql = ", ".join([f"AVG({colonne}) AS {colonne}" for colonne in colonnes])
 
-                liste_joueurs.append(joueur)
+                    # Requête SQL pour calculer les moyennes
+                    cursor.execute(
+                        f"""
+                        SELECT {colonnes_sql}
+                        FROM Equipe
+                        WHERE TRIM(LOWER(equipe_nom)) = TRIM(LOWER(%s));
+                        """,
+                        (equipe_nom,)
+                    )
 
-        return liste_joueurs
+                    row = cursor.fetchone()
+
+                    if row:
+                        # Convertir les résultats en dictionnaire
+                        moyennes = {colonne: float(row[colonne]) if row[colonne] is not None else 0.0 for colonne in colonnes}
+                        logging.info(f"Moyennes pour le joueur '{equipe_nom}': {moyennes}")
+                        return moyennes
+                    else:
+                        logging.warning(f"Aucune donnée trouvée pour le joueur '{equipe_nom}'.")
+                        return {colonne: 0.0 for colonne in colonnes}
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des moyennes pour le joueur '{equipe_nom}': {e}")
+            return {colonne: 0.0 for colonne in colonnes}
+

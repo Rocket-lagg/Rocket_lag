@@ -66,7 +66,7 @@ class Equipe(EntiteSportive):
     """
 
     def __init__(
-         self,
+        self,
         match_id,
         equipe_nom,
         shots,
@@ -86,15 +86,17 @@ class Equipe(EntiteSportive):
         region,
         ligue,
         stage,
+        # Paramètres avec valeurs par défaut pour les statistiques par match
         shots_par_match=1,  # valeur par défaut 1
         goals_par_match=1,  # valeur par défaut 1
         saves_par_match=1,  # valeur par défaut 1
         assists_par_match=1,  # valeur par défaut 1
         score_par_match=1,  # valeur par défaut 1
-        demo_inflige_par_match=1,
+        demo_inflige_par_match=1,  # valeur par défaut 1
+        indice_de_pression=1,
+        indice_performance=1
     ):
-
-        # Appel du constructeur parent (EntiteSportive)
+        # Initialisation des attributs principaux (super() appelé si nécessaire)
         super().__init__(
             match_id,
             equipe_nom,
@@ -115,21 +117,47 @@ class Equipe(EntiteSportive):
             stage,
         )
 
-        assert isinstance(region, str), "region doit être une chaîne de caractères"
-        assert isinstance(ligue, str), "ligue doit être une chaîne de caractères"
-        assert isinstance(stage, str), "stage doit être une chaîne de caractères"
-
-        # Initialisation des nouveaux attributs spécifiques à la classe Equipe
+        # Initialisation des attributs spécifiques à Equipe
         self.equipe_score = equipe_score
         self.boost_stole = boost_stole
+
+        # Initialisation des statistiques par match
+        self.shots_par_match = shots_par_match
+        self.goals_par_match = goals_par_match
+        self.saves_par_match = saves_par_match
+        self.assists_par_match = assists_par_match
+        self.score_par_match = score_par_match
+        self.demo_inflige_par_match = demo_inflige_par_match
 
     def __str__(self):
         """
         Retourne une représentation sous forme de chaîne de caractères des informations de l'équipe.
-
-        Retour:
-        -------
-        str :
-            Représentation de l'équipe avec son nom, son score et sa région.
         """
-        return f"Equipe({self.equipe_nom}, Score: {self.equipe_score}, Région: {self.region})"
+        return (f"Equipe({self.equipe_nom}, "
+                f"Match ID: {self.match_id}, "
+                f"Shots: {self.shots}, "
+                f"Goals: {self.goals}, "
+                f"Saves: {self.saves}, "
+                f"Assists: {self.assists}, "
+                f"Score: {self.score}, "
+                f"Shooting Percentage: {self.shooting_percentage}, "
+                f"Time Offensive Third: {self.time_offensive_third}, "
+                f"Time Defensive Third: {self.time_defensive_third}, "
+                f"Time Neutral Third: {self.time_neutral_third}, "
+                f"Demo Infligé: {self.demo_inflige}, "
+                f"Demo Reçu: {self.demo_recu}, "
+                f"Equipe Score: {self.equipe_score}, "
+                f"Boost Stolen: {self.boost_stole}, "
+                f"Date: {self.date}, "
+                f"Region: {self.region}, "
+                f"Ligue: {self.ligue}, "
+                f"Stage: {self.stage}, "
+                f"Shots per Match: {self.shots_par_match}, "
+                f"Goals per Match: {self.goals_par_match}, "
+                f"Saves per Match: {self.saves_par_match}, "
+                f"Assists per Match: {self.assists_par_match}, "
+                f"Score per Match: {self.score_par_match}, "
+                f"Demo Infligé per Match: {self.demo_inflige_par_match})")
+
+
+# Supposons que la classe EntiteSportive et Equipe aient été définies comme ci-dessus.

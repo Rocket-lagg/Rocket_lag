@@ -18,7 +18,7 @@ class ConnexionVue(VueAbstraite):
 
         # Si l'utilisateur a été trouvé à partir des ses identifiants de connexion
         if utilisateur:
-            message = f"Vous êtes connecté sous le pseudo {utilisateur.pseudo}"
+            message = f"Vous êtes connecté sous le pseudo {utilisateur.nom_utilisateur}"
             Session().connexion(utilisateur)
 
             from view.accueil.accueil_vue import AccueilVue

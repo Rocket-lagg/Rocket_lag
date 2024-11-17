@@ -12,7 +12,7 @@ class Tournoi:
         self.officiel = officiel
         self.equipes = []
         self.matchs = []
-        self.conn = sqlite3.connect(db_name)
+       
 
     def ajouter_equipes(self, liste_equipes):
         for equipe in liste_equipes:

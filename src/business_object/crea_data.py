@@ -6,8 +6,16 @@ from dao.joueur_dao import JoueurDao
 from business_object.joueur import Joueur
 from dao.equipe_dao import EquipeDao
 from business_object.Equipe import Equipe
+from business_object.Match import Match
+
+from dao.match_dao import MatchDao
 # Charger les variables d'environnement
 dotenv.load_dotenv()
+
+regional_indices = {
+            "EU": 1, "NA": 1, "SAM": 0.9, "MENA": 0.9,
+            "OCE": 0.5, "APAC": 0.5, "SSA": 0.3, "INT":1
+        }
 
 class API:
     def __init__(self, base_url):
@@ -29,11 +37,9 @@ class MatchProcessor:
         self.api = api
         self.match_list = []
         self.match_data_list = []
-        self.filtered_matches = []
-        self.filtered_players = []
         self.joueur_dao = JoueurDao()
         self.equipe_dao = EquipeDao()
-        #self.equipedao = JoueurDao()
+        self.match_dao = MatchDao()
 
 
 
@@ -65,10 +71,38 @@ class MatchProcessor:
                 print("Erreur : Match Unknown. Aucun traitement effectué.")
                 continue
 
+            team_data_blue = match_data.get('blue', {})
+            equipe_score_blue = team_data_blue.get('score', 0)  # Défaut : 0 si absent
+            equipe1_nom = match_data['blue']['team']['team']['name']
+
+            team_data_orange = match_data.get('orange', {})
+            equipe_score_orange = team_data_orange.get('score', 0)  # Défaut : 0 si absent
+            equipe2_nom = match_data['orange']['team']['team']['name']
+
             ligue = match_data['event']['name']
             region = match_data['event']['region']
             stage = match_data['stage']['name']
             date = match_data['date']
+            perso = False
+
+            match1 = {
+                "date": date,
+                "stage": stage,
+                "ligue": ligue,
+                "region": region,
+                "score1": equipe_score_blue,
+                "score2": equipe_score_orange,
+                "equipe1": equipe1_nom,  # Nom de l'équipe
+                "equipe2": equipe2_nom,  # Nom de l'équipe
+                "perso": perso,
+                "match_id": match_data["_id"]
+            }
+
+            # Créer l'objet Match et l'enregistrer
+            match2 = Match(**match1)
+
+            result_match = self.match_dao.creer(match2)
+
 
             # Process teams and players for each match
             for couleur in ['blue', 'orange']:
@@ -107,9 +141,24 @@ class MatchProcessor:
             "stage": stage,
             "ligue": ligue
         }
-        self.filtered_matches.append(equipe_stats)
-        equipe = Equipe(**equipe_stats)
 
+        equipe = Equipe(**equipe_stats)
+        equipe.indice_performance = round(
+            (
+                equipe.goals * 1 +
+                equipe.assists * 0.75 +
+                equipe.saves * 0.6 +
+                equipe.shots * 0.4 +
+                (equipe.goals / equipe.shots) * 0.5 if equipe.shots > 0 else 0
+            )  * regional_indices[equipe.region], 2
+        )
+        equipe.indice_de_pression = round(
+            (   equipe.boost_stole/10 +
+                equipe.goals / 1.05 +
+                equipe.shots / 3.29 +
+                equipe.demo_inflige / 0.56 +
+                equipe.time_offensive_third / 201.1
+            ) , 2)
         result_equipe = self.equipe_dao.creer(equipe)
 
 
@@ -136,11 +185,11 @@ class MatchProcessor:
             "saves": joueur_core['saves'],
             "assists": joueur_core['assists'],
             "score": joueur_core['score'],
-            "shooting_percentage": joueur_core['shootingPercentage'],
+            "shooting_percentage": round(joueur_core['shootingPercentage'],2),
             "demo_inflige": joueur_stats['stats']['demo']['inflicted'],
             "demo_recu": joueur_stats['stats']['demo']['taken'],
-            "goal_participation": joueur_stats['advanced']['goalParticipation'],
-            "rating": joueur_stats['advanced']['rating'],
+            "goal_participation": round(joueur_stats['advanced']['goalParticipation'],2),
+            "rating": round(joueur_stats['advanced']['rating'],2),
             "time_defensive_third": joueur_stats['stats']['positioning']['timeDefensiveThird'],
             "time_neutral_third": joueur_stats['stats']['positioning']['timeNeutralThird'],
             "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird'],
@@ -150,30 +199,23 @@ class MatchProcessor:
             "ligue":ligue
         }
 
+
             joueur = Joueur(**joueur_data)
-            self.filtered_players.append(joueur_data)
+            joueur.indice_offensif = round(
+            (
+                joueur.goals / 1.05 +
+                joueur.assists / 0.5 +
+                joueur.shots / 3.29 +
+                joueur.demo_inflige / 0.56 +
+                joueur.time_offensive_third / 201.1
+            ) , 2)
+            joueur.indice_performance = round(
+            (
+                joueur.goals * 1 +
+                joueur.assists * 0.75 +
+                joueur.saves * 0.6 +
+                joueur.shots * 0.4 +
+                (joueur.goals / joueur.shots) * 0.5 if joueur.shots > 0 else 0
+            )  * regional_indices[joueur.region], 2
+        )
             result = self.joueur_dao.creer(joueur)
-
-
-
-    def create_dataframes(self):
-        """Create Pandas DataFrames from the filtered match and player data."""
-        df_filtered_matches = pd.DataFrame(self.filtered_matches)
-        df_filtered_players = pd.DataFrame(self.filtered_players)
-        return df_filtered_matches, df_filtered_players
-
-
-
-
-    # Step 1: Initialiser l'API et le processeur de match
-api = API(base_url="https://api.rlcstatistics.net")
-match_processor = MatchProcessor(api)
-
-    # Step 2: Récupérer les matchs
-match_processor.recup_matches(page=265, page_size=4)
-
-    # Step 3: Récupérer les données des matchs
-u = match_processor.recup_match_data()
-
-    # Step 4: Traiter les matchs et les joueurs
-match_processor.process_matches()

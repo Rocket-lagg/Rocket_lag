@@ -18,7 +18,7 @@ class Utilisateur:
         Email de l'utilisateur
 
     tournois_crées: list[Tournoi]
-        Liste des tournois créés par l'utilisateur"
+        Liste des ids de tournois créés par l'utilisateur"
 
     paris: list[Pari]
         Liste des paris fait par l'utilisateur
