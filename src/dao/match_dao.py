@@ -121,15 +121,15 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    match_id=res["match_id"],
-                    equipe1=res["equipe1"],
-                    equipe2=res["equipe2"],
-                    score1=res["score1"],
-                    score2=res["score2"],
-                    date=res["date"],
-                    region=res["region"],
-                    ligue=res["ligue"],
-                    perso=res["perso"],
+                    match_id=row["match_id"],
+                    equipe1=row["equipe1"],
+                    equipe2=row["equipe2"],
+                    score1=row["score1"],
+                    score2=row["score2"],
+                    date=row["date"],
+                    region=row["region"],
+                    ligue=row["ligue"],
+                    perso=row["perso"],
                 )
 
                 liste_matchs.append(match)
@@ -155,34 +155,37 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-                        SELECT match_id
+                        SELECT*
                         FROM match
                         WHERE equipe1 = %(equipe)s OR equipe2 = %(equipe)s;
                         """,
                         {"equipe": equipe},  # Utilisation d'un dictionnaire de paramètres
                     )
                     res = cursor.fetchall()
-                    print("Résultat de la requête :", res)  # Débogage pour vérifier la structure
         except Exception as e:
-            logging.error(f"Erreur lors de la récupération des matchs : {e}")
+            logging.info(e)
             raise
 
-        # Initialisation de list_match_id comme une liste vide
-        list_match_id = []
+        liste_matchs = []
 
         if res:
             for row in res:
-                # Vérification de la structure de la ligne et accès aux données
-                if isinstance(row, tuple):
-                    # Si chaque ligne est un tuple, alors match_id est probablement à l'index 0
-                    list_match_id.append(row[0])
-                elif isinstance(row, dict):
-                    # Si chaque ligne est un dictionnaire, accéder à match_id par sa clé
-                    list_match_id.append(row["match_id"])  # Vérifier que la clé "match_id" existe
-                else:
-                    logging.warning(f"Structure inattendue dans la réponse : {row}")
+                match = Match(
+                    match_id=row["match_id"],
+                    equipe1=row["equipe1"],
+                    equipe2=row["equipe2"],
+                    score1=row["score1"],
+                    score2=row["score2"],
+                    date=row["date"],
+                    region=row["region"],
+                    ligue=row["ligue"],
+                    perso=row["perso"],
+                    stage=row["stage"]
+                )
 
-        return list_match_id
+                liste_matchs.append(match)
+
+        return liste_matchs
 
     @log
     def trouver_match_id_par_joueur(self, joueur) -> list[str]:
@@ -202,22 +205,38 @@ class MatchDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT match_id                           "
-                        " FROM joueur                     "
-                        " WHERE nom = %(joueur)s;  ",
-                        {"joueur": joueur},
+                        """
+                        SELECT*
+                        FROM match JOIN Joueur ON Joueur.match_id = match.match_id
+                        WHERE Joueur.nom =  %(joueur)s;
+                        """,
+                        {"joueur": joueur},  # Utilisation d'un dictionnaire de paramètres
                     )
                     res = cursor.fetchall()
         except Exception as e:
             logging.info(e)
             raise
 
-        list_match_id = []
+        liste_matchs = []
+
         if res:
             for row in res:
-                list_match_id.append(row["match_id"])
+                match = Match(
+                    match_id=row["match_id"],
+                    equipe1=row["equipe1"],
+                    equipe2=row["equipe2"],
+                    score1=row["score1"],
+                    score2=row["score2"],
+                    date=row["date"],
+                    region=row["region"],
+                    ligue=row["ligue"],
+                    perso=row["perso"],
+                    stage=row["stage"]
+                )
 
-        return list_match_id
+                liste_matchs.append(match)
+
+        return liste_matchs
 
     @log
     def lister_tous(self) -> list[Match]:
@@ -264,3 +283,66 @@ class MatchDao(metaclass=Singleton):
                 liste_matchs.append(match)
 
         return liste_matchs
+
+    def trouver_match_id_et_joueur(self, joueur, match_id) -> Match:
+        """Trouver un match grâce au nom d'un joueur et à l'ID du match.
+
+        Parameters
+        ----------
+        joueur : str
+            Nom unique du joueur.
+        match_id : str
+            L'ID du match.
+
+        Returns
+        -------
+        Match :
+            Objet Match correspondant au joueur et au match.
+            Retourne None si aucun résultat n'est trouvé.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM match
+                        JOIN Joueur ON Joueur.match_id = match.match_id
+                        WHERE Joueur.nom = %(joueur)s AND Joueur.match_id = %(match_id)s;
+                        """,
+                        {
+                            "joueur": joueur,
+                            "match_id": match_id,
+                        }
+                    )
+                    row = cursor.fetchone()  # Récupérer un seul résultat
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération du match pour le joueur {joueur}: {e}")
+            raise
+
+        if row:
+            # Construire l'objet Match à partir des données de la ligne
+            match = Match(
+                match_id=row["match_id"],
+                equipe1=row["equipe1"],
+                equipe2=row["equipe2"],
+                score1=row["score1"],
+                score2=row["score2"],
+                date=row["date"],
+                region=row["region"],
+                ligue=row["ligue"],
+                perso=row["perso"],
+                stage=row["stage"]
+            )
+            return match
+        else:
+            return None  # Aucun match trouvé
+
+
+
+
+
+r=MatchDao()
+#
+print(r.trouver_match_id_par_equipe("Karmine Corp")[0].region)
+print(r.trouver_match_id_et_joueur("itachi","65fda0fd5e3cd1fbef8217d5").cote_equipe2)
