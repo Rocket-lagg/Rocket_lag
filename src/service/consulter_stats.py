@@ -3,11 +3,16 @@ from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
 from business_object.joueur import Joueur
-from business_object.Equipe import Equipe
+from business_object.equipe import Equipe
 
 
 class ConsulterStats(metaclass=Singleton):
     """Une classe service qui affiche les statistiques par joueur, équipe et match"""
+
+    @staticmethod
+    def stats_par_match(total, n):
+        """Calculer la moyenne par match tout en évitant la division par zéro"""
+        return total / n if n > 0 else 0
 
     def stats_joueurs(self, nom_joueur):
         """Une fonction qui permet d'afficher les statistiques par joueur"""
@@ -22,105 +27,113 @@ class ConsulterStats(metaclass=Singleton):
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
 
         # Récupérer le nombre de matchs
-        n = joueurdao.nombre_match(nom_joueur)
+        matchdao = MatchDao()
+        id_matchs = matchdao.trouver_id_match_par_joueur(nom_joueur)
+        n = len(id_matchs)
 
         if n == 0:
             raise ValueError(f"Aucun match trouvé pour le joueur {nom_joueur}.")
 
         # Dictionnaire pour simplifier l'indice régional
         regional_indices = {
-            "EU": 1, "NA": 1, "SAM": 0.9, "MENA": 0.9,
-            "OCE": 0.5, "APAC": 0.5, "SSA": 0.3, "INT":1
+            "EU": 1,
+            "NA": 1,
+            "SAM": 0.9,
+            "MENA": 0.9,
+            "OCE": 0.5,
+            "APAC": 0.5,
+            "SSA": 0.3,
         }
         regional_indice = regional_indices.get(joueur_data.region)
         if regional_indice is None:
             raise ValueError("La région du joueur est inconnue.")
 
         # Calcul des statistiques par match
-        stats_par_match = lambda total: total / n if n > 0 else 0
-
-        joueur_data.goals_par_match = stats_par_match(joueur_data.goals)
-        joueur_data.assists_par_match = stats_par_match(joueur_data.assists)
-        joueur_data.shots_par_match = stats_par_match(joueur_data.shots)
-        joueur_data.saves_par_match = stats_par_match(joueur_data.saves)
-        joueur_data.score_par_match = stats_par_match(joueur_data.score)
-        joueur_data.demo_inflige_par_match = stats_par_match(joueur_data.demo_inflige)
+        joueur_data.goals_par_match = self.stats_par_match(joueur_data.goals, n)
+        joueur_data.assists_par_match = self.stats_par_match(joueur_data.assists, n)
+        joueur_data.shots_par_match = self.stats_par_match(joueur_data.shots, n)
+        joueur_data.saves_par_match = self.stats_par_match(joueur_data.saves, n)
+        joueur_data.score_par_match = self.stats_par_match(joueur_data.score, n)
+        joueur_data.demo_inflige_par_match = self.stats_par_match(joueur_data.demo_inflige, n)
 
         # Calcul des indices
         joueur_data.indice_offensif = round(
             (
-                joueur_data.goals / 1.05 +
-                joueur_data.assists / 0.5 +
-                joueur_data.shots / 3.29 +
-                joueur_data.demo_inflige / 0.56 +
-                joueur_data.time_offensive_third / 201.1
-            ) * (1 / n), 2
+                joueur_data.goals / 1.05
+                + joueur_data.assists / 0.5
+                + joueur_data.shots / 3.29
+                + joueur_data.demo_inflige / 0.56
+                + joueur_data.time_offensive_third / 201.1
+            )
+            / n,
+            2,
         )
 
         joueur_data.indice_performance = round(
             (
-                joueur_data.goals * 1 +
-                joueur_data.assists * 0.75 +
-                joueur_data.saves * 0.6 +
-                joueur_data.shots * 0.4 +
-                (joueur_data.goals / joueur_data.shots) * 0.5 if joueur_data.shots > 0 else 0
-            ) * (1 / n) * regional_indice, 2
+                joueur_data.goals * 1
+                + joueur_data.assists * 0.75
+                + joueur_data.saves * 0.6
+                + joueur_data.shots * 0.4
+                + (joueur_data.goals / joueur_data.shots) * 0.5
+                if joueur_data.shots > 0
+                else 0
+            )
+            / n
+            * regional_indice,
+            2,
         )
 
         return joueur_data
 
+    # Note pour les vues : Les stats à afficher dans la vue sont : goals, goals par match, assists, assists par match,
+    # saves, saves par match, shots, shots par match, score, score par match, demo infligées, demo infligées par match,
+    # indice de performance, indice offensif, pourcentage de tirs
+
     def stats_equipe(self, nom_equipe):
         """Une fonction qui permet d'afficher les statistiques par équipe"""
-        if not isinstance(str, nom_equipe):
+        if not isinstance(nom_equipe, str):
             raise TypeError("'nom_equipe' doit être une instance de str")
+
         equipedao = EquipeDao()
         equipe_data = equipedao.obtenir_par_nom(nom_equipe)
+
         if not equipe_data:
-            raise ValueError(f"Aucune equipe nommée {nom_equipe} n'a été trouvée.")
+            raise ValueError(f"Aucune équipe nommée {nom_equipe} n'a été trouvée.")
+
         matchdao = MatchDao()
         id_matchs = matchdao.trouver_id_match_par_equipe(nom_equipe)
         n = len(id_matchs)
-        if n==0:
+
+        if n == 0:
             raise ValueError(f"Aucun match n'a été trouvé pour l'équipe {nom_equipe}.")
-        stats_par_match = lambda total: total / n if n > 0 else 0
-        equipe_data.goals_par_match = stats_par_matchs(equipe_data.goals)
-        equipe_data.assists_par_match = stats_par_matchs(equipe_data.assists)
-        equipe_data.shots_par_match = stats_par_match(equipe_data.shots)
-        equipe_data.score_par_match = stats_par_match(equipe_data.score)
-        equipe_data.demo_inflige_par_match = stats_par_match(demo_inflige)
 
+        # Calcul des statistiques par match
+        equipe_data.goals_par_match = self.stats_par_match(equipe_data.goals, n)
+        equipe_data.assists_par_match = self.stats_par_match(equipe_data.assists, n)
+        equipe_data.shots_par_match = self.stats_par_match(equipe_data.shots, n)
+        equipe_data.score_par_match = self.stats_par_match(equipe_data.score, n)
+        equipe_data.demo_inflige_par_match = self.stats_par_match(equipe_data.demo_inflige, n)
 
-        equipe = Equipe(
-            match_id = equipe_data.match_id,
-            equipe_nom = equipe_data.equipe_nom,
-            joueurs = equipe_data.joueurs #ajouter cet argumentà Equipe() et aux méthodes DAO
-
+        # Calcul de l'indice de pression
+        equipe_data.indice_de_pression = round(
+            (
+                equipe_data.demo_inflige / 1.68
+                + equipe_data.time_offensive_third / 603.3
+                + equipe_data.boost_stole / 1500
+            )
+            / n,
+            2,
         )
-        joueurs = equipe.joueurs
-        goals = equipe.goals
-        assists = equipe.assists
-        shots = equipe.shots
-        saves = equipe.saves
-        rating = equipe.score
-        shot_percentage = equipe.shot_percentage
-        demolitions = equipe.demo_inflige
-        # indice de pression TODO -> besoin du nombre de boosts volés, du temps passé dans la partie de terrain adverse, et des démolitions
-        print(
-            f"Statistiques de l'équipe {nom_equipe}, constituée de {joueurs}, "
-            f"depuis le début de la saison :\n"
-            f"Total des buts marqués : {goals}\n"
-            f"Nombre moyen de buts marqués par match : {goals/n}\n"
-            f"Total des passes décisives : {assists}\n"
-            f"Nombre moyen de passes décisives par match : {assists/n}\n"
-            f"Total des tirs : {shots}\n"
-            f"Nombre moyen de tirs par match : {shots/n}\n"
-            f"Total d'arrêts : {saves}\n"
-            f"Nombre moyen d'arrêts par match : {saves/n}\n"
-            f"Rating moyen au cours de la saison : {rating/n}\n"
-            f"Pourcentage de tirs cadrés au cours de la saison : {shot_percentage/n}\n"
-            f"Total des démolitions infligées : {demolitions}\n"
-            f"Nombre moyen de démolitions infligées par match : {demolitions/n}"
-        )
+
+        return equipe_data
+
+        # Note pour les vues : Les statistiques à afficher sont : les joueurs (equipe_data.joueurs),
+        # shots, shots par match, goals, goals par match, assists, assists par match, saves, saves par match,
+        # pourcentage de tir, rating, rating par match, demo infligées, demo infligées par match, indice de pression
+
+        # Note pour les fonctions DAO : penser à ajouter un argument "joueurs" dans Equipe() qui contienne les
+        # noms des joueurs qui constituent l'équipe, et penser à implémenter ça dans les fonctions DAO.
 
     def stats_matchs(self, nom_equipe="Non renseigné", nom_joueur="Non renseigné"):
         if not isinstance(nom_equipe, str):
@@ -150,5 +163,5 @@ class ConsulterStats(metaclass=Singleton):
 
 if __name__ == "__main__":
     consulter_stats = ConsulterStats()  # Création d'une instance de ConsulterStats
-    nom_joueur = "itachi"  # Remplacez par le nom du joueur que vous souhaitez
+    nom_joueur = "Crispy"  # Remplacez par le nom du joueur que vous souhaitez
     consulter_stats.stats_joueurs(nom_joueur)  # Appel de la méthode
