@@ -26,10 +26,7 @@ class ConsulterStats(metaclass=Singleton):
         if not joueur_data:
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
 
-        # Récupérer le nombre de matchs
-        matchdao = MatchDao()
-        id_matchs = matchdao.trouver_match_id_par_joueur(nom_joueur)
-        n = len(id_matchs)
+        n=joueurdao.nombre_match(nom_joueur)
 
         if n == 0:
             raise ValueError(f"Aucun match trouvé pour le joueur {nom_joueur}.")
