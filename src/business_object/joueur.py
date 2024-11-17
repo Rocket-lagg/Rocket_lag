@@ -95,7 +95,7 @@ class Joueur(EntiteSportive):
         demo_inflige_par_match=1,
         # Paramètres additionnels
         indice_offensif=1,
-        indice_performance=1
+        indice_performance=1,
     ):
 
         # Appel du constructeur parent (EntiteSportive)
@@ -103,15 +103,10 @@ class Joueur(EntiteSportive):
             match_id,
             equipe_nom,
             shots,
-
             goals,
-
             saves,
-
             assists,
-
             score,
-
             shooting_percentage,
             time_offensive_third,
             time_defensive_third,
@@ -122,7 +117,6 @@ class Joueur(EntiteSportive):
             region,
             ligue,
             stage,
-
         )
         # Vérifications des types pour les nouveaux attributs spécifiques à Joueur
         assert isinstance(nom, str), "nom doit être une chaîne de caractères"
@@ -145,24 +139,26 @@ class Joueur(EntiteSportive):
         str :
             Représentation du joueur avec son nom et d'autres informations personnelles.
         """
-        return (f"Joueur({self.nom}, "
-            f"Nationalité: {self.nationalite}, "
-            f"Region: {self.region}, "
-            f"Ligue: {self.ligue}, "
-            f"Stage: {self.stage}, "
-            f"Match ID: {self.match_id}, "
-            f"Equipe: {self.equipe_nom}, "
-            f"Shots: {self.shots}, "
-            f"Goals: {self.goals}, "
-            f"Saves: {self.saves}, "
-            f"Assists: {self.assists}, "
-            f"Score: {self.score}, "
-            f"Shooting Percentage: {self.shooting_percentage}, "
-            f"Time Offensive Third: {self.time_offensive_third}, "
-            f"Time Defensive Third: {self.time_defensive_third}, "
-            f"Time Neutral Third: {self.time_neutral_third}, "
-            f"Demo Infligé: {self.demo_inflige}, "
-            f"Demo Reçu: {self.demo_recu}, "
-            f"Goal Participation: {self.goal_participation}, "
-            f"Rating: {self.rating}, "
-            f"Date: {self.date} ")
+        return (
+            f"Joueur({self.nom} \n"
+            f"Nationalité: {self.nationalite} \n"
+            f"Region: {self.region} \n"
+            f"Ligue: {self.ligue} \n"
+            f"Stage: {self.stage} \n"
+            f"Match ID: {self.match_id} \n"
+            f"Equipe: {self.equipe_nom} \n"
+            f"Shots: {self.shots} \n"
+            f"Goals: {self.goals} \n"
+            f"Saves: {self.saves} \n"
+            f"Assists: {self.assists} \n"
+            f"Score: {self.score} \n"
+            f"Shooting Percentage: {self.shooting_percentage} \n"
+            f"Time Offensive Third: {self.time_offensive_third} \n"
+            f"Time Defensive Third: {self.time_defensive_third} \n"
+            f"Time Neutral Third: {self.time_neutral_third} \n"
+            f"Demo Infligé: {self.demo_inflige}\n"
+            f"Demo Reçu: {self.demo_recu}\n"
+            f"Goal Participation: {self.goal_participation}\n"
+            f"Rating: {self.rating} \n"
+            f"Date: {self.date} \n"
+        )

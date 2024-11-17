@@ -102,41 +102,6 @@ class ResetDatabase(metaclass=Singleton):
                     logging.info("Table Equipe créée avec succès.")
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table Equipe: {e}")
-    
-    def lancer_match(self):
-        
-
-
-
-    def lancer_match(self):
-        """
-        Création de la table Equipe dans la base de données.
-        """
-        try:
-            # Connexion à la base de données
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    # Commande SQL pour supprimer et recréer la table Equipe
-                    cursor.execute(
-                        """
-                        DROP TABLE IF EXISTS Match;
-                        CREATE TABLE  Match (
-                            match_id VARCHAR(255) PRIMARY KEY,
-                            equipe1 VARCHAR(255),
-                            equipe2 VARCHAR(255),
-                            score1 INT,
-                            score2 INT,
-                            date DATE,  -- Utilisation d'un type DATE pour les dates
-                            region VARCHAR(50),
-                            ligue VARCHAR(255),
-                            perso BOOL,
-                        );
-                        """
-                    )
-                    connection.commit()  # Confirmer les modifications
-                    logging.info("Table Match créée avec succès.")
-        except Exception as e:
-            logging.error(f"Erreur lors de la création de la table Match: {e}")
 
 
 

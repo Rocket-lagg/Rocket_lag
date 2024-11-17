@@ -32,7 +32,7 @@ class MatchDao(metaclass=Singleton):
                             "dates": match.dates,
                             "region": match.region,
                             "ligue": match.ligue,
-                            "perso": match.perso
+                            "perso": match.perso,
                         },
                     )
 
@@ -157,7 +157,7 @@ class MatchDao(metaclass=Singleton):
             logging.info(e)
             raise
 
-        list_match_id = None
+        list_match_id = []
         if res:
             for row in res:
                 list_match_id.append(row["match_id"])

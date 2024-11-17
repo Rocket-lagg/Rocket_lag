@@ -29,8 +29,14 @@ class ConsulterStats(metaclass=Singleton):
 
         # Dictionnaire pour simplifier l'indice régional
         regional_indices = {
-            "EU": 1, "NA": 1, "SAM": 0.9, "MENA": 0.9,
-            "OCE": 0.5, "APAC": 0.5, "SSA": 0.3, "INT":1
+            "EU": 1,
+            "NA": 1,
+            "SAM": 0.9,
+            "MENA": 0.9,
+            "OCE": 0.5,
+            "APAC": 0.5,
+            "SSA": 0.3,
+            "INT": 1,
         }
         regional_indice = regional_indices.get(joueur_data.region)
         if regional_indice is None:
@@ -49,52 +55,60 @@ class ConsulterStats(metaclass=Singleton):
         # Calcul des indices
         joueur_data.indice_offensif = round(
             (
-                joueur_data.goals / 1.05 +
-                joueur_data.assists / 0.5 +
-                joueur_data.shots / 3.29 +
-                joueur_data.demo_inflige / 0.56 +
-                joueur_data.time_offensive_third / 201.1
-            ) * (1 / n), 2
+                joueur_data.goals / 1.05
+                + joueur_data.assists / 0.5
+                + joueur_data.shots / 3.29
+                + joueur_data.demo_inflige / 0.56
+                + joueur_data.time_offensive_third / 201.1
+            )
+            * (1 / n),
+            2,
         )
 
         joueur_data.indice_performance = round(
             (
-                joueur_data.goals * 1 +
-                joueur_data.assists * 0.75 +
-                joueur_data.saves * 0.6 +
-                joueur_data.shots * 0.4 +
-                (joueur_data.goals / joueur_data.shots) * 0.5 if joueur_data.shots > 0 else 0
-            ) * (1 / n) * regional_indice, 2
+                joueur_data.goals * 1
+                + joueur_data.assists * 0.75
+                + joueur_data.saves * 0.6
+                + joueur_data.shots * 0.4
+                + (joueur_data.goals / joueur_data.shots) * 0.5
+                if joueur_data.shots > 0
+                else 0
+            )
+            * (1 / n)
+            * regional_indice,
+            2,
         )
 
         return joueur_data
 
     def stats_equipe(self, nom_equipe):
         """Une fonction qui permet d'afficher les statistiques par équipe"""
-        if not isinstance(str, nom_equipe):
+        if not isinstance(nom_equipe, str):
             raise TypeError("'nom_equipe' doit être une instance de str")
         equipedao = EquipeDao()
         equipe_data = equipedao.obtenir_par_nom(nom_equipe)
         if not equipe_data:
             raise ValueError(f"Aucune equipe nommée {nom_equipe} n'a été trouvée.")
         matchdao = MatchDao()
-        id_matchs = matchdao.trouver_id_match_par_equipe(nom_equipe)
+        id_matchs = matchdao.trouver_match_id_par_equipe(nom_equipe)
         n = len(id_matchs)
-        if n==0:
+        if n == 0:
             raise ValueError(f"Aucun match n'a été trouvé pour l'équipe {nom_equipe}.")
-        stats_par_match = lambda total: total / n if n > 0 else 0
-        equipe_data.goals_par_match = stats_par_matchs(equipe_data.goals)
-        equipe_data.assists_par_match = stats_par_matchs(equipe_data.assists)
+
+        def stats_par_match(total):
+            return total / n if n > 0 else 0
+
+        equipe_data.goals_par_match = stats_par_match(equipe_data.goals)
+        equipe_data.assists_par_match = stats_par_match(equipe_data.assists)
         equipe_data.shots_par_match = stats_par_match(equipe_data.shots)
         equipe_data.score_par_match = stats_par_match(equipe_data.score)
-        equipe_data.demo_inflige_par_match = stats_par_match(demo_inflige)
-
+        equipe_data.demo_inflige_par_match = stats_par_match(equipe_data.demo_inflige)
 
         equipe = Equipe(
-            match_id = equipe_data.match_id,
-            equipe_nom = equipe_data.equipe_nom,
-            joueurs = equipe_data.joueurs #ajouter cet argumentà Equipe() et aux méthodes DAO
-
+            match_id=equipe_data.match_id,
+            equipe_nom=equipe_data.equipe_nom,
+            joueurs=equipe_data.joueurs,  # ajouter cet argumentà Equipe() et aux méthodes DAO
         )
         joueurs = equipe.joueurs
         goals = equipe.goals

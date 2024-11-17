@@ -66,7 +66,7 @@ class Equipe(EntiteSportive):
     """
 
     def __init__(
-         self,
+        self,
         match_id,
         equipe_nom,
         shots,

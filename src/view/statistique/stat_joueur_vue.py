@@ -22,13 +22,14 @@ class JoueurVue(VueAbstraite):
             Retourne la vue choisie par l'utilisateur dans le terminal
         """
 
-        print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
+        print("\n" + "-" * 50 + "\nConsulter Statistique - Joueur\n" + "-" * 50 + "\n")
 
         reponse = input("Nom du joueur: ")
-        self.consulter_stats.stats_joueurs(reponse)
+        joueur_stat = self.consulter_stats.stats_joueurs(reponse)
+        print(joueur_stat)
 
         choix = inquirer.select(
-            message="",
+            message="Que voulez-vous faire maintenant?",
             choices=[
                 "Chercher un autre joueur",
                 "Chercher une équipe",

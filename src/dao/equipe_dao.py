@@ -8,6 +8,7 @@ from dao.db_connection import DBConnection
 from business_object.Equipe import Equipe
 from business_object.joueur import Joueur
 
+
 class EquipeDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
 
@@ -64,8 +65,8 @@ class EquipeDao(metaclass=Singleton):
                             "time_defensive_third": equipe.time_defensive_third,
                             "time_neutral_third": equipe.time_neutral_third,
                             "demo_inflige": equipe.demo_inflige,
-                            "demo_recu": equipe.demo_recu
-                         },
+                            "demo_recu": equipe.demo_recu,
+                        },
                     )
                     # Récupérer l'ID du joueur créé
                     res = cursor.fetchone()
@@ -73,4 +74,3 @@ class EquipeDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création d'equipe : {e}")
             return False
-
