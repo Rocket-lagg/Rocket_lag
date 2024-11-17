@@ -32,7 +32,7 @@ class MatchDao(metaclass=Singleton):
                             "dates": match.dates,
                             "region": match.region,
                             "ligue": match.ligue,
-                            "perso": match.perso,
+                            "perso": match.perso
                         },
                     )
 

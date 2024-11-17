@@ -12,6 +12,7 @@ import dotenv
 
 dotenv.load_dotenv()  # Charger .env avant d'utiliser DBConnection ou ResetDatabase
 
+from business_object.crea_data import*
 
 class ResetDatabase(metaclass=Singleton):
     """
@@ -31,7 +32,6 @@ class ResetDatabase(metaclass=Singleton):
                         """
                         DROP TABLE IF EXISTS Joueur;
                         CREATE TABLE Joueur (
-                            joueur_id SERIAL PRIMARY KEY,
                             nom VARCHAR(100) NOT NULL,
                             nationalite VARCHAR(50),
                             rating FLOAT,
@@ -49,10 +49,11 @@ class ResetDatabase(metaclass=Singleton):
                             demo_inflige INTEGER,
                             demo_recu INTEGER,
                             goal_participation FLOAT,
-                            date DATE,                 -- Date du match
+                            date TIMESTAMP WITH TIME ZONE,                 -- Date du match
                             region VARCHAR(50),        -- Région du match
                             ligue VARCHAR(100),        -- Ligue à laquelle appartient le match
-                            stage VARCHAR(100)         -- Étape ou phase du tournoi ou du match
+                            stage VARCHAR(100),        -- Étape ou phase du tournoi ou du match
+                            PRIMARY KEY (match_id, equipe_nom,nom)
                         );
                         """
                     )
@@ -73,7 +74,6 @@ class ResetDatabase(metaclass=Singleton):
                     cursor.execute(
                         """
                         DROP TABLE IF EXISTS Equipe;
-
                         CREATE TABLE  Equipe (
                             match_id VARCHAR(255),                 -- Identifiant unique du match
                             equipe_nom VARCHAR(255),               -- Nom de l'équipe
@@ -90,7 +90,7 @@ class ResetDatabase(metaclass=Singleton):
                             time_defensive_third FLOAT,            -- Temps passé dans le tiers défensif (en secondes)
                             time_neutral_third FLOAT,              -- Temps passé dans le tiers neutre (en secondes)
                             time_offensive_third FLOAT,            -- Temps passé dans le tiers offensif (en secondes)
-                            date DATE,                             -- Date du match
+                            date TIMESTAMP WITH TIME ZONE,                             -- Date du match
                             region VARCHAR(50),                    -- Région du match
                             stage VARCHAR(100),                    -- Étape ou phase du tournoi ou du match
                             ligue VARCHAR(100),                    -- Ligue ou division du match
@@ -106,16 +106,83 @@ class ResetDatabase(metaclass=Singleton):
     def lancer_match(self):
         
 
+
+
+    def lancer_match(self):
+        """
+        Création de la table Equipe dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                        DROP TABLE IF EXISTS Match;
+                        CREATE TABLE  Match (
+                            match_id VARCHAR(255) PRIMARY KEY,
+                            equipe1 VARCHAR(255),
+                            equipe2 VARCHAR(255),
+                            score1 INT,
+                            score2 INT,
+                            date DATE,  -- Utilisation d'un type DATE pour les dates
+                            region VARCHAR(50),
+                            ligue VARCHAR(255),
+                            perso BOOL,
+                        );
+                        """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Match créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Match: {e}")
+
+
+
+    def lancer_match(self):
+        """
+        Création de la table Equipe dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                        DROP TABLE IF EXISTS Match;
+                        CREATE TABLE  Match (
+                            match_id VARCHAR(255) PRIMARY KEY,
+                            equipe1 VARCHAR(255),
+                            equipe2 VARCHAR(255),
+                            score1 INT,
+                            score2 INT,
+                            date DATE,  -- Utilisation d'un type DATE pour les dates
+                            region VARCHAR(50),
+                            ligue VARCHAR(255),
+                            perso BOOL,
+                        );
+                        """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Match créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Match: {e}")
+
     def lancer(self):
-        self.lancer_equipe()
+
         self.lancer_joueur()
+        self.lancer_equipe()
+            # Step 1: Initialiser l'API et le processeur de match
+        api = API(base_url="https://api.rlcstatistics.net")
+        match_processor = MatchProcessor(api)
 
+            # Step 2: Récupérer les matchs
+        match_processor.recup_matches(page=265, page_size=4)
 
-if __name__ == "__main__":
-    dotenv.load_dotenv()  # Charger les variables d'environnement
-    # Configuration du logging
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+            # Step 3: Récupérer les données des matchs
+        match_processor.recup_match_data()
 
-    # Créer une instance de ResetDatabase et créer les tables
-    reset_db = ResetDatabase()
-    reset_db.lancer()
+            # Step 4: Traiter les matchs et les joueurs
+        match_processor.process_matches()

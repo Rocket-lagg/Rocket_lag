@@ -30,7 +30,6 @@ class AccueilVue(VueAbstraite):
                     "Consulter le calendrier",
                     "Parier",
                     "Gestion des tournois",
-                    "Ré-initialiser la base de données",
                     "Infos de session",
                     "Se déconnecter",
                     "Quitter",
@@ -45,7 +44,6 @@ class AccueilVue(VueAbstraite):
                     "Consulter les statistiques de match",
                     "Consulter les statistiques de joueur/équipe",
                     "Consulter le calendrier",
-                    "Ré-initialiser la base de données",
                     "Infos de session",
                     "Quitter",
                 ],
@@ -93,9 +91,4 @@ class AccueilVue(VueAbstraite):
             case "Infos de session":
                 return AccueilVue(Session().afficher())
 
-            case "Ré-initialiser la base de données":
-                succes = ResetDatabase().lancer()
-                message = (
-                    f"Ré-initilisation de la base de données - {'SUCCES' if succes else 'ECHEC'}"
-                )
                 return AccueilVue(message)

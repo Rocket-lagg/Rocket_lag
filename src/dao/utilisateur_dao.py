@@ -65,11 +65,38 @@ class UtilisateurDao(metaclass=Singleton):
             nom_utilisateur=utilisateur_bdd["pseudo"],
             mot_de_passe=utilisateur_bdd["mdp"],
             email=utilisateur_bdd["mail"],
-            tournois_crees=[],
+            tournois_crees=utilisateur_bdd.get("tournois", []),  # Charge les tournois s'ils sont fournis
             points=utilisateur_bdd["points"],
-            paris=[],
+            paris=utilisateur_bdd.get("paris", []),
         )
         return utilisateur
+
+
+
+    def init():
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS Utilisateur (
+                            id_utilisateur SERIAL PRIMARY KEY,
+                            pseudo VARCHAR(30) UNIQUE,
+                            mdp VARCHAR(256),
+                            mail VARCHAR(50),
+                            points INT DEFAULT 0,
+                            paris INT[],
+                            id_tournois VARCHAR(50)[]
+                        );
+                        """
+                    )
+                    connection.commit()  # Assurez-vous de confirmer la transaction
+                    logging.info("Table 'utilisateur' créée ou déjà existante.")
+            return True  # Indique que la table est créée ou existe déjà
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table 'utilisateur': {e}")
+            return False  # Indique un échec dans la création de la table
+
 
     def creer(self, utilisateur) -> bool:
         """Creation d'un utilisateur dans la base de données
@@ -302,14 +329,12 @@ class UtilisateurDao(metaclass=Singleton):
         utilisateur = None
 
         if res:
-            utilisateur = Utilisateur(
-                id_utilisateur=res["id_utilisateur"],
-                pseudo=res["pseudo"],
-                mdp=res["mdp"],
-                mail=res["mail"],
-                tournois_crees=res["tournois_crees"],
+             utilisateur = Utilisateur(
+                nom_utilisateur=res["pseudo"],
+                mot_de_passe=res["mdp"],  # Gardez cela uniquement si nécessaire pour des raisons techniques.
+                email=res["mail"],
+                tournois_crees=res.get("tournois_crees", []),
                 points=res["points"],
-                paris=res["paris"],
-            )
-
+                paris=res.get("paris", []),
+    )
         return utilisateur

@@ -3,7 +3,7 @@ from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
 from business_object.joueur import Joueur
-from business_object.equipe import Equipe
+from business_object.Equipe import Equipe
 
 
 class ConsulterStats(metaclass=Singleton):
@@ -22,9 +22,7 @@ class ConsulterStats(metaclass=Singleton):
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
 
         # Récupérer le nombre de matchs
-        matchdao = MatchDao()
-        id_matchs = matchdao.trouver_id_match_par_joueur(nom_joueur)
-        n = len(id_matchs)
+        n = joueurdao.nombre_match(nom_joueur)
 
         if n == 0:
             raise ValueError(f"Aucun match trouvé pour le joueur {nom_joueur}.")
@@ -32,7 +30,7 @@ class ConsulterStats(metaclass=Singleton):
         # Dictionnaire pour simplifier l'indice régional
         regional_indices = {
             "EU": 1, "NA": 1, "SAM": 0.9, "MENA": 0.9,
-            "OCE": 0.5, "APAC": 0.5, "SSA": 0.3
+            "OCE": 0.5, "APAC": 0.5, "SSA": 0.3, "INT":1
         }
         regional_indice = regional_indices.get(joueur_data.region)
         if regional_indice is None:
@@ -82,9 +80,19 @@ class ConsulterStats(metaclass=Singleton):
         matchdao = MatchDao()
         id_matchs = matchdao.trouver_id_match_par_equipe(nom_equipe)
         n = len(id_matchs)
+        if n==0:
+            raise ValueError(f"Aucun match n'a été trouvé pour l'équipe {nom_equipe}.")
+        stats_par_match = lambda total: total / n if n > 0 else 0
+        equipe_data.goals_par_match = stats_par_matchs(equipe_data.goals)
+        equipe_data.assists_par_match = stats_par_matchs(equipe_data.assists)
+        equipe_data.shots_par_match = stats_par_match(equipe_data.shots)
+        equipe_data.score_par_match = stats_par_match(equipe_data.score)
+        equipe_data.demo_inflige_par_match = stats_par_match(demo_inflige)
+
+
         equipe = Equipe(
             match_id = equipe_data.match_id,
-            equipe_nom = equipe_data.equipe_nom
+            equipe_nom = equipe_data.equipe_nom,
             joueurs = equipe_data.joueurs #ajouter cet argumentà Equipe() et aux méthodes DAO
 
         )
@@ -142,5 +150,5 @@ class ConsulterStats(metaclass=Singleton):
 
 if __name__ == "__main__":
     consulter_stats = ConsulterStats()  # Création d'une instance de ConsulterStats
-    nom_joueur = "Crispy"  # Remplacez par le nom du joueur que vous souhaitez
+    nom_joueur = "itachi"  # Remplacez par le nom du joueur que vous souhaitez
     consulter_stats.stats_joueurs(nom_joueur)  # Appel de la méthode
