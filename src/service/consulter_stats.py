@@ -3,7 +3,7 @@ from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
 from business_object.joueur import Joueur
-from business_object.equipe import Equipe
+from business_object.Equipe import Equipe
 
 
 class ConsulterStats(metaclass=Singleton):
@@ -26,10 +26,7 @@ class ConsulterStats(metaclass=Singleton):
         if not joueur_data:
             raise ValueError(f"Aucun joueur nommé {nom_joueur} n'a été trouvé.")
 
-        # Récupérer le nombre de matchs
-        matchdao = MatchDao()
-        id_matchs = matchdao.trouver_id_match_par_joueur(nom_joueur)
-        n = len(id_matchs)
+        n=joueurdao.nombre_match(nom_joueur)
 
         if n == 0:
             raise ValueError(f"Aucun match trouvé pour le joueur {nom_joueur}.")
