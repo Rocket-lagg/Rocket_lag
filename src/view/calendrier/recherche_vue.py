@@ -24,13 +24,13 @@ class RechercheVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
-        date = input("A quelle date le match a-t-il eu lieu? (JJ/MM/AA): ")
+        date = input("A quelle date le match a-t-il eu lieu? (AAAA/MM/JJ): ")
         self.calendrier_evenement.rechercher_match_par_date(date)
 
         choix = inquirer.select(
             message="",
             choices=[
-                "Afficher le calendrier",
+                "Afficher le calendrier de l'année",
                 "Retour",
             ],
         ).execute()
@@ -42,6 +42,7 @@ class RechercheVue(VueAbstraite):
                 return AccueilVue()
 
             case "Afficher le calendrier":
+                
                 from view.calendrier.calendrier_even_vue import EvenementVue
 
                 return EvenementVue()

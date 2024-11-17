@@ -130,6 +130,7 @@ class MatchDao(metaclass=Singleton):
                     region=row["region"],
                     ligue=row["ligue"],
                     perso=row["perso"],
+                    stage=row["stage"]
                 )
 
                 liste_matchs.append(match)
@@ -346,3 +347,4 @@ r=MatchDao()
 #
 print(r.trouver_match_id_par_equipe("Karmine Corp")[0].region)
 print(r.trouver_match_id_et_joueur("itachi","65fda0fd5e3cd1fbef8217d5").cote_equipe2)
+print(r.trouver_par_dates("2024-03-29")[0].equipe1)
