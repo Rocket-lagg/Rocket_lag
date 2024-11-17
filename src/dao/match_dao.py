@@ -11,9 +11,7 @@ from business_object.Match import Match
 class MatchDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux matchs de la base de données"""
 
-
     @log
-
     def creer(self, match) -> bool:
         res = None
         try:
@@ -84,7 +82,7 @@ class MatchDao(metaclass=Singleton):
                 region=res_match["region"],
                 ligue=res_match["ligue"],
                 perso=res_match["perso"],
-                stage=res_match["stage"]
+                stage=res_match["stage"],
             )
 
         return match
@@ -132,7 +130,6 @@ class MatchDao(metaclass=Singleton):
                     region=res["region"],
                     ligue=res["ligue"],
                     perso=res["perso"],
-
                 )
 
                 liste_matchs.append(match)
@@ -162,7 +159,7 @@ class MatchDao(metaclass=Singleton):
                         FROM match
                         WHERE equipe1 = %(equipe)s OR equipe2 = %(equipe)s;
                         """,
-                        {"equipe": equipe}  # Utilisation d'un dictionnaire de paramètres
+                        {"equipe": equipe},  # Utilisation d'un dictionnaire de paramètres
                     )
                     res = cursor.fetchall()
                     print("Résultat de la requête :", res)  # Débogage pour vérifier la structure
@@ -187,8 +184,6 @@ class MatchDao(metaclass=Singleton):
 
         return list_match_id
 
-
-
     @log
     def trouver_match_id_par_joueur(self, joueur) -> list[str]:
         """trouver l'id de match grâce au nom d'un joueur
@@ -209,7 +204,7 @@ class MatchDao(metaclass=Singleton):
                     cursor.execute(
                         "SELECT match_id                           "
                         " FROM joueur                     "
-                        " WHERE joueur_nom = %(joueur)s;  ",
+                        " WHERE nom = %(joueur)s;  ",
                         {"joueur": joueur},
                     )
                     res = cursor.fetchall()
@@ -217,7 +212,7 @@ class MatchDao(metaclass=Singleton):
             logging.info(e)
             raise
 
-        list_match_id = None
+        list_match_id = []
         if res:
             for row in res:
                 list_match_id.append(row["match_id"])

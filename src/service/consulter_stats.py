@@ -3,7 +3,7 @@ from dao.equipe_dao import EquipeDao
 from dao.joueur_dao import JoueurDao
 from dao.match_dao import MatchDao
 from business_object.joueur import Joueur
-from business_object.equipe import Equipe
+from business_object.Equipe import Equipe
 
 
 class ConsulterStats(metaclass=Singleton):
@@ -28,7 +28,7 @@ class ConsulterStats(metaclass=Singleton):
 
         # Récupérer le nombre de matchs
         matchdao = MatchDao()
-        id_matchs = matchdao.trouver_id_match_par_joueur(nom_joueur)
+        id_matchs = matchdao.trouver_match_id_par_joueur(nom_joueur)
         n = len(id_matchs)
 
         if n == 0:
@@ -45,9 +45,23 @@ class ConsulterStats(metaclass=Singleton):
             "SSA": 0.3,
         }
 
-        collonne = ["goals","assists","score","shots","shooting_percentage","demo_inflige","demo_recu","goal_participation","saves",
-                     "indice_offensif","indice_performance","time_offensive_third","time_defensive_third","time_neutral_third"]
-        stat_affiché = joueurdao.moyennes_statistiques(nom_joueur,collonne)
+        collonne = [
+            "goals",
+            "assists",
+            "score",
+            "shots",
+            "shooting_percentage",
+            "demo_inflige",
+            "demo_recu",
+            "goal_participation",
+            "saves",
+            "indice_offensif",
+            "indice_performance",
+            "time_offensive_third",
+            "time_defensive_third",
+            "time_neutral_third",
+        ]
+        stat_affiché = joueurdao.moyennes_statistiques(nom_joueur, collonne)
 
         print(
             f"Statistiques de {joueur_data.nom}, depuis le début de la saison :\n"
@@ -66,8 +80,6 @@ class ConsulterStats(metaclass=Singleton):
             f"Temps moyen passé en défense : {stat_affiché['time_defensive_third']} secondes"
         )
 
-
-
     # Note pour les vues : Les stats à afficher dans la vue sont : goals, goals par match, assists, assists par match,
     # saves, saves par match, shots, shots par match, score, score par match, demo infligées, demo infligées par match,
     # indice de performance, indice offensif, pourcentage de tirs
@@ -78,32 +90,46 @@ class ConsulterStats(metaclass=Singleton):
         equipedao = EquipeDao()
         equipe_data = equipedao.obtenir_par_nom(nom_equipe)
         n = equipedao.nombre_match(nom_equipe)
-        if n==0:
+        if n == 0:
             raise ValueError(f"Aucun match n'a été trouvé pour l'équipe {nom_equipe}.")
 
         # indice de pression TODO -> besoin du nombre de boosts volés, du temps passé dans la partie de terrain adverse, et des démolitions
 
-        collonne = ["goals","assists","score","shots","shooting_percentage","demo_inflige","demo_recu","saves",
-                     "boost_stole","time_offensive_third","time_defensive_third","time_neutral_third","indice_de_pression","indice_performance"]
+        collonne = [
+            "goals",
+            "assists",
+            "score",
+            "shots",
+            "shooting_percentage",
+            "demo_inflige",
+            "demo_recu",
+            "saves",
+            "boost_stole",
+            "time_offensive_third",
+            "time_defensive_third",
+            "time_neutral_third",
+            "indice_de_pression",
+            "indice_performance",
+        ]
 
-        stat_affiché = equipedao.moyennes_statistiques(nom_equipe,collonne)
+        stat_affiché = equipedao.moyennes_statistiques(nom_equipe, collonne)
 
         print(
-                f"Statistiques de {nom_equipe}, depuis le début de la saison :\n"
-                f"Nombre moyen de buts marqués par match : {stat_affiché['goals']}\n"
-                f"Nombre moyen de passes décisives par match : {stat_affiché['assists']}\n"
-                f"Score moyen par match : {stat_affiché['score']}\n"
-                f"Nombre moyen de tirs par match : {stat_affiché['shots']}\n"
-                f"Pourcentage moyen des tirs effectués convertis en buts : {stat_affiché['shooting_percentage']}\n"
-                f"Nombre moyen d'arrêts par match : {stat_affiché['saves']}\n"
-                f"Performance moyenne : {stat_affiché['indice_performance']}\n"
-                f"Moyennes de démolitions infligées : {stat_affiché['demo_inflige']}\n"
-                f"Moyennes de démolitions reçues par match : {stat_affiché['demo_recu']}\n"
-                f"Temps moyen passé en attaque : {stat_affiché['time_offensive_third']} secondes\n"
-                f"Temps moyen passé en défense : {stat_affiché['time_defensive_third']} secondes\n"
-                f"Temps moyen passé en zone neutre : {stat_affiché['time_neutral_third']} secondes\n"
-                f"Indice de pression moyen : {stat_affiché['indice_de_pression']}\n")
-
+            f"Statistiques de {nom_equipe}, depuis le début de la saison :\n"
+            f"Nombre moyen de buts marqués par match : {stat_affiché['goals']}\n"
+            f"Nombre moyen de passes décisives par match : {stat_affiché['assists']}\n"
+            f"Score moyen par match : {stat_affiché['score']}\n"
+            f"Nombre moyen de tirs par match : {stat_affiché['shots']}\n"
+            f"Pourcentage moyen des tirs effectués convertis en buts : {stat_affiché['shooting_percentage']}\n"
+            f"Nombre moyen d'arrêts par match : {stat_affiché['saves']}\n"
+            f"Performance moyenne : {stat_affiché['indice_performance']}\n"
+            f"Moyennes de démolitions infligées : {stat_affiché['demo_inflige']}\n"
+            f"Moyennes de démolitions reçues par match : {stat_affiché['demo_recu']}\n"
+            f"Temps moyen passé en attaque : {stat_affiché['time_offensive_third']} secondes\n"
+            f"Temps moyen passé en défense : {stat_affiché['time_defensive_third']} secondes\n"
+            f"Temps moyen passé en zone neutre : {stat_affiché['time_neutral_third']} secondes\n"
+            f"Indice de pression moyen : {stat_affiché['indice_de_pression']}\n"
+        )
 
     def stats_matchs(self, nom_equipe="Non renseigné", nom_joueur="Non renseigné"):
         match_dao = MatchDao()
