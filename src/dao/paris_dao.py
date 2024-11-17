@@ -41,32 +41,9 @@ class ParisDao:
         except Exception as e:
             print(e)
 
-    def instancier(self, utilisateur_bdd) -> Utilisateur:
-        """Instancie un utilisateur avec ses tournois créés et ses paris.
 
-        Parameters
-        ----------
-        id_utilisateur : int
-            L'ID de l'utilisateur à récupérer.
-
-        Returns
-        -------
-        utilisateur : Utilisateur
-            Utilisateur enrichi avec ses tournois créés et ses paris.
-        """
-
-        utilisateur = Utilisateur(
-            nom_utilisateur=utilisateur_bdd["pseudo"],
-            mot_de_passe=utilisateur_bdd["mdp"],
-            email=utilisateur_bdd["mail"],
-            tournois_crees=[],
-            points=utilisateur_bdd["points"],
-            paris=[],
-        )
-        return utilisateur
-
-    def creer(self, utilisateur) -> bool:
-        """Creation d'un utilisateur dans la base de données
+    def supprimer_un_paris(self, paris) -> bool:
+        """Suppression d'un pari dans la base de données
 
         Parameters
         ----------

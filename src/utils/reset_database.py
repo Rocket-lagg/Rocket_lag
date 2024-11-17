@@ -9,8 +9,8 @@ from utils.singleton import Singleton
 from dao.db_connection import DBConnection
 from service.utilisateur_service import UtilisateurService
 import dotenv
-dotenv.load_dotenv()  # Charger .env avant d'utiliser DBConnection ou ResetDatabase
 
+dotenv.load_dotenv()  # Charger .env avant d'utiliser DBConnection ou ResetDatabase
 
 
 class ResetDatabase(metaclass=Singleton):
@@ -102,6 +102,9 @@ class ResetDatabase(metaclass=Singleton):
                     logging.info("Table Equipe créée avec succès.")
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table Equipe: {e}")
+    
+    def lancer_match(self):
+        
 
     def lancer(self):
         self.lancer_equipe()
@@ -111,7 +114,7 @@ class ResetDatabase(metaclass=Singleton):
 if __name__ == "__main__":
     dotenv.load_dotenv()  # Charger les variables d'environnement
     # Configuration du logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     # Créer une instance de ResetDatabase et créer les tables
     reset_db = ResetDatabase()
