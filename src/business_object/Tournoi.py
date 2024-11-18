@@ -10,7 +10,6 @@ class Tournoi:
         self.id_tournoi = id_tournoi
         self.nom_tournoi = nom_tournoi
         self.createur = createur
-        self.officiel = officiel
         self.equipes = []
         self.matchs = []
 

@@ -1,7 +1,7 @@
 --> créer les méthodes pour instancier les objets à partir de la dao dans les classes services, cad rassembler les différents bouts de l'objet définis par plusieurs dao
 --> Mettre des méthodes pour instancier le début des objets dans chaque classe de DAO
 --> Changer les méthodes DAO pour mettre à jour les requetes selon la nouvelle bdd ("RocketLag", tables de lien)
-
+--> Créer une table equipe_utilisateur (avec id_tournoi) et match_perso
 DROP TABLE IF EXISTS "RocketLag".Equipe CASCADE;
 
 le code des tables si besoin
@@ -103,6 +103,24 @@ CREATE TABLE "RocketLag".paris_utilisateur (
     PRIMARY KEY (id_utilisateur, id_pari)  -- Ajout d'une clé primaire composée
 );
 
+-- Création de la table match_perso
+CREATE TABLE "RocketLag".match_perso (
+    id_match VARCHAR(255) PRIMARY KEY,
+    id_tournoi VARCHAR(255) REFERENCES "RocketLag".tournoi(id_tournoi) ,
+    id_equipe1 VARCHAR(255) REFERENCES "RocketLag".equipe(id_equipe),
+    id_equipe2 VARCHAR(255) REFERENCES "RocketLag".equipe(id_equipe),
+    score1 INT,
+    score2 INT,
+);
+
+-- Création de la table equipe_tournoi
+CREATE TABLE "RocketLag".equipe_tournoi (
+    nom_equipe VARCHAR(255) PRIMARY KEY,
+    id_joueur1 VARCHAR REFERENCES "RocketLag".joueur(id_joueur),
+    id_joueur2 VARCHAR REFERENCES "RocketLag".joueur(id_joueur),
+    id_joueur3 VARCHAR REFERENCES "RocketLag".joueur(id_joueur),
+    id_tournoi VARCHAR REFERENCES "RocketLag".tournoi(id_tournoi),
+);
 
 ALTER TABLE "RocketLag".info_match
 ADD column event VARCHAR(255);

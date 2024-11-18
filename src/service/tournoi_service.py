@@ -2,7 +2,7 @@ from view.session import Session
 from dao.tournoi_dao import TournoiDao
 from business_object.Tournoi import Tournoi
 from dao.utilisateur_dao import UtilisateurDao
-from dao.equipe_dao import EquipeDao
+from dao.equipe_tournoi_dao import EquipeDao
 from dao.match_dao import MatchDao
 from utils.securite import hash_password
 

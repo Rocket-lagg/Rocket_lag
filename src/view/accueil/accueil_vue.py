@@ -74,7 +74,7 @@ class AccueilVue(VueAbstraite):
                 return MatchVue("Consultation des statistiques de match")
 
             case "Consulter le calendrier":
-                from view.statistique.calendrier_vue import CalendrierVue
+                from view.calendrier.calendrier_vue import CalendrierVue
 
                 return CalendrierVue("")
 
