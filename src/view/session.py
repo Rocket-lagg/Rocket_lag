@@ -14,6 +14,7 @@ class Session(metaclass=Singleton):
         """Création de la session"""
         self.utilisateur = None
         self.debut_connexion = None
+        self.tournoi = None
 
     def connexion(self, utilisateur):
         """Enregistement des données en session"""

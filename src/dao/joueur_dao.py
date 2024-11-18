@@ -302,3 +302,62 @@ class JoueurDao(metaclass=Singleton):
             return {colonne: 0.0 for colonne in colonnes}
 
 
+    @log
+    def obtenir_par_match(self, match_id: str) -> dict | None:
+        """Récupère les joueurs de chaque équipe pour un match donné.
+
+        Parameters
+        ----------
+        match_id : str
+            L'ID du match pour lequel récupérer les joueurs.
+
+        Returns
+        -------
+        dict | None
+            Un dictionnaire structuré contenant les joueurs des deux équipes, ou None si aucun joueur n'est trouvé.
+            Exemple :
+            {
+                "Complexity Gaming": ["crr", "DORITO", "Reysbull"],
+                "Pioneers": ["Amphis", "Fibérr", "Scrub"]
+            }
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Requête SQL pour obtenir tous les joueurs pour un match donné
+                    cursor.execute(
+                        """
+                        SELECT nom, equipe_nom
+                        FROM joueur
+                        WHERE match_id = %(match_id)s
+                        """,
+                        {"match_id": match_id},
+                    )
+                    rows = cursor.fetchall()
+
+                    if rows:
+                        # Organiser les joueurs par équipe
+                        truc = []
+                        for row in rows:
+                            nom, equipe_nom = row  # Extraire les colonnes
+                            truc.append(row)
+
+                        return truc
+
+
+                    # Aucun joueur trouvé
+                    return None
+        except Exception as e:
+            # Gestion des erreurs
+            print(f"Erreur lors de la récupération des joueurs : {e}")
+            return None
+
+
+r = JoueurDao()
+r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")
+print(r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[0])
+
+#si tu veux les deux equipe tu fais n= len(r.r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0"))+1 et
+# r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[0].equipe_nom (equipe1)
+# r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[n].equipe_nom
+# les joueurs sont dans les bonnes equipes avec .nom

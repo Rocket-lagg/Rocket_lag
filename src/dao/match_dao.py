@@ -360,8 +360,82 @@ class MatchDao(metaclass=Singleton):
             return None
 
 
+
+
+
+    def trouver_match_id_et_equipe(self, equipe, match_id) -> Match:
+        """Trouver un match grâce au nom d'un joueur et à l'ID du match.
+
+        Parameters
+        ----------
+        joueur : str
+            Nom unique du joueur.
+        match_id : str
+            L'ID du match.
+
+        Returns
+        -------
+        Match :
+            Objet Match correspondant au joueur et au match.
+            Retourne None si aucun résultat n'est trouvé.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM match
+                        JOIN Equipe ON Equipe.match_id = match.match_id
+                        WHERE equipe1 = %(equipe)s OR equipe2 = %(equipe)s
+						AND Equipe.match_id = %(match_id)s
+						AND Equipe.equipe_nom = %(equipe)s;
+                        """,
+                        {
+                            "equipe": equipe,
+                            "match_id": match_id,
+                        },
+                    )
+                    row = cursor.fetchone()  # Récupérer un seul résultat
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération du match pour le joueur {joueur}: {e}")
+            raise
+
+        if row:
+            # Construire le dictionnaire Match à partir des données de la ligne
+            match = {
+                "match_id": row["match_id"],
+                "equipe1": row["equipe1"],
+                "equipe2": row["equipe2"],
+                "score1": row["score1"],
+                "score2": row["score2"],
+                "cote_equipe2": row["cote_equipe2"],
+                "cote_equipe1": row["cote_equipe1"],
+                "date": row["date"],
+                "region": row["region"],
+                "ligue": row["ligue"],
+                "perso": row["perso"],
+                "stage": row["stage"],
+                "equipe_nom": row["equipe_nom"],
+                "equipe_score": row["equipe_score"],
+                "boost_stole": row["boost_stole"],
+                "shots": row["shots"],
+                "goals": row["goals"],
+                "saves": row["saves"],
+                "assists": row["assists"],
+                "score": row["score"],
+                "shooting_percentage": row["shooting_percentage"],
+                "time_offensive_third": row["time_offensive_third"],
+                "time_defensive_third": row["time_defensive_third"],
+                "time_neutral_third": row["time_neutral_third"],
+                "demo_inflige": row["demo_inflige"],
+                "demo_recu": row["demo_recu"],
+                "indice_de_pression": row["indice_de_pression"],
+                "indice_performance": row["indice_performance"],
+            }
+            return match
+        else:
+            return None
+
 r = MatchDao()
-# [1].region ["score1"]
-print(r.trouver_match_id_par_equipe("Karmine Corp"))
-print(r.trouver_match_id_et_joueur("itachi", "65fda0fd5e3cd1fbef8217d5"))
-print(r.trouver_par_dates("2024-03-29")[0].equipe1)
+print(r.trouver_match_id_et_equipe("Pioneers","65fda0fd5e3cd1fbef8217e0")["cote_equipe2"])

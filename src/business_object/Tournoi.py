@@ -6,7 +6,8 @@ import sqlite3
 
 
 class Tournoi:
-    def __init__(self, nom_tournoi, createur, officiel=False, db_name="tournois.db"):
+    def __init__(self, nom_tournoi, createur, id_tournoi, officiel=False, db_name="tournois.db"):
+        self.id_tournoi = id_tournoi
         self.nom_tournoi = nom_tournoi
         self.createur = createur
         self.equipes = []

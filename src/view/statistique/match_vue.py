@@ -22,7 +22,7 @@ class MatchVue(VueAbstraite):
             Retourne la vue choisie par l'utilisateur dans le terminal
         """
 
-        print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
+        print("\n" + "-" * 50 + "\nConsulter Statistique - Match\n" + "-" * 50 + "\n")
 
         reponse = input("Renseigner ou l'équipe ou la date du match: ")
         self.consulter_stats.stats_matchs(reponse)
