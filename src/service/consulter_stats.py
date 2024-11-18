@@ -128,7 +128,7 @@ class ConsulterStats(metaclass=Singleton):
             f"Indice de pression moyen : {stat_affiché['indice_de_pression']}\n"
         )
 
-    def choix_match(nom_joueur):
+    def choix_match(self, nom_joueur):
         if not isinstance(nom_joueur, str):
             raise TypeError("'nom_joueur' doit être une instance de str.")
 
@@ -144,14 +144,11 @@ class ConsulterStats(metaclass=Singleton):
                 f"{match.equipe1} vs {match.equipe2} - Stage: {match.stage}, Date: {match.date}"
             )
 
-            # Créer la valeur associée à cette clé, qui est l'ID du match
-            match_info = [match.match_id]
-
-            # Ajouter les informations dans le dictionnaire
+            # Ajouter l'ID du match dans une liste, si la clé existe déjà, ajoutez l'ID à la liste
             if match_key in match_dict:
-                match_dict[match_key].append(match_info)
+                match_dict[match_key].append(match.match_id)
             else:
-                match_dict[match_key] = match_info
+                match_dict[match_key] = [match.match_id]
 
         return match_dict
 
@@ -273,28 +270,3 @@ class ConsulterStats(metaclass=Singleton):
             stats_details.append(match_detail)
 
         return stats_details
-
-    def stats_matchs(self, nom_equipe="Non renseigné", nom_joueur="Non renseigné"):
-        """Renvoie les statistiques par match pour un joueur et/ou une équipe et inclut les autres joueurs et équipes"""
-        if not isinstance(nom_equipe, str) or not isinstance(nom_joueur, str):
-            raise TypeError(
-                "Les noms d'équipe et de joueur doivent être des chaînes de caractères."
-            )
-        if nom_equipe == "Non renseigné" and nom_joueur == "Non renseigné":
-            raise ValueError("Il faut renseigner au moins un nom d'équipe ou de joueur.")
-
-        stats_joueur = []
-        stats_equipe = []
-
-        # Obtenir les statistiques par joueur
-        if nom_joueur != "Non renseigné":
-            stats_joueur = self.stats_matchs_joueurs(nom_joueur)
-
-        # Obtenir les statistiques par équipe
-        if nom_equipe != "Non renseigné":
-            stats_equipe = self.stats_matchs_equipe(nom_equipe)
-
-        # Fusionner les résultats
-        stats_combined = stats_joueur + stats_equipe
-
-        return stats_combined
