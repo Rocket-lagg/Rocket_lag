@@ -29,8 +29,8 @@ class TournoiService:
     def creer_equipe(self, id_tournoi, nom_equipe):
         self.tournoi_dao.creer_equipe(id_tournoi, nom_equipe)
 
-    def creer_match(self, equipe1, equipe2):
-        self.tournoi_dao.creer_equipe(equipe1, equipe2)
+    def creer_match(self, equipe1, equipe2, tour=1):
+        self.tournoi_dao.creer_equipe(equipe1, equipe2, tour)
 
     def recuperer_equipe(self, id_tournoi):
         equipes = self.tournoi_dao.recuperer_equipe(id_tournoi)

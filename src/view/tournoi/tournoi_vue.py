@@ -25,7 +25,7 @@ class TournoiVue(VueAbstraite):
             Retourne la vue choisie par l'utilisateur dans le terminal
         """
 
-        print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
+        print("\n" + "-" * 50 + "\n TOURNOIS \n" + "-" * 50 + "\n")
 
         # self.tournoi.afficher_infos_tournois()
 
@@ -59,6 +59,7 @@ class TournoiVue(VueAbstraite):
                 from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
 
                 return NouveauTournoiVue()
+
             case "Gérer mes tournois":
                 tournois = self.tournoi.recuperer_tournois()
                 tournois_choix = [{"name": t.nom_tournoi, "value": t} for t in tournois]

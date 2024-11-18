@@ -10,7 +10,9 @@ from business_object.Tournoi import Tournoi
 
 class TournoiDao(metaclass=Singleton):
 
-    def creer_tournoi(self, nom_utilisateur, id_tournois, nom_tournois, type_tournoi) -> bool:
+    def creer_tournoi(
+        self, nom_utilisateur, id_tournois, nom_tournois, type_tournoi, tours
+    ) -> bool:
         """Création d'un tournoi dans la base de données"""
         try:
             # Connexion à la base de données
@@ -19,8 +21,8 @@ class TournoiDao(metaclass=Singleton):
                     # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
                     cursor.execute(
                         """
-                        INSERT INTO tournoi (id_tournoi, nom_createur, nom, type_match, officiel)
-                        VALUES (%(id_tournoi)s, %(nom_createur)s, %(nom)s, %(type_match)s, %(officiel)s)
+                        INSERT INTO tournoi (id_tournoi, nom_createur, nom, type_match, tours, officiel)
+                        VALUES (%(id_tournoi)s, %(nom_createur)s, %(nom)s, %(type_match)s, %(tours)s, %(officiel)s)
                         RETURNING id_tournoi;
                         """,
                         {
@@ -28,6 +30,7 @@ class TournoiDao(metaclass=Singleton):
                             "nom_createur": nom_utilisateur,
                             "nom": nom_tournois,
                             "type_match": type_tournoi,
+                            "tours": tours,
                             "officiel": False,  # Utiliser un booléen natif
                         },
                     )
@@ -65,6 +68,7 @@ class TournoiDao(metaclass=Singleton):
                                 id_tournoi=element["id_tournoi"],
                                 nom_tournoi=element["nom"],
                                 createur=element["nom_createur"],
+                                tours=element["tours"],
                                 officiel=element["officiel"],
                             )
                             liste_tournois.append(tournoi)
@@ -74,6 +78,7 @@ class TournoiDao(metaclass=Singleton):
                             id_tournoi=res["id_tournoi"],
                             nom_tournoi=res["nom"],
                             createur=res["nom_createur"],
+                            tours=res["tours"],
                             officiel=res["officiel"],
                         )
                         return [tournoi]
@@ -120,14 +125,14 @@ class TournoiDao(metaclass=Singleton):
                     # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
                     cursor.execute(
                         """
-                            INSERT INTO match_tournoi (score1, score2)
-                            VALUES (%(score1)s, %(score2)s)
-                            WHERE id_match = %(id_match)s;
+                            UPDATE match_tournoi
+                            SET score_equipe1 = %(score_equipe1)s, score_equipe2 = %(score_equipe2)s
+                            WHERE id_match = %(id_match)s
                             """,
-                        {"score1": score1, "score2": score2, "id_match": match_id},
+                        {"score_equipe1": score1, "score_equipe2": score2, "id_match": match_id},
                     )
         except Exception as e:
-            logging.error(f"Erreur lors de la création des équipes : {e}")
+            print(f"Erreur lors de la création des équipes : {e}")
             return False
 
     def creer_equipe(self, id_tournoi, nom_equipe):
@@ -156,13 +161,14 @@ class TournoiDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-                            INSERT INTO match_tournoi (id_tournoi, equipe1, equipe2)
-                            VALUES (%(id_tournoi)s, %(equipe1)s, %(equipe2)s);
+                            INSERT INTO match_tournoi (id_tournoi, equipe1, equipe2, tour)
+                            VALUES (%(id_tournoi)s, %(equipe1)s, %(equipe2)s, %(tour)s);
                             """,
                         {
                             "id_tournoi": id_tournoi,
                             "equipe1": equipe1,
                             "equipe2": equipe2,
+                            "tour": tour,
                         },
                     )
         except Exception as e:

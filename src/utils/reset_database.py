@@ -156,6 +156,7 @@ class ResetDatabase(metaclass=Singleton):
                             nom_createur VARCHAR(255) REFERENCES utilisateur(pseudo),
                             nom VARCHAR(255),
                             type_match INT,
+                            tours INT,
                             officiel BOOL
                         );
                             """
@@ -273,7 +274,8 @@ class ResetDatabase(metaclass=Singleton):
                             equipe1 VARCHAR(255),
                             equipe2 VARCHAR(255),
                             score_equipe1 INT,
-                            score_equipe2 INT
+                            score_equipe2 INT,
+                            tour INT,
                         );
                             """
                     )
