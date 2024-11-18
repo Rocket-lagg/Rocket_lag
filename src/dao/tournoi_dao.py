@@ -11,19 +11,8 @@ from business_object.Tournoi import Tournoi
 class TournoiDao(metaclass=Singleton):
 
     @log
-    def creer(self, Tournoi) -> bool:
-        """Creation d'un joueur dans la base de données
-
-        Parameters
-        ----------
-        equipe : Equipe
-
-        Returns
-        -------
-        created : bool
-            True si la création est un succès
-            False sinon
-        """
+    def creer_tournoi(self, nom_utilisateur, id_tournois, nom_tournois, type_tournoi) -> bool:
+        """Creation d'un tournoi dans la base de données"""
 
         res = None
         try:
@@ -33,42 +22,134 @@ class TournoiDao(metaclass=Singleton):
                     # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
                     cursor.execute(
                         """
-                        INSERT INTO Equipe (match_id, equipe_nom, equipe_score, boost_stole,
-                                        shots, goals, saves, assists, score, shooting_percentage,
-                                         date, ligue, region, stage, time_offensive_third, time_defensive_third,
-                                         time_neutral_third, demo_inflige, demo_recu )
-                        VALUES (%(match_id)s, %(equipe_nom)s, %(equipe_score)s, %(boost_stole)s,
-                                %(shots)s, %(goals)s, %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s,
-                                 %(date)s, %(ligue)s, %(region)s, %(stage)s, %(time_offensive_third)s, %(time_defensive_third)s,
-                                %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s)
-                        RETURNING equipe_nom;
-
+                        INSERT INTO Tournoi (id_tournoi, nom_createur, nom, officiel, type_tournoi)
+                        VALUES (%(id_tournois)s, %(nom_utilisateur)s, %(nom_tournoi)s, %(officiel)s, %(type_tournoi)s);
                         """,
                         {
-                            "match_id": equipe.match_id,
-                            "equipe_nom": equipe.equipe_nom,
-                            "equipe_score": equipe.equipe_score,
-                            "boost_stole": equipe.boost_stole,
-                            "shots": equipe.shots,
-                            "goals": equipe.goals,
-                            "saves": equipe.saves,
-                            "assists": equipe.assists,
-                            "score": equipe.score,
-                            "shooting_percentage": equipe.shooting_percentage,
-                            "date": equipe.date,
-                            "ligue": equipe.ligue,
-                            "region": equipe.region,
-                            "stage": equipe.stage,
-                            "time_offensive_third": equipe.time_offensive_third,
-                            "time_defensive_third": equipe.time_defensive_third,
-                            "time_neutral_third": equipe.time_neutral_third,
-                            "demo_inflige": equipe.demo_inflige,
-                            "demo_recu": equipe.demo_recu
-                         },
+                            "id_tournoi": id_tournois,
+                            "nom_createur": nom_utilisateur,
+                            "nom": nom_tournois,
+                            "officiel": 0,
+                            "type_tournoi": type_tournoi,
+                        },
                     )
                     # Récupérer l'ID du joueur créé
                     res = cursor.fetchone()
             return res is not None
         except Exception as e:
-            logging.error(f"Erreur lors de la création d'equipe : {e}")
+            logging.error(f"Erreur lors de la création du tournois : {e}")
+            return False
+
+    def recuperer_equipe(self, id_tournoi):
+        res = None
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT nom_equipe
+                        FROM equipe_tournoi
+                        WHERE id_tournoi = %(id_tournoi)s
+                        """,
+                        {
+                            "id_tournoi": id_tournoi,
+                        },
+                    )
+                    res = cursor.fetchall()
+                    if not res:
+                        return []
+                    liste_equipe = []
+                    for element in res:
+                        liste_equipe.append(element["nom_equipe"])
+                    return liste_equipe
+
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des équipes : {e}")
+            return False
+
+    def ajouter_score(self, score1, score2, match_id):
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
+                    cursor.execute(
+                        """
+                            INSERT INTO match_tournoi (score1, score2)
+                            VALUES (%(score1)s, %(score2)s)
+                            WHERE id_match = %(id_match))s;
+                            """,
+                        {"score1": score1, "score2": score2, "id_match": match_id},
+                    )
+        except Exception as e:
+            logging.error(f"Erreur lors de la création des équipes : {e}")
+            return False
+
+    def creer_equipe(self, id_tournoi, nom_equipe):
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
+                    cursor.execute(
+                        """
+                            INSERT INTO equipe_tournoi (id_tournoi, nom_equipe)
+                            VALUES (%(id_tournoi)s, %(nom_equipe)s);
+                            """,
+                        {
+                            "id_tournoi": id_tournoi,
+                            "nom_equipe": nom_equipe,
+                        },
+                    )
+        except Exception as e:
+            logging.error(f"Erreur lors de la création des équipes : {e}")
+            return False
+
+    def creer_match(self, id_tournoi, equipe1, equipe2):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            INSERT INTO match_tournoi (id_tournoi, equipe1, equipe2)
+                            VALUES (%(id_tournoi)s, %(equipe1)s, %(equipe2)s);
+                            """,
+                        {
+                            "id_tournoi": id_tournoi,
+                            "equipe1": equipe1,
+                            "equipe2": equipe2,
+                        },
+                    )
+        except Exception as e:
+            logging.error(f"Erreur lors de la création des matchs : {e}")
+            return False
+
+    def trouver_matchs_par_tournoi(self, id_tournoi):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            SELECT (id_match, equipe1, equipe2)
+                            FROM match_tournoi
+                            WHERE id_tournoi = %(id_tournoi)s
+                            """,
+                        {
+                            "id_tournoi": id_tournoi,
+                        },
+                    )
+                    res = cursor.fetchall()
+                    if res:
+                        if isinstance(res, list):
+                            liste = []
+                            for r in res:
+                                liste.append([r["id_match"], r["equipe1"], r["equipe2"]])
+                            return liste
+                        else:
+                            return [res["id_match"], res["equipe1"], res["equipe2"]]
+                    else:
+                        return []
+        except Exception as e:
+            logging.error(f"Erreur lors de la création des matchs : {e}")
             return False

@@ -22,7 +22,7 @@ class EquipeVue(VueAbstraite):
             Retourne la vue choisie par l'utilisateur dans le terminal
         """
 
-        print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
+        print("\n" + "-" * 50 + "\nConsulter Statistique - Equipe\n" + "-" * 50 + "\n")
 
         reponse = input("Nom de l'équipe: ")
         self.consulter_stats.stats_equipe(reponse)

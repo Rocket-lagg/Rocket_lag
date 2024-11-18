@@ -1,10 +1,11 @@
 from service.tournoi_service import TournoiService
 from view.vue_abstraite import VueAbstraite
 from InquirerPy import inquirer
+import time
 
 
-class PariVue(VueAbstraite):
-    """Une vue pour afficher les paris d'un utilisateur"""
+class TournoiVue(VueAbstraite):
+    """Une vue pour afficher les tournois d'un utilisateur"""
 
     def __init__(self, message=""):
         self.message = message
@@ -24,12 +25,14 @@ class PariVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
-        self.tournois.afficher_infos_tournoi()
+        # self.tournoi.afficher_infos_tournois()
 
         choix = inquirer.select(
             message="Souhaitez-vous lancer un nouveau tournoi?",
             choices=[
                 "Créer un tournoi",
+                "Gérer mes tournois",
+                "Rejoindre un tournoi",
                 "Retour",
             ],
         ).execute()
@@ -40,7 +43,17 @@ class PariVue(VueAbstraite):
 
                 return AccueilVue()
 
-            case "Paris":
+            case "Rejoindre un tournoi":
+                res = input("Entrez la clef du tournoi: ")
+                tournoi = self.tournoi.recuperer_tournoi_par_clef(res)
+                if not tournoi:
+                    print("La clef ne correspond à aucun tournoi")
+                    time.sleep(2)
+                    return self
+                from view.tournoi.gestion_tournoi_vue import GestionTournoiVue
+                return GestionTournoiVue
+
+            case "Créer un tournoi":
                 from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
 
                 return NouveauTournoiVue()

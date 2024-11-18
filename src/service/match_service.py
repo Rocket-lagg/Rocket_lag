@@ -1,7 +1,7 @@
 from business_object.Match import Match
 
 
-class EquipeService:
+class MatchService:
 
     def instancier(self, match_bdd):
         match = Match(
