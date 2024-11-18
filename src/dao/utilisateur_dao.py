@@ -65,13 +65,13 @@ class UtilisateurDao(metaclass=Singleton):
             nom_utilisateur=utilisateur_bdd["pseudo"],
             mot_de_passe=utilisateur_bdd["mdp"],
             email=utilisateur_bdd["mail"],
-            tournois_crees=utilisateur_bdd.get("tournois", []),  # Charge les tournois s'ils sont fournis
+            tournois_crees=utilisateur_bdd.get(
+                "tournois", []
+            ),  # Charge les tournois s'ils sont fournis
             points=utilisateur_bdd["points"],
             paris=utilisateur_bdd.get("paris", []),
         )
         return utilisateur
-
-
 
     def init():
         try:
@@ -96,7 +96,6 @@ class UtilisateurDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table 'utilisateur': {e}")
             return False  # Indique un échec dans la création de la table
-
 
     def creer(self, utilisateur) -> bool:
         """Creation d'un utilisateur dans la base de données
@@ -207,8 +206,7 @@ class UtilisateurDao(metaclass=Singleton):
         if res:
             for row in res:
                 utilisateur = Utilisateur(
-                    id_utilisateur=row["id_utilisateur"],
-                    pseudo=row["pseudo"],
+                    nom_utilisateur=row["pseudo"],
                     mdp=row["mdp"],
                     mail=row["mail"],
                     tournois_crees=row["tournois_crees"],
@@ -329,12 +327,14 @@ class UtilisateurDao(metaclass=Singleton):
         utilisateur = None
 
         if res:
-             utilisateur = Utilisateur(
+            utilisateur = Utilisateur(
                 nom_utilisateur=res["pseudo"],
-                mot_de_passe=res["mdp"],  # Gardez cela uniquement si nécessaire pour des raisons techniques.
+                mot_de_passe=res[
+                    "mdp"
+                ],  # Gardez cela uniquement si nécessaire pour des raisons techniques.
                 email=res["mail"],
                 tournois_crees=res.get("tournois_crees", []),
                 points=res["points"],
                 paris=res.get("paris", []),
-    )
+            )
         return utilisateur

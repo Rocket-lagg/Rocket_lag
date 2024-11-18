@@ -12,11 +12,11 @@ from business_object.Utilisateur import Utilisateur
 
 
 @pytest.fixture(scope="session", autouse=True)
-#def setup_test_environment():
+# def setup_test_environment():
 #    """Initialisation des données de test"""
 #    with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
 #        ResetDatabase().lancer(test_dao=True)
- #       yield
+#       yield
 
 
 def test_trouver_par_id_existant():
@@ -66,7 +66,9 @@ def test_creer_ok():
     """Création de Utilisateur réussie"""
 
     # GIVEN
-    utilisateur = Utilisateur(pseudo="test", mdp="1234", mail="test@mail.fr", tournois_crees=[], points=10, paris=[])
+    utilisateur = Utilisateur(
+        nom_utilisateur="test", mot_de_passe="1234", email="test@mail.fr", tournois_crees=[], points=10, paris=[]
+    )
 
     # WHEN
     creation_ok = UtilisateurDao().creer(utilisateur)
@@ -80,7 +82,9 @@ def test_creer_ko():
     """Création de Utilisateur échouée (mail incorrects)"""
 
     # GIVEN
-    utilisateur = Utilisateur(pseudo="zerty", mdp="1234", mail=12, tournois_crees=[], points=0, paris=[])
+    utilisateur = Utilisateur(
+        nom_utilisateur="zerty", mot_de_passe="1234", email=12, tournois_crees=[], points=0, paris=[]
+    )
 
     # WHEN
     creation_ok = UtilisateurDao().creer(utilisateur)
@@ -93,8 +97,10 @@ def test_modifier_ok():
     """Modification de Utilisateur réussie"""
 
     # GIVEN
-    new_mail = "maurice@mail.com"
-    utilisateur = Utilisateur(id_utilisateur=997, pseudo="maurice", mdp ='1234', mail=new_mail, tournois_crees=[], points=666, paris=[])
+    new_email = "maurice@mail.com"
+    utilisateur = Utilisateur(
+        nom_utilisateur="maurice", mot_de_passe="1234", email=new_email, tournois_crees=[], points=666, paris=[]
+    )
 
     # WHEN
     modification_ok = UtilisateurDao().modifier(utilisateur)
@@ -107,7 +113,9 @@ def test_modifier_ko():
     """Modification de Utilisateur échouée (id inconnu)"""
 
     # GIVEN
-    utilisateur = Utilisateur(id_utilisateur=8888, pseudo="test", mdp="1234", mail="test@mail.fr", tournois_crees=[], points=666, paris=[])
+    utilisateur = Utilisateur(
+        nom_utilisateur="test", mot_de_passe="1234", email="test@mail.fr", tournois_crees=[], points=666, paris=[]
+    )
 
     # WHEN
     modification_ok = UtilisateurDao().modifier(utilisateur)
@@ -120,7 +128,7 @@ def test_supprimer_ok():
     """Suppression de Utilisateur réussie"""
 
     # GIVEN
-    utilisateur = Utilisateur(id_utilisateur=995, pseudo="miguel", mail="miguel@projet.fr")
+    utilisateur = Utilisateur(nom_utilisateur="miguel", email="miguel@projet.fr")
 
     # WHEN
     suppression_ok = UtilisateurDao().supprimer(utilisateur)
@@ -133,7 +141,9 @@ def test_supprimer_ko():
     """Suppression de Utilisateur échouée (id inconnu)"""
 
     # GIVEN
-    utilisateur = Utilisateur(id_utilisateur=8888, pseudo="id inconnu", mdp="1234", mail="jp@mail.fr", tournois_crees=[], points=0, paris=[])
+    utilisateur = Utilisateur(
+        nom_utilisateur="id inconnu", mot_de_passe="1234", email="jp@mail.fr", tournois_crees=[], points=0, paris=[]
+    )
 
     # WHEN
     suppression_ok = UtilisateurDao().supprimer(utilisateur)
@@ -146,25 +156,25 @@ def test_se_connecter_ok():
     """Connexion de Utilisateur réussie"""
 
     # GIVEN
-    pseudo = "batricia"
-    mdp = "9876"
+    nom_utilisateur = "batricia"
+    mot_de_passe = "9876"
 
     # WHEN
-    utilisateur = UtilisateurDao().se_connecter(pseudo, mdp)  #hash_password(mdp, pseudo)
+    utilisateur = UtilisateurDao().se_connecter(nom_utilisateur, mot_de_passe)  # hash_password(mot_de_passe, nom_utilisateur)
 
     # THEN
     assert isinstance(utilisateur, Utilisateur)
 
 
 def test_se_connecter_ko():
-    """Connexion de Utilisateur échouée (pseudo ou mdp incorrect)"""
+    """Connexion de Utilisateur échouée (nom_utilisateur ou mot_de_passe incorrect)"""
 
     # GIVEN
-    pseudo = "toto"
-    mdp = "poiuytreza"
+    nom_utilisateur = "toto"
+    mot_de_passe = "poiuytreza"
 
     # WHEN
-    utilisateur = UtilisateurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
+    utilisateur = UtilisateurDao().se_connecter(nom_utilisateur, hash_password(mot_de_passe, nom_utilisateur))
 
     # THEN
     assert not utilisateur

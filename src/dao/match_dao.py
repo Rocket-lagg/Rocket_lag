@@ -61,7 +61,7 @@ class MatchDao(metaclass=Singleton):
                     cursor.execute(
                         """
                                 SELECT*
-                                FROM Match
+                                FROM match
                                 WHERE id_match = %(id_match)s;
                                 """,
                         {"id_match": id_match},
@@ -105,8 +105,8 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM Match                      "
-                        " WHERE date = %(date)s             "
+                        "  FROM match                      "
+                        " WHERE date::date = %(date)s             "
                         " AND perso = FALSE;  ",
                         {"date": date},
                     )
@@ -130,7 +130,7 @@ class MatchDao(metaclass=Singleton):
                     region=row["region"],
                     ligue=row["ligue"],
                     perso=row["perso"],
-                    stage=row["stage"]
+                    stage=row["stage"],
                 )
 
                 liste_matchs.append(match)
@@ -181,7 +181,7 @@ class MatchDao(metaclass=Singleton):
                     region=row["region"],
                     ligue=row["ligue"],
                     perso=row["perso"],
-                    stage=row["stage"]
+                    stage=row["stage"],
                 )
 
                 liste_matchs.append(match)
@@ -232,7 +232,7 @@ class MatchDao(metaclass=Singleton):
                     region=row["region"],
                     ligue=row["ligue"],
                     perso=row["perso"],
-                    stage=row["stage"]
+                    stage=row["stage"],
                 )
 
                 liste_matchs.append(match)
@@ -258,7 +258,7 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                              "
-                        "  FROM matchs;                        "
+                        "  FROM match;                        "
                     )
                     res = cursor.fetchall()
         except Exception as e:
@@ -270,15 +270,16 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    match_id=res["match_id"],
-                    equipe1=res["equipe1"],
-                    equipe2=res["equipe2"],
-                    score1=res["score1"],
-                    score2=res["score2"],
-                    dates=res["dates"],
-                    region=res["region"],
-                    ligue=res["ligue"],
-                    perso=res["perso"],
+                    match_id=row["match_id"],
+                    equipe1=row["equipe1"],
+                    equipe2=row["equipe2"],
+                    score1=row["score1"],
+                    score2=row["score2"],
+                    date=row["date"],
+                    region=row["region"],
+                    ligue=row["ligue"],
+                    stage=row["stage"],
+                    perso=row["perso"],
                 )
 
                 liste_matchs.append(match)
@@ -314,7 +315,7 @@ class MatchDao(metaclass=Singleton):
                         {
                             "joueur": joueur,
                             "match_id": match_id,
-                        }
+                        },
                     )
                     row = cursor.fetchone()  # Récupérer un seul résultat
         except Exception as e:
@@ -322,49 +323,45 @@ class MatchDao(metaclass=Singleton):
             raise
 
         if row:
-    # Construire le dictionnaire Match à partir des données de la ligne
+            # Construire le dictionnaire Match à partir des données de la ligne
             match = {
-                    "match_id": row["match_id"],
-                    "equipe1": row["equipe1"],
-                    "equipe2": row["equipe2"],
-                    "score1": row["score1"],
-                    "score2": row["score2"],
-                    "cote_equipe2": row["cote_equipe2"],
-                    "cote_equipe1":row["cote_equipe1"],
-                    "date": row["date"],
-                    "region": row["region"],
-                    "ligue": row["ligue"],
-                    "perso": row["perso"],
-                    "stage": row["stage"],
-                    "nom": row["nom"],
-                    "nationalite": row["nationalite"],
-                    "rating": row["rating"],
-                    "shots": row["shots"],
-                    "goals": row["goals"],
-                    "saves": row["saves"],
-                    "assists": row["assists"],
-                    "score": row["score"],
-                    "shooting_percentage": row["shooting_percentage"],
-                    "time_offensive_third": row["time_offensive_third"],
-                    "time_defensive_third": row["time_defensive_third"],
-                    "time_neutral_third": row["time_neutral_third"],
-                    "demo_inflige": row["demo_inflige"],
-                    "demo_recu": row["demo_recu"],
-                    "goal_participation": row["goal_participation"],
-                    "indice_offensif": row["indice_offensif"],
-                    "indice_performance": row["indice_performance"]
-                }
+                "match_id": row["match_id"],
+                "equipe1": row["equipe1"],
+                "equipe2": row["equipe2"],
+                "score1": row["score1"],
+                "score2": row["score2"],
+                "cote_equipe2": row["cote_equipe2"],
+                "cote_equipe1": row["cote_equipe1"],
+                "date": row["date"],
+                "region": row["region"],
+                "ligue": row["ligue"],
+                "perso": row["perso"],
+                "stage": row["stage"],
+                "nom": row["nom"],
+                "nationalite": row["nationalite"],
+                "rating": row["rating"],
+                "shots": row["shots"],
+                "goals": row["goals"],
+                "saves": row["saves"],
+                "assists": row["assists"],
+                "score": row["score"],
+                "shooting_percentage": row["shooting_percentage"],
+                "time_offensive_third": row["time_offensive_third"],
+                "time_defensive_third": row["time_defensive_third"],
+                "time_neutral_third": row["time_neutral_third"],
+                "demo_inflige": row["demo_inflige"],
+                "demo_recu": row["demo_recu"],
+                "goal_participation": row["goal_participation"],
+                "indice_offensif": row["indice_offensif"],
+                "indice_performance": row["indice_performance"],
+            }
             return match
         else:
             return None
 
 
-
-
-
-
-r=MatchDao()
-#
-print(r.trouver_match_id_par_equipe("Karmine Corp")[0].region)
-print(r.trouver_match_id_et_joueur("itachi","65fda0fd5e3cd1fbef8217d5")["score1"])
+r = MatchDao()
+# [1].region ["score1"]
+print(r.trouver_match_id_par_equipe("Karmine Corp"))
+print(r.trouver_match_id_et_joueur("itachi", "65fda0fd5e3cd1fbef8217d5"))
 print(r.trouver_par_dates("2024-03-29")[0].equipe1)
