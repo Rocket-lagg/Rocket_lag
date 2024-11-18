@@ -48,25 +48,33 @@ class GestionTournoiVue(VueAbstraite):
                 res = input("Nom de l'équipe: ")
                 if res and res.strip():
                     id_tournoi = Session().tournoi.id_tournoi
-                    self.tournoi.creer_equipe(res, id_tournoi)
+                    self.tournoi.creer_equipe(id_tournoi, res)
                 return self
 
-            case "Faire le pooling":
+            case "Faire le pooling (minimum 2 équipes)":
                 id_tournoi = Session().tournoi.id_tournoi
                 liste_equipe = self.tournoi.recuperer_equipe(id_tournoi)
                 if liste_equipe == []:
                     print("Vous n'avez aucune équipe de créée")
+                    time.sleep(2)
+                    return self
                 if len(liste_equipe) % 2 != 0:
-                    raise ValueError(
-                        "Le nombre d'équipes doit être pair pour créer des rencontres."
-                    )
+                    print("Le nombre d'équipes doit être pair pour créer des rencontres.")
+                    time.sleep(2)
+                    return self
                 random.shuffle(liste_equipe)
                 liste_pairs = [
                     (liste_equipe[i], liste_equipe[i + 1]) for i in range(0, len(liste_equipe), 2)
                 ]
+                i = 1
+                for element in liste_pairs:
+                    print(f"Paire numéro {i}: {element}")
+                    i += 1
+                result = input("Les paires constituées vous conviennent-elles ? (oui/non): ")
+                if result != "oui":
+                    return self
                 for element in liste_pairs:
                     self.tournoi.ajouter_match(element)
-                return liste_pairs
                 return self
 
             case "Rentrer le score d'un match":
@@ -78,7 +86,7 @@ class GestionTournoiVue(VueAbstraite):
                 matchs_choix = [
                     {"name": f"{match[1]} vs {match[2]}", "value": match} for match in matches
                 ]
-                matchs_choix.apen({"name": "Retour", "value": "quit"})
+                matchs_choix.append({"name": "Retour", "value": "quit"})
                 matches_questions = inquirer.select(
                     message="Que souhaitez vous faire?",
                     choices=matchs_choix,
@@ -87,16 +95,16 @@ class GestionTournoiVue(VueAbstraite):
                     return self
                 else:
                     match1 = matches_questions
-                    print("\\n")
-                    score1 = input(f"Score de l'équipe {match1[1]}")
+                    print("\n\n")
+                    score1 = input(f"Score de l'équipe {match1[1]}: ")
                     try:
                         score1 = int(score1)
                     except ValueError:
                         print("Le score doit être un entier")
                         time.sleep(2)
                         return self
-                    print("\\n")
-                    score2 = input(f"Score de l'équipe {match1[2]}")
+                    print("\n\n")
+                    score2 = input(f"Score de l'équipe {match1[2]}: ")
                     try:
                         score2 = int(score2)
                     except ValueError:
