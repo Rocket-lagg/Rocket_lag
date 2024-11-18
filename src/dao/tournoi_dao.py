@@ -61,24 +61,22 @@ class TournoiDao(metaclass=Singleton):
                     liste_tournois = []
                     if isinstance(res, list):
                         for element in res:
-                            liste_tournois.append(
-                                Tournoi(
-                                    id_tournoi=element["id_tournoi"],
-                                    nom_tournoi=element["nom"],
-                                    nom_createur=element["nom_createur"],
-                                    officiel=element["officiel"],
-                                )
+                            tournoi = Tournoi(
+                                id_tournoi=element["id_tournoi"],
+                                nom_tournoi=element["nom"],
+                                createur=element["nom_createur"],
+                                officiel=element["officiel"],
                             )
+                            liste_tournois.append(tournoi)
                         return liste_tournois
                     else:
-                        return [
-                            Tournoi(
-                                id_tournoi=res["id_tournoi"],
-                                nom_tournoi=res["nom"],
-                                nom_createur=res["nom_createur"],
-                                officiel=res["officiel"],
-                            )
-                        ]
+                        tournoi = Tournoi(
+                            id_tournoi=res["id_tournoi"],
+                            nom_tournoi=res["nom"],
+                            createur=res["nom_createur"],
+                            officiel=res["officiel"],
+                        )
+                        return [tournoi]
 
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des équipes : {e}")
@@ -104,15 +102,17 @@ class TournoiDao(metaclass=Singleton):
                     if not res:
                         return []
                     liste_equipe = []
-                    for element in res:
-                        liste_equipe.append(element["nom_equipe"])
-                    return liste_equipe
+                    if isinstance(res, list):
+                        for element in res:
+                            liste_equipe.append(element["nom_equipe"])
+                        return liste_equipe
+                    return res["nom_equipe"]
 
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des équipes : {e}")
             return False
 
-    def ajouter_score(self, score1, score2, match_id):
+    def ajouter_score_match(self, score1, score2, match_id):
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
@@ -122,7 +122,7 @@ class TournoiDao(metaclass=Singleton):
                         """
                             INSERT INTO match_tournoi (score1, score2)
                             VALUES (%(score1)s, %(score2)s)
-                            WHERE id_match = %(id_match))s;
+                            WHERE id_match = %(id_match)s;
                             """,
                         {"score1": score1, "score2": score2, "id_match": match_id},
                     )
@@ -175,7 +175,7 @@ class TournoiDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-                            SELECT (id_match, equipe1, equipe2)
+                            SELECT id_match, equipe1, equipe2
                             FROM match_tournoi
                             WHERE id_tournoi = %(id_tournoi)s
                             """,
@@ -185,13 +185,10 @@ class TournoiDao(metaclass=Singleton):
                     )
                     res = cursor.fetchall()
                     if res:
-                        if isinstance(res, list):
-                            liste = []
-                            for r in res:
-                                liste.append([r["id_match"], r["equipe1"], r["equipe2"]])
-                            return liste
-                        else:
-                            return [res["id_match"], res["equipe1"], res["equipe2"]]
+                        liste = []
+                        for r in res:
+                            liste.append([r["id_match"], r["equipe1"], r["equipe2"]])
+                        return liste
                     else:
                         return []
         except Exception as e:

@@ -2,6 +2,7 @@ from service.tournoi_service import TournoiService
 from view.vue_abstraite import VueAbstraite
 from InquirerPy import inquirer
 from view.session import Session
+from view.tournoi.gestion_tournoi_vue import GestionTournoiVue
 import time
 
 
@@ -51,9 +52,8 @@ class TournoiVue(VueAbstraite):
                     print("La clef ne correspond à aucun tournoi")
                     time.sleep(2)
                     return self
-                from view.tournoi.gestion_tournoi_vue import GestionTournoiVue
 
-                return GestionTournoiVue
+                return GestionTournoiVue()
 
             case "Créer un tournoi":
                 from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
@@ -70,5 +70,6 @@ class TournoiVue(VueAbstraite):
                 if tournois_questions == "quit":
                     return self
                 else:
-                    Session.tournoi = tournois_questions
+                    print(tournois_questions)
+                    Session().tournoi = tournois_questions
                     return GestionTournoiVue()

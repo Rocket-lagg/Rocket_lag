@@ -357,10 +357,3 @@ class MatchDao(metaclass=Singleton):
             return match
         else:
             return None
-
-
-r = MatchDao()
-#
-print(r.trouver_match_id_par_equipe("Karmine Corp")[0].region)
-print(r.trouver_match_id_et_joueur("itachi", "65fda0fd5e3cd1fbef8217d5")["score1"])
-print(r.trouver_par_dates("2024-03-29")[0].equipe1)

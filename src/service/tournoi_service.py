@@ -2,7 +2,6 @@ from view.session import Session
 from dao.tournoi_dao import TournoiDao
 from business_object.Tournoi import Tournoi
 from dao.utilisateur_dao import UtilisateurDao
-from dao.equipe_tournoi_dao import EquipeDao
 from dao.match_dao import MatchDao
 from utils.securite import hash_password
 
@@ -11,7 +10,6 @@ class TournoiService:
 
     def __init__(self):
         self.utilisateur_dao = UtilisateurDao()
-        self.equipe_dao = EquipeDao()
         self.match_dao = MatchDao()
         self.tournoi_dao = TournoiDao()
 
@@ -35,15 +33,16 @@ class TournoiService:
         self.tournoi_dao.creer_equipe(equipe1, equipe2)
 
     def recuperer_equipe(self, id_tournoi):
-        self.tournoi_dao.recuperer_equipe(id_tournoi)
+        equipes = self.tournoi_dao.recuperer_equipe(id_tournoi)
+        return equipes
 
     def ajouter_match(self, rencontre):
         equipe1 = rencontre[0]
         equipe2 = rencontre[1]
-        self.tournoi_dao.creer_match(Session.tournoi.id_tournoi, equipe1, equipe2)
+        self.tournoi_dao.creer_match(Session().tournoi.id_tournoi, equipe1, equipe2)
 
     def recuperer_match(self):
-        tournoi = Session.tournoi
+        tournoi = Session().tournoi
         matches = self.tournoi_dao.trouver_matchs_par_tournoi(tournoi.id_tournoi)
         return matches
 
