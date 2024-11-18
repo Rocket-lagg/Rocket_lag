@@ -1,6 +1,7 @@
 from service.tournoi_service import TournoiService
 from view.vue_abstraite import VueAbstraite
 from InquirerPy import inquirer
+from view.session import Session
 import time
 
 
@@ -51,9 +52,23 @@ class TournoiVue(VueAbstraite):
                     time.sleep(2)
                     return self
                 from view.tournoi.gestion_tournoi_vue import GestionTournoiVue
+
                 return GestionTournoiVue
 
             case "Créer un tournoi":
                 from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
 
                 return NouveauTournoiVue()
+            case "Gérer mes tournois":
+                tournois = self.tournoi.recuperer_tournois()
+                tournois_choix = [{"name": t.nom_tournoi, "value": t} for t in tournois]
+                tournois_choix.append({"name": "Retour", "value": "quit"})
+                tournois_questions = inquirer.select(
+                    message="Que souhaitez vous faire?",
+                    choices=tournois_choix,
+                ).execute()
+                if tournois_questions == "quit":
+                    return self
+                else:
+                    Session.tournoi = tournois_questions
+                    return GestionTournoiVue()

@@ -10,11 +10,8 @@ from business_object.Tournoi import Tournoi
 
 class TournoiDao(metaclass=Singleton):
 
-    @log
     def creer_tournoi(self, nom_utilisateur, id_tournois, nom_tournois, type_tournoi) -> bool:
-        """Creation d'un tournoi dans la base de données"""
-
-        res = None
+        """Création d'un tournoi dans la base de données"""
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
@@ -22,22 +19,69 @@ class TournoiDao(metaclass=Singleton):
                     # Requête d'insertion SQL avec RETURNING pour récupérer l'ID
                     cursor.execute(
                         """
-                        INSERT INTO Tournoi (id_tournoi, nom_createur, nom, officiel, type_tournoi)
-                        VALUES (%(id_tournois)s, %(nom_utilisateur)s, %(nom_tournoi)s, %(officiel)s, %(type_tournoi)s);
+                        INSERT INTO tournoi (id_tournoi, nom_createur, nom, type_match, officiel)
+                        VALUES (%(id_tournoi)s, %(nom_createur)s, %(nom)s, %(type_match)s, %(officiel)s)
+                        RETURNING id_tournoi;
                         """,
                         {
                             "id_tournoi": id_tournois,
                             "nom_createur": nom_utilisateur,
                             "nom": nom_tournois,
-                            "officiel": 0,
-                            "type_tournoi": type_tournoi,
+                            "type_match": type_tournoi,
+                            "officiel": False,  # Utiliser un booléen natif
                         },
                     )
-                    # Récupérer l'ID du joueur créé
+                    # Récupérer l'ID du tournoi créé
                     res = cursor.fetchone()
+                    connection.commit()  # Important pour valider les changements
             return res is not None
         except Exception as e:
-            logging.error(f"Erreur lors de la création du tournois : {e}")
+            logging.error(f"Erreur lors de la création du tournoi : {e}")
+            return False
+
+    def recuperer_tournois_par_utilisateur(self, nom_createur):
+        res = None
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM tournoi
+                        WHERE nom_createur = %(nom_createur)s
+                        """,
+                        {
+                            "nom_createur": nom_createur,
+                        },
+                    )
+                    res = cursor.fetchall()
+                    if not res:
+                        return []
+                    liste_tournois = []
+                    if isinstance(res, list):
+                        for element in res:
+                            liste_tournois.append(
+                                Tournoi(
+                                    id_tournoi=element["id_tournoi"],
+                                    nom_tournoi=element["nom"],
+                                    nom_createur=element["nom_createur"],
+                                    officiel=element["officiel"],
+                                )
+                            )
+                        return liste_tournois
+                    else:
+                        return [
+                            Tournoi(
+                                id_tournoi=res["id_tournoi"],
+                                nom_tournoi=res["nom"],
+                                nom_createur=res["nom_createur"],
+                                officiel=res["officiel"],
+                            )
+                        ]
+
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des équipes : {e}")
             return False
 
     def recuperer_equipe(self, id_tournoi):

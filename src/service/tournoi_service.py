@@ -18,9 +18,15 @@ class TournoiService:
     def creer_tournois(self, nom_tournoi, type_tournoi):
         nom_utilisateur = Session().utilisateur.nom_utilisateur
         id_tournoi = hash_password(nom_tournoi, sel=nom_utilisateur)
-        self.tournoi_dao.creer_tournoi(nom_utilisateur, id_tournoi, nom_tournoi, type_tournoi)
+        res = self.tournoi_dao.creer_tournoi(nom_utilisateur, id_tournoi, nom_tournoi, type_tournoi)
         tournoi = Tournoi(nom_tournoi, Session().utilisateur, id_tournoi)
+        print(res)
         return tournoi
+
+    def recuperer_tournois(self):
+        nom_utilisateur = Session().utilisateur.nom_utilisateur
+        tournois = self.tournoi_dao.recuperer_tournois_par_utilisateur(nom_utilisateur)
+        return tournois
 
     def creer_equipe(self, id_tournoi, nom_equipe):
         self.tournoi_dao.creer_equipe(id_tournoi, nom_equipe)

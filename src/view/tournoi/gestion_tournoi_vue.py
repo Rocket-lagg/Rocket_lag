@@ -49,6 +49,7 @@ class GestionTournoiVue(VueAbstraite):
                 if res and res.strip():
                     id_tournoi = Session().tournoi.id_tournoi
                     self.tournoi.creer_equipe(res, id_tournoi)
+                return self
 
             case "Faire le pooling":
                 id_tournoi = Session().tournoi.id_tournoi
@@ -66,6 +67,7 @@ class GestionTournoiVue(VueAbstraite):
                 for element in liste_pairs:
                     self.tournoi.ajouter_match(element)
                 return liste_pairs
+                return self
 
             case "Rentrer le score d'un match":
                 matches = self.tournoi.recuperer_match()
@@ -102,3 +104,4 @@ class GestionTournoiVue(VueAbstraite):
                         time.sleep(2)
                         return self
                     self.tournoi.ajouter_score(score1, score2, match1)
+                return self
