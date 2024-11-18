@@ -275,7 +275,7 @@ class ResetDatabase(metaclass=Singleton):
                             equipe2 VARCHAR(255),
                             score_equipe1 INT,
                             score_equipe2 INT,
-                            tour INT,
+                            tour INT
                         );
                             """
                     )
