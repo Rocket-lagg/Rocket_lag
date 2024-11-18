@@ -1,10 +1,11 @@
 from service.tournoi_service import TournoiService
 from view.vue_abstraite import VueAbstraite
-from InquirerPy import inquirer
+import time
+from view.session import Session
 
 
-class PariVue(VueAbstraite):
-    """Une vue pour afficher les paris d'un utilisateur"""
+class NouveauTournoiVue(VueAbstraite):
+    """Une vue pour la création d'un tournoi"""
 
     def __init__(self, message=""):
         self.message = message
@@ -24,24 +25,21 @@ class PariVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
-        joueurs = input("Qui voulez vous inviter dans votre tournoi?")
-        self.tournois.creer_tournoi(joueurs)
+        nom_tournois = input("Quel nom souhaitez-vous donner à votre tournoi? ")
+        type_tournois = int(
+            input("Quel type de tournois voulez-vous? (tapez 1 pour 1v1, 2 pour 2v2, 3 pour 3v3) ")
+        )
 
-        choix = inquirer.select(
-            message="Souhaitez-vous lancer un nouveau tournoi?",
-            choices=[
-                "Créer un tournoi",
-                "Retour",
-            ],
-        ).execute()
+        if type_tournois != 1 and type_tournois != 2 and type_tournois != 3:
+            print("Tapez 1, 2 ou 3")
+            time.sleep(2)
+            return self
 
-        match choix:
-            case "Retour":
-                from view.accueil.accueil_vue import AccueilVue
+        tournoi = self.tournoi.creer_tournois(nom_tournois, type_tournois)
+        clef_tournoi = tournoi.id_tournoi
+        Session().tournoi = tournoi
+        print(f"La clef pour rejoindre le tounoi est:\n{clef_tournoi}")
+        input("Appuyer sur entrée pour passer à la suite")
+        from view.tournoi.gestion_tournoi_vue import GestionTournoiVue
 
-                return AccueilVue()
-
-            case "Paris":
-                from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
-
-                return NouveauTournoiVue()
+        return GestionTournoiVue()

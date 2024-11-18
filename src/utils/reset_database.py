@@ -1,4 +1,3 @@
-import os
 import logging
 
 
@@ -12,7 +11,8 @@ import dotenv
 
 dotenv.load_dotenv()  # Charger .env avant d'utiliser DBConnection ou ResetDatabase
 
-from business_object.crea_data import*
+from business_object.crea_data import *
+
 
 class ResetDatabase(metaclass=Singleton):
     """
@@ -78,7 +78,7 @@ class ResetDatabase(metaclass=Singleton):
                         DROP TABLE IF EXISTS Equipe;
                         CREATE TABLE  Equipe (
                             match_id VARCHAR(255),                 -- Identifiant unique du match
-                            equipe_nom VARCHAR(255),               -- Nom de l'équipe
+                            equipe_nom VARCHAR(255) UNIQUE, -- Nom de l'équipe
                             equipe_score INT,                      -- Score de l'équipe
                             shots INT,                             -- Nombre de tirs
                             goals INT,                             -- Nombre de buts
@@ -106,8 +106,6 @@ class ResetDatabase(metaclass=Singleton):
                     logging.info("Table Equipe créée avec succès.")
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table Equipe: {e}")
-
-
 
     def lancer_match(self):
         """
@@ -142,21 +140,169 @@ class ResetDatabase(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table Match: {e}")
 
+    def lancer_tournoi(self):
+        """
+        Création de la table Tournoi dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS Tournoi (
+                            id_tournoi VARCHAR(255) PRIMARY KEY,
+                            nom_createur VARCHAR(255) REFERENCES utilisateur(pseudo),
+                            nom VARCHAR(255),
+                            type_match INT,
+                            officiel BOOL
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Tournoi créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Tournoi: {e}")
+
+    def lancer_paris(self):
+        """
+        Création de la table Paris dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS Paris (
+                            id_pari SERIAL PRIMARY KEY,  -- Ajout d'une clé primaire pour paris
+                            id_parieur INT REFERENCES utilisateur(id_utilisateur),
+                            id_match VARCHAR REFERENCES Match(match_id),
+                            equipe_nom VARCHAR REFERENCES Equipe(equipe_nom)
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Paris créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Paris: {e}")
+
+    def lancer_tournoi_utilisateur(self):
+        """
+        Création de la table Tournoi Utilisateur dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS tournois_utilisateur (
+                            id_utilisateur INT REFERENCES utilisateur(id_utilisateur),
+                            id_tournoi VARCHAR(255) REFERENCES tournoi(id_tournoi),
+                            PRIMARY KEY (id_utilisateur, id_tournoi)  -- Ajout d'une clé primaire composée
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Tournois Utilisateur créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Tournoi Utilisateur: {e}")
+
+    def lancer_paris_utilisateur(self):
+        """
+        Création de la table Tournoi Utilisateur dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS paris_utilisateur (
+                            id_utilisateur INT REFERENCES utilisateur(id_utilisateur),
+                            id_pari INT REFERENCES paris(id_pari),
+                            PRIMARY KEY (id_utilisateur, id_pari)  -- Ajout d'une clé primaire composée
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Paris Utilisateur créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de la table Paris Utilisateur: {e}")
+
+    def lancer_equipe_tournoi(self):
+        """
+        Création de la table Equipe Tournoi dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Commande SQL pour supprimer et recréer la table Equipe
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS equipe_tournoi (
+                            id_tournoi VARCHAR(255) REFERENCES tournoi(id_tournoi),
+                            nom_equipe VARCHAR(255)
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Equipe Tournoi créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de Equipe Tournoi: {e}")
+
+    def lancer_match_tournoi(self):
+        """
+        Création de la table Match Tournoi dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS match_tournoi (
+                            id_match SERIAL PRIMARY KEY,
+                            id_tournoi VARCHAR(255) REFERENCES tournoi(id_tournoi),
+                            equipe1 VARCHAR(255),
+                            equipe2 VARCHAR(255),
+                            score_equipe1 INT,
+                            score_equipe2 INT
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table Match Tournoi créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de Match Tournoi: {e}")
 
     def lancer(self):
 
         self.lancer_joueur()
         self.lancer_equipe()
         self.lancer_match()
-            # Step 1: Initialiser l'API et le processeur de match
+        self.lancer_paris()
+        self.lancer_paris_utilisateur()
+        self.lancer_tournoi()
+        self.lancer_tournoi_utilisateur()
+        self.lancer_equipe_tournoi()
+        self.lancer_match_tournoi()
+
+        # Step 1: Initialiser l'API et le processeur de match
         api = API(base_url="https://api.rlcstatistics.net")
         match_processor = MatchProcessor(api)
 
-            # Step 2: Récupérer les matchs
+        # Step 2: Récupérer les matchs
         match_processor.recup_matches(page=265, page_size=4)
 
-            # Step 3: Récupérer les données des matchs
+        # Step 3: Récupérer les données des matchs
         match_processor.recup_match_data()
 
-            # Step 4: Traiter les matchs et les joueurs
+        # Step 4: Traiter les matchs et les joueurs
         match_processor.process_matches()
