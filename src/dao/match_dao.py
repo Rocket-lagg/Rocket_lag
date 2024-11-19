@@ -54,22 +54,26 @@ class MatchDao(metaclass=Singleton):
         return created
 
     @log
-    def trouver_par_id_match(id_match):
+    def trouver_par_match_id(self, match_id):
+        """Trouver un match par son match_id"""
+        res_match = None  # Initialiser la variable avant l'exécution
         try:
             with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
+                with connection.cursor() as cursor:  # Le curseur est automatiquement fermé après le bloc
                     cursor.execute(
                         """
-                                SELECT*
-                                FROM Match
-                                WHERE id_match = %(id_match)s;
-                                """,
-                        {"id_match": id_match},
+                        SELECT *
+                        FROM Match
+                        WHERE match_id = %(match_id)s;
+                        """,
+                        {"match_id": match_id},
                     )
-            res_match = cursor.fetchone()
+                    res_match = cursor.fetchone()  # Assurez-vous de récupérer la donnée ici
         except Exception as e:
-            print(e)
+            logging.error(f"Erreur lors de la récupération du match : {e}")
+            raise
 
+        # Assurez-vous que res_match est défini avant de l'utiliser
         match = None
         if res_match:
             match = Match(
@@ -78,7 +82,7 @@ class MatchDao(metaclass=Singleton):
                 equipe2=res_match["equipe2"],
                 score1=res_match["score1"],
                 score2=res_match["score2"],
-                dates=res_match["dates"],
+                date=res_match["date"],
                 region=res_match["region"],
                 ligue=res_match["ligue"],
                 perso=res_match["perso"],
@@ -358,10 +362,6 @@ class MatchDao(metaclass=Singleton):
         else:
             return None
 
-
-
-
-
     def trouver_match_id_et_equipe(self, equipe, match_id) -> Match:
         """Trouver un match grâce au nom d'un joueur et à l'ID du match.
 
@@ -436,5 +436,6 @@ class MatchDao(metaclass=Singleton):
         else:
             return None
 
+
 r = MatchDao()
-print(r.trouver_match_id_et_equipe("Pioneers","65fda0fd5e3cd1fbef8217e0")["cote_equipe2"])
+print(r.trouver_match_id_et_equipe("Pioneers", "65fda0fd5e3cd1fbef8217e0")["cote_equipe2"])

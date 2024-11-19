@@ -128,7 +128,7 @@ class ConsulterStats(metaclass=Singleton):
             f"Indice de pression moyen : {stat_affiché['indice_de_pression']}\n"
         )
 
-    def choix_match(self, nom_joueur):
+    def choix_match_joueur(self, nom_joueur):
         if not isinstance(nom_joueur, str):
             raise TypeError("'nom_joueur' doit être une instance de str.")
 
@@ -152,121 +152,192 @@ class ConsulterStats(metaclass=Singleton):
 
         return match_dict
 
-    def stats_matchs_joueurs(self, nom_joueur):
-        """Renvoie toutes les données par match pour un joueur spécifié, ainsi que celles des autres joueurs"""
-        if not isinstance(nom_joueur, str):
-            raise TypeError("Le nom du joueur doit être une chaîne de caractères.")
+    def choix_match_equipe(self, nom_equipe):
+        if not isinstance(nom_equipe, str):
+            raise TypeError("'nom_equipe' doit être une instance de str.")
+
+        matchdao = MatchDao()
+        liste = matchdao.trouver_match_id_par_equipe(nom_equipe)
+
+        # Transformer la liste d'objets Match en un dictionnaire avec la forme souhaitée
+        match_dict = {}
+
+        for match in liste:
+            # Créer la clé sous la forme 'equipe1 vs equipe2 - Stage: stage, Date: date'
+            match_key = (
+                f"{match.equipe1} vs {match.equipe2} - Stage: {match.stage}, Date: {match.date}"
+            )
+
+            # Ajouter l'ID du match dans une liste, si la clé existe déjà, ajoutez l'ID à la liste
+            if match_key in match_dict:
+                match_dict[match_key].append(match.match_id)
+            else:
+                match_dict[match_key] = [match.match_id]
+
+        return match_dict
+
+    def stats_completes_match(self, match_id):
+        """Renvoie toutes les statistiques pour les deux équipes d'un match donné, avec calcul des stats des équipes et des joueurs."""
+        if not isinstance(match_id, str):
+            raise TypeError("L'ID du match doit être une chaîne de caractères.")
 
         joueurdao = JoueurDao()
         matchdao = MatchDao()
 
-        # Vérifier si le joueur existe
-        joueur_data = joueurdao.obtenir_par_nom(nom_joueur)
-        if not joueur_data:
-            raise ValueError(f"Aucun joueur nommé {nom_joueur} trouvé.")
+        # Utiliser la méthode trouver_match_id_et_equipe à la place
+        match_data = matchdao.trouver_match_id_et_equipe("Complexity Gaming", match_id)
 
-        # Obtenir les IDs de tous les matchs joués par le joueur
-        id_matchs = matchdao.trouver_match_id_par_joueur(nom_joueur)
-        if not id_matchs:
-            raise ValueError(f"Aucun match trouvé pour le joueur {nom_joueur}.")
+        if not match_data:
+            raise ValueError(f"Aucun détail trouvé pour le match avec l'ID {match_id}.")
 
-        # Obtenir les statistiques par match pour le joueur et pour tous les autres joueurs
-        stats_details = []
-        for match_id in id_matchs:
-            match_stats = matchdao.obtenir_stats_match_joueur(nom_joueur, match_id)
+        # Préparer les informations du match en utilisant les clés du dictionnaire
+        stats_match = {
+            "match_id": match_data["match_id"],
+            "equipe1": match_data["equipe1"],
+            "equipe2": match_data["equipe2"],
+            "score1": match_data["score1"],
+            "score2": match_data["score2"],
+            "date": match_data["date"],
+            "stage": match_data["stage"],
+            "region": match_data["region"],
+            "ligue": match_data["ligue"],
+        }
 
-            # Il faut encore créer la fonction obtenir_stats_match_joueur
-            # Exemple de structure de données attendue de la fonction DAO pour un match donné :
-            # match_stats = {"goals": 2, "assists": 1, "shots": 5, "saves": 3, "score": 500, "demo_inflige": 1}
+        # Récupérer les joueurs par équipe
+        joueurs_par_equipe = joueurdao.obtenir_par_match(match_id)
 
-            match_detail = {
-                "match_id": match_id,
-                "goals": match_stats.get("goals", 0),
-                "assists": match_stats.get("assists", 0),
-                "shots": match_stats.get("shots", 0),
-                "saves": match_stats.get("saves", 0),
-                "score": match_stats.get("score", 0),
-                "demo_inflige": match_stats.get("demo_inflige", 0),
-                "pourcentage_tirs": self.stats_par_match(
-                    match_stats.get("goals", 0), match_stats.get("shots", 0)
-                ),
-            }
+        if not joueurs_par_equipe:
+            raise ValueError(f"Aucun joueur trouvé pour le match avec l'ID {match_id}.")
 
-            # Récupérer aussi les stats des autres joueurs participant à ce match
-            joueurs_match = matchdao.trouver_joueurs_par_match(
-                match_id
-            )  # Cette fonction retourne la liste des noms des joueurs du match
-            for joueur_nom in joueurs_match:
-                if joueur_nom != nom_joueur:  # Ignorer le joueur demandé
-                    other_player_stats = matchdao.obtenir_stats_match_joueur(joueur_nom, match_id)
-                    match_detail[f"{joueur_nom}_goals"] = other_player_stats.get("goals", 0)
-                    match_detail[f"{joueur_nom}_assists"] = other_player_stats.get("assists", 0)
-                    match_detail[f"{joueur_nom}_shots"] = other_player_stats.get("shots", 0)
-                    match_detail[f"{joueur_nom}_saves"] = other_player_stats.get("saves", 0)
-                    match_detail[f"{joueur_nom}_score"] = other_player_stats.get("score", 0)
-                    match_detail[f"{joueur_nom}_demo_inflige"] = other_player_stats.get(
-                        "demo_inflige", 0
-                    )
+        # Transformation : Regrouper les joueurs par équipe
+        joueurs_par_equipe_dict = {}
+        for joueur in joueurs_par_equipe:
+            equipe_nom = joueur["equipe_nom"]
+            if equipe_nom not in joueurs_par_equipe_dict:
+                joueurs_par_equipe_dict[equipe_nom] = []
+            joueurs_par_equipe_dict[equipe_nom].append(joueur)
 
-            stats_details.append(match_detail)
+        # Ajouter les joueurs dans chaque équipe avec leurs statistiques
+        stats_match["joueurs"] = {}
+        equipe1_stats = {
+            "score": 0,
+            "boost_stole": 0,
+            "total_time_offensive": 0,
+            "total_time_defensive": 0,
+            "total_time_neutral": 0,
+            "total_demos_infliges": 0,
+            "total_demos_recus": 0,
+        }
 
-        return stats_details
+        equipe2_stats = {
+            "score": 0,
+            "boost_stole": 0,
+            "total_time_offensive": 0,
+            "total_time_defensive": 0,
+            "total_time_neutral": 0,
+            "total_demos_infliges": 0,
+            "total_demos_recus": 0,
+        }
 
-    def stats_matchs_equipe(self, nom_equipe):
-        """Renvoie toutes les données par match pour une équipe spécifiée, ainsi que celles des autres équipes"""
-        if not isinstance(nom_equipe, str):
-            raise TypeError("Le nom de l'équipe doit être une chaîne de caractères.")
+        # Ajouter les joueurs et calculer les stats des équipes
+        for equipe, joueurs in joueurs_par_equipe_dict.items():
+            stats_match["joueurs"][equipe] = []
+            for joueur in joueurs:
+                joueur_stats = matchdao.trouver_match_id_et_joueur(joueur["nom"], match_id)
+                if joueur_stats:
+                    joueur_detail = {
+                        "nom": joueur_stats.get("nom"),
+                        "nationalite": joueur_stats.get("nationalite"),
+                        "rating": joueur_stats.get("rating"),
+                        "goals": joueur_stats.get("goals"),
+                        "assists": joueur_stats.get("assists"),
+                        "saves": joueur_stats.get("saves"),
+                        "shots": joueur_stats.get("shots"),
+                        "score": joueur_stats.get("score"),
+                        "shooting_percentage": joueur_stats.get("shooting_percentage"),
+                        "time_offensive_third": joueur_stats.get("time_offensive_third"),
+                        "time_defensive_third": joueur_stats.get("time_defensive_third"),
+                        "time_neutral_third": joueur_stats.get("time_neutral_third"),
+                        "demo_inflige": joueur_stats.get("demo_inflige"),
+                        "demo_recu": joueur_stats.get("demo_recu"),
+                        "goal_participation": joueur_stats.get(
+                            "goal_participation"
+                        ),  # Gardée ici pour les joueurs
+                        "indice_offensif": joueur_stats.get("indice_offensif"),
+                        "indice_performance": joueur_stats.get("indice_performance"),
+                    }
+                    stats_match["joueurs"][equipe].append(joueur_detail)
 
-        equipedao = EquipeDao()
-        matchdao = MatchDao()
+                    # Calcul des stats agrégées pour chaque équipe
+                    if equipe == match_data["equipe1"]:
+                        equipe1_stats["score"] += joueur_stats.get("score", 0)
+                        equipe1_stats["boost_stole"] += joueur_stats.get("boost_stole", 0)
+                        equipe1_stats["total_time_offensive"] += joueur_stats.get(
+                            "time_offensive_third", 0
+                        )
+                        equipe1_stats["total_time_defensive"] += joueur_stats.get(
+                            "time_defensive_third", 0
+                        )
+                        equipe1_stats["total_time_neutral"] += joueur_stats.get(
+                            "time_neutral_third", 0
+                        )
+                        equipe1_stats["total_demos_infliges"] += joueur_stats.get("demo_inflige", 0)
+                        equipe1_stats["total_demos_recus"] += joueur_stats.get("demo_recu", 0)
 
-        # Vérifier si l'équipe existe
-        equipe_data = equipedao.obtenir_par_nom(nom_equipe)
-        if not equipe_data:
-            raise ValueError(f"Aucune équipe nommée {nom_equipe} trouvée.")
+                    elif equipe == match_data["equipe2"]:
+                        equipe2_stats["score"] += joueur_stats.get("score", 0)
+                        equipe2_stats["boost_stole"] += joueur_stats.get("boost_stole", 0)
+                        equipe2_stats["total_time_offensive"] += joueur_stats.get(
+                            "time_offensive_third", 0
+                        )
+                        equipe2_stats["total_time_defensive"] += joueur_stats.get(
+                            "time_defensive_third", 0
+                        )
+                        equipe2_stats["total_time_neutral"] += joueur_stats.get(
+                            "time_neutral_third", 0
+                        )
+                        equipe2_stats["total_demos_infliges"] += joueur_stats.get("demo_inflige", 0)
+                        equipe2_stats["total_demos_recus"] += joueur_stats.get("demo_recu", 0)
 
-        # Obtenir les IDs de tous les matchs joués par l'équipe
-        id_matchs = matchdao.trouver_match_id_par_equipe(nom_equipe)
-        if not id_matchs:
-            raise ValueError(f"Aucun match trouvé pour l'équipe {nom_equipe}.")
+        # Ajouter les statistiques agrégées pour les équipes
+        stats_match["equipe1_stats"] = {
+            "score": equipe1_stats["score"],
+            "boost_stole": match_data.get("boost_stole", equipe1_stats["boost_stole"]),
+            "total_time_offensive": match_data.get(
+                "total_time_offensive", equipe1_stats["total_time_offensive"]
+            ),
+            "total_time_defensive": match_data.get(
+                "total_time_defensive", equipe1_stats["total_time_defensive"]
+            ),
+            "total_time_neutral": match_data.get(
+                "total_time_neutral", equipe1_stats["total_time_neutral"]
+            ),
+            "total_demos_infliges": match_data.get(
+                "total_demos_infliges", equipe1_stats["total_demos_infliges"]
+            ),
+            "total_demos_recus": match_data.get(
+                "total_demos_recus", equipe1_stats["total_demos_recus"]
+            ),
+        }
 
-        # Obtenir les statistiques par match pour l'équipe et pour toutes les autres équipes
-        stats_details = []
-        for match_id in id_matchs:
-            match_stats = matchdao.obtenir_stats_match_equipe(nom_equipe, match_id)
+        stats_match["equipe2_stats"] = {
+            "score": equipe2_stats["score"],
+            "boost_stole": match_data.get("boost_stole", equipe2_stats["boost_stole"]),
+            "total_time_offensive": match_data.get(
+                "total_time_offensive", equipe2_stats["total_time_offensive"]
+            ),
+            "total_time_defensive": match_data.get(
+                "total_time_defensive", equipe2_stats["total_time_defensive"]
+            ),
+            "total_time_neutral": match_data.get(
+                "total_time_neutral", equipe2_stats["total_time_neutral"]
+            ),
+            "total_demos_infliges": match_data.get(
+                "total_demos_infliges", equipe2_stats["total_demos_infliges"]
+            ),
+            "total_demos_recus": match_data.get(
+                "total_demos_recus", equipe2_stats["total_demos_recus"]
+            ),
+        }
 
-            # Exemple de structure de données attendue de la fonction DAO pour un match donné :
-            # match_stats = {"goals": 4, "assists": 2, "shots": 10, "saves": 5, "score": 1500, "demo_inflige": 2}
-
-            match_detail = {
-                "match_id": match_id,
-                "goals": match_stats.get("goals", 0),
-                "assists": match_stats.get("assists", 0),
-                "shots": match_stats.get("shots", 0),
-                "saves": match_stats.get("saves", 0),
-                "score": match_stats.get("score", 0),
-                "demo_inflige": match_stats.get("demo_inflige", 0),
-                "pourcentage_tirs": self.stats_par_match(
-                    match_stats.get("goals", 0), match_stats.get("shots", 0)
-                ),
-            }
-
-            # Récupérer aussi les stats des autres équipes participant à ce match
-            equipes_match = matchdao.trouver_equipes_par_match(
-                match_id
-            )  # Cette fonction retourne la liste des équipes du match
-            for equipe_nom in equipes_match:
-                if equipe_nom != nom_equipe:  # Ignorer l'équipe demandée
-                    other_team_stats = matchdao.obtenir_stats_match_equipe(equipe_nom, match_id)
-                    match_detail[f"{equipe_nom}_goals"] = other_team_stats.get("goals", 0)
-                    match_detail[f"{equipe_nom}_assists"] = other_team_stats.get("assists", 0)
-                    match_detail[f"{equipe_nom}_shots"] = other_team_stats.get("shots", 0)
-                    match_detail[f"{equipe_nom}_saves"] = other_team_stats.get("saves", 0)
-                    match_detail[f"{equipe_nom}_score"] = other_team_stats.get("score", 0)
-                    match_detail[f"{equipe_nom}_demo_inflige"] = other_team_stats.get(
-                        "demo_inflige", 0
-                    )
-
-            stats_details.append(match_detail)
-
-        return stats_details
+        return stats_match
