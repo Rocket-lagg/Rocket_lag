@@ -138,12 +138,12 @@ class MatchEquipeVue(VueAbstraite):
 
                 return AccueilVue()
 
-        if choix == "Chercher un autre match avec un nom de joueur":
+            case "Chercher un autre match avec un nom de joueur":
 
-            from view.statistique.match_joueur_vue import MatchJoueurVue
+                from view.statistique.match_joueur_vue import MatchJoueurVue
 
-            return MatchJoueurVue()
+                return MatchJoueurVue()
 
-        if choix == "Chercher un autre match avec un nom d'équipe":
+            case "Chercher un autre match avec un nom d'équipe":
 
-            return self
+                return self
