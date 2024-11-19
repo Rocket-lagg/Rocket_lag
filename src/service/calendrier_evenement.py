@@ -55,7 +55,8 @@ class CalendrierEvenement:
             print(f"{calendar.month_name[mois]} {jour} : {evenement}")
 
     def rechercher_match_par_date(self, dates):
-        liste_match = self.matchdao.trouver_par_dates(dates)
+        match_dao = MatchDao()
+        liste_match = match_dao.trouver_par_dates(dates)
 
         if liste_match == []:
             print(f"Il n'y a aucun match le {dates}")

@@ -353,9 +353,7 @@ class JoueurDao(metaclass=Singleton):
             return None
 
 
-r = JoueurDao()
-r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")
-print(r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[0])
+
 
 #si tu veux les deux equipe tu fais n= len(r.r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0"))+1 et
 # r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[0].equipe_nom (equipe1)

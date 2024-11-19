@@ -438,5 +438,3 @@ class MatchDao(metaclass=Singleton):
             return None
 
 
-r = MatchDao()
-print(r.trouver_match_id_et_equipe("Pioneers", "65fda0fd5e3cd1fbef8217e0")["cote_equipe2"])
