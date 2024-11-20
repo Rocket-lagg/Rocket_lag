@@ -12,7 +12,7 @@ class NouveauTournoiVue(VueAbstraite):
         self.tournoi = TournoiService()
 
     def message_info(self):
-        print("Nouveau Tournoi")
+        print("")
 
     def choisir_menu(self):
         """Choix du menu suivant
@@ -23,13 +23,13 @@ class NouveauTournoiVue(VueAbstraite):
             Retourne la vue choisie par l'utilisateur dans le terminal
         """
 
-        print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
+        print("\n" + "-" * 50 + "\nNouveau Tournoi\n" + "-" * 50 + "\n")
 
         nom_tournois = input("Quel nom souhaitez-vous donner à votre tournoi? ")
         type_tournois = int(
             input("Quel type de tournois voulez-vous? (tapez 1 pour 1v1, 2 pour 2v2, 3 pour 3v3) ")
         )
-        tours = int(input("Nombre de tours pour ce tournoi"))
+        tours = int(input("Nombre de tours pour ce tournoi: "))
         if type_tournois != 1 and type_tournois != 2 and type_tournois != 3:
             print("Tapez 1, 2 ou 3")
             time.sleep(2)
@@ -40,6 +40,6 @@ class NouveauTournoiVue(VueAbstraite):
         Session().tournoi = tournoi
         print(f"La clef pour rejoindre le tounoi est:\n{clef_tournoi}")
         input("Appuyer sur entrée pour passer à la suite")
-        from view.tournoi.gestion_tournoi_vue import GestionTournoiVue
+        from view.tournoi.tournoi_vue import TournoiVue
 
-        return GestionTournoiVue()
+        return TournoiVue()

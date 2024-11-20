@@ -249,7 +249,8 @@ class ResetDatabase(metaclass=Singleton):
                         """
                             CREATE TABLE IF NOT EXISTS equipe_tournoi (
                             id_tournoi VARCHAR(255) REFERENCES tournoi(id_tournoi),
-                            nom_equipe VARCHAR(255)
+                            nom_equipe VARCHAR(255),
+                            tour INT
                         );
                             """
                     )
@@ -275,7 +276,7 @@ class ResetDatabase(metaclass=Singleton):
                             equipe2 VARCHAR(255),
                             score_equipe1 INT,
                             score_equipe2 INT,
-                            tour INT,
+                            tour INT
                         );
                             """
                     )

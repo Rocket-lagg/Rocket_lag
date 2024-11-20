@@ -27,8 +27,6 @@ class TournoiVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\n TOURNOIS \n" + "-" * 50 + "\n")
 
-        # self.tournoi.afficher_infos_tournois()
-
         choix = inquirer.select(
             message="Souhaitez-vous lancer un nouveau tournoi?",
             choices=[
@@ -65,7 +63,7 @@ class TournoiVue(VueAbstraite):
                 tournois_choix = [{"name": t.nom_tournoi, "value": t} for t in tournois]
                 tournois_choix.append({"name": "Retour", "value": "quit"})
                 tournois_questions = inquirer.select(
-                    message="Que souhaitez vous faire?",
+                    message="Quel tournoi voulez-vous modifier?",
                     choices=tournois_choix,
                 ).execute()
                 if tournois_questions == "quit":
