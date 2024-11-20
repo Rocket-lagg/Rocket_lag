@@ -22,16 +22,12 @@ class MatchVue(VueAbstraite):
             Retourne la vue choisie par l'utilisateur dans le terminal
         """
 
-        print("\n" + "-" * 50 + "\nConsulter Statistique - Match\n" + "-" * 50 + "\n")
-
-        reponse = input("Renseigner ou l'équipe ou la date du match: ")
-        self.consulter_stats.stats_matchs(reponse)
-
+        print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
         choix = inquirer.select(
             message="",
             choices=[
-                "Chercher un autre match",
-                "Chercher une équipe ou un joueur",
+                "Rechercher le match par joueur",
+                "Rechercher le match par équipe",
                 "Retour",
             ],
         ).execute()
@@ -42,11 +38,13 @@ class MatchVue(VueAbstraite):
 
                 return AccueilVue()
 
-            case "Chercher un autre match":
+            case "Rechercher le match par joueur":
 
-                return self
+                from view.statistique.match_joueur_vue import MatchJoueurVue
 
-            case "Chercher une équipe ou un joueur":
-                from view.statistique.stat_vue import StatVue
+                return MatchJoueurVue()
 
-                return StatVue()
+            case "Rechercher le match par équipe":
+                from view.statistique.match_equipe_vue import MatchEquipeVue
+
+                return MatchEquipeVue()

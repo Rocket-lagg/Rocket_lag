@@ -75,7 +75,7 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Equipe
                     cursor.execute(
                         """
-                        DROP TABLE IF EXISTS Equipe;
+                        DROP TABLE IF EXISTS Equipe CASCADE;
                         CREATE TABLE  Equipe (
                             match_id VARCHAR(255),                 -- Identifiant unique du match
                             equipe_nom VARCHAR(255) UNIQUE, -- Nom de l'équipe
@@ -118,14 +118,14 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Equipe
                     cursor.execute(
                         """
-                        DROP TABLE IF EXISTS Match;
-                        CREATE TABLE  Match (
+                        DROP TABLE IF EXISTS match CASCADE;
+                        CREATE TABLE  match (
                             match_id VARCHAR(255) PRIMARY KEY,
                             equipe1 VARCHAR(255),
                             equipe2 VARCHAR(255),
                             score1 INT,
                             score2 INT,
-                            date DATE,  -- Utilisation d'un type DATE pour les dates
+                            date TIMESTAMP WITH TIME ZONE,  -- Utilisation d'un type DATE pour les dates
                             region VARCHAR(50),
                             stage VARCHAR(255),
                             ligue VARCHAR(255),

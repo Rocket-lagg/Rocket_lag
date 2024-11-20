@@ -54,22 +54,26 @@ class MatchDao(metaclass=Singleton):
         return created
 
     @log
-    def trouver_par_id_match(id_match):
+    def trouver_par_match_id(self, match_id):
+        """Trouver un match par son match_id"""
+        res_match = None  # Initialiser la variable avant l'exécution
         try:
             with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
+                with connection.cursor() as cursor:  # Le curseur est automatiquement fermé après le bloc
                     cursor.execute(
                         """
-                                SELECT*
-                                FROM Match
-                                WHERE id_match = %(id_match)s;
-                                """,
-                        {"id_match": id_match},
+                        SELECT *
+                        FROM Match
+                        WHERE match_id = %(match_id)s;
+                        """,
+                        {"match_id": match_id},
                     )
-            res_match = cursor.fetchone()
+                    res_match = cursor.fetchone()  # Assurez-vous de récupérer la donnée ici
         except Exception as e:
-            print(e)
+            logging.error(f"Erreur lors de la récupération du match : {e}")
+            raise
 
+        # Assurez-vous que res_match est défini avant de l'utiliser
         match = None
         if res_match:
             match = Match(
@@ -78,7 +82,7 @@ class MatchDao(metaclass=Singleton):
                 equipe2=res_match["equipe2"],
                 score1=res_match["score1"],
                 score2=res_match["score2"],
-                dates=res_match["dates"],
+                date=res_match["date"],
                 region=res_match["region"],
                 ligue=res_match["ligue"],
                 perso=res_match["perso"],
@@ -105,8 +109,8 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM Match                      "
-                        " WHERE date = %(date)s             "
+                        "  FROM match                      "
+                        " WHERE date::date = %(date)s             "
                         " AND perso = FALSE;  ",
                         {"date": date},
                     )
@@ -258,7 +262,7 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                              "
-                        "  FROM matchs;                        "
+                        "  FROM match;                        "
                     )
                     res = cursor.fetchall()
         except Exception as e:
@@ -270,15 +274,16 @@ class MatchDao(metaclass=Singleton):
         if res:
             for row in res:
                 match = Match(
-                    match_id=res["match_id"],
-                    equipe1=res["equipe1"],
-                    equipe2=res["equipe2"],
-                    score1=res["score1"],
-                    score2=res["score2"],
-                    dates=res["dates"],
-                    region=res["region"],
-                    ligue=res["ligue"],
-                    perso=res["perso"],
+                    match_id=row["match_id"],
+                    equipe1=row["equipe1"],
+                    equipe2=row["equipe2"],
+                    score1=row["score1"],
+                    score2=row["score2"],
+                    date=row["date"],
+                    region=row["region"],
+                    ligue=row["ligue"],
+                    stage=row["stage"],
+                    perso=row["perso"],
                 )
 
                 liste_matchs.append(match)
@@ -357,3 +362,79 @@ class MatchDao(metaclass=Singleton):
             return match
         else:
             return None
+
+    def trouver_match_id_et_equipe(self, equipe, match_id) -> Match:
+        """Trouver un match grâce au nom d'un joueur et à l'ID du match.
+
+        Parameters
+        ----------
+        joueur : str
+            Nom unique du joueur.
+        match_id : str
+            L'ID du match.
+
+        Returns
+        -------
+        Match :
+            Objet Match correspondant au joueur et au match.
+            Retourne None si aucun résultat n'est trouvé.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM match
+                        JOIN Equipe ON Equipe.match_id = match.match_id
+                        WHERE equipe1 = %(equipe)s OR equipe2 = %(equipe)s
+						AND Equipe.match_id = %(match_id)s
+						AND Equipe.equipe_nom = %(equipe)s;
+                        """,
+                        {
+                            "equipe": equipe,
+                            "match_id": match_id,
+                        },
+                    )
+                    row = cursor.fetchone()  # Récupérer un seul résultat
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération du match pour le joueur {joueur}: {e}")
+            raise
+
+        if row:
+            # Construire le dictionnaire Match à partir des données de la ligne
+            match = {
+                "match_id": row["match_id"],
+                "equipe1": row["equipe1"],
+                "equipe2": row["equipe2"],
+                "score1": row["score1"],
+                "score2": row["score2"],
+                "cote_equipe2": row["cote_equipe2"],
+                "cote_equipe1": row["cote_equipe1"],
+                "date": row["date"],
+                "region": row["region"],
+                "ligue": row["ligue"],
+                "perso": row["perso"],
+                "stage": row["stage"],
+                "equipe_nom": row["equipe_nom"],
+                "equipe_score": row["equipe_score"],
+                "boost_stole": row["boost_stole"],
+                "shots": row["shots"],
+                "goals": row["goals"],
+                "saves": row["saves"],
+                "assists": row["assists"],
+                "score": row["score"],
+                "shooting_percentage": row["shooting_percentage"],
+                "time_offensive_third": row["time_offensive_third"],
+                "time_defensive_third": row["time_defensive_third"],
+                "time_neutral_third": row["time_neutral_third"],
+                "demo_inflige": row["demo_inflige"],
+                "demo_recu": row["demo_recu"],
+                "indice_de_pression": row["indice_de_pression"],
+                "indice_performance": row["indice_performance"],
+            }
+            return match
+        else:
+            return None
+
+
