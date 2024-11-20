@@ -53,6 +53,32 @@ class MatchJoueurVue(VueAbstraite):
         # Appel à la fonction pour afficher toutes les statistiques du match
         self.traiter_match(joueur, match_id)
 
+        choix = inquirer.select(
+            message="Que voulez-vous faire maintenant?",
+            choices=[
+                "Chercher un autre match avec un nom de joueur",
+                "Chercher un autre match avec un nom d'équipe",
+                "Retour",
+            ],
+        ).execute()
+
+        match choix:
+            case "Retour":
+
+                from view.accueil.accueil_vue import AccueilVue
+
+                return AccueilVue()
+
+            case "Chercher un autre match avec un nom de joueur":
+
+                return self
+
+            case "Chercher un autre match avec un nom d'équipe":
+
+                from view.statistique.match_equipe_vue import MatchEquipeVue
+
+                return MatchEquipeVue()
+
     def traiter_match(self, joueur, match_id):
         try:
             # Essayer de récupérer les détails du match
@@ -127,29 +153,3 @@ class MatchJoueurVue(VueAbstraite):
 
         except Exception as e:
             print(f"Une erreur inattendue s'est produite : {e}")
-
-        choix = inquirer.select(
-            message="Que voulez-vous faire maintenant?",
-            choices=[
-                "Chercher un autre match avec un nom de joueur",
-                "Chercher un autre match avec un nom d'équipe",
-                "Retour",
-            ],
-        ).execute()
-
-        match choix:
-            case "Retour":
-
-                from view.accueil.accueil_vue import AccueilVue
-
-                return AccueilVue()
-
-        if choix == "Chercher un autre match avec un nom de joueur":
-
-            return self
-
-        if choix == "Chercher un autre match avec un nom d'équipe":
-
-            from view.statistique.match_equipe_vue import MatchEquipeVue
-
-            return MatchEquipeVue()
