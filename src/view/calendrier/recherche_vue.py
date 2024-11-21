@@ -30,7 +30,7 @@ class RechercheVue(VueAbstraite):
         choix = inquirer.select(
             message="",
             choices=[
-                "Afficher le calendrier de l'année",
+                "Afficher le calendrier",
                 "Retour",
             ],
         ).execute()
@@ -42,7 +42,7 @@ class RechercheVue(VueAbstraite):
                 return AccueilVue()
 
             case "Afficher le calendrier":
-                
+
                 from view.calendrier.calendrier_even_vue import EvenementVue
 
                 return EvenementVue()

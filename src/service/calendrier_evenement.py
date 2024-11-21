@@ -1,6 +1,7 @@
 from datetime import datetime
 from dao.match_dao import MatchDao
 import calendar
+import logging
 
 
 class CalendrierEvenement:
@@ -8,32 +9,54 @@ class CalendrierEvenement:
     def __init__(self):
         self.match_dao = MatchDao()
 
-    def dictionnaire_evenement(self, annee):
-        # Dictionnaire des événements par jour (clé = (mois, jour), valeur = événement)
+    def dictionnaire_evenement(self, annee, mois):
+        # Dictionnaire des événements par jour (clé = (mois, jour), valeur = liste d'événements)
         all_matchs = self.match_dao.lister_tous()
         evenements = {}
         for match in all_matchs:
-            print(match.date)
             date = match.date
-            if date.year == annee:
-                evenements[(date.month, date.day)] = (
-                    f"{match.ligue}: {match.equipe1} vs {match.equipe2} à {date.hour}h{date.minute} "
+            print(date)
+            if date.year == annee and date.month == mois:
+                # Construire la chaîne de l'événement
+                evenement = (
+                    f"{match.ligue}: {match.equipe1} vs {match.equipe2} à {date.hour}h{date.minute}"
                 )
+
+                # Ajouter à la clé correspondante dans le dictionnaire
+                if (date.month, date.day) not in evenements:
+                    evenements[(date.month, date.day)] = (
+                        []
+                    )  # Initialiser une liste si la clé n'existe pas
+
+                evenements[(date.month, date.day)].append(
+                    evenement
+                )  # Ajouter l'événement à la liste existante
+
         return evenements
 
     # Fonction pour afficher un calendrier d'une année complète avec des événements
-    def afficher_calendrier_annee(self, annee):
-        evenements = CalendrierEvenement().dictionnaire_evenement(annee)
-        print(f"Calendrier pour l'année {annee} :\n")
-        # Pour chaque mois de l'année
-        for mois in range(1, 13):
-            print(calendar.month_name[mois], annee)
-            print("Lu Ma Me Je Ve Sa Di")  # En-tête des jours de la semaine
+
+    def afficher_calendrier_annee(self, annee, mois):
+        try:
+            # Vérifications des entrées
+            if not isinstance(annee, int):
+                raise TypeError("L'année doit être un entier.")
+            if not isinstance(mois, int) or not (1 <= mois <= 12):
+                raise ValueError("Le mois doit être un entier entre 1 et 12.")
+
+            # Récupération des événements
+            evenements = CalendrierEvenement().dictionnaire_evenement(annee, mois)
+
+            # Affichage du titre
+            print(f"Calendrier pour {calendar.month_name[mois]} {annee} :\n")
+
+            # En-tête des jours de la semaine
+            print("Lu Ma Me Je Ve Sa Di")
 
             # Obtenir le calendrier du mois sous forme de tableau
             tableau_mois = calendar.monthcalendar(annee, mois)
 
-            # Afficher les jours du mois et ajouter des événements s'il y en a
+            # Affichage du calendrier avec les événements
             for semaine in tableau_mois:
                 ligne = []
                 for jour in semaine:
@@ -45,14 +68,24 @@ class CalendrierEvenement:
                             ligne.append(f"{jour:2}*")
                         else:
                             ligne.append(f"{jour:2}")
-                print(" ".join(ligne))
+                print(" ".join(ligne))  # Afficher la semaine
 
-            print()  # Saut de ligne entre les mois
+            print()  # Ligne vide après le calendrier
 
-        # Liste des événements
-        print("Événements de l'année :")
-        for (mois, jour), evenement in evenements.items():
-            print(f"{calendar.month_name[mois]} {jour} : {evenement}")
+            # Liste des événements
+            print("Événements du mois :")
+            for (mois_evt, jour), liste_evenements in evenements.items():
+                print(f"{calendar.month_name[mois_evt]} {jour} :")
+                for evenement in liste_evenements:
+                    print(f"  - {evenement}")
+
+        except Exception as e:
+            # Gestion des erreurs
+            logging.error(
+                f"Une erreur s'est produite dans afficher_calendrier_annee: {e}"
+            )
+            print(f"Une erreur est survenue : {e}")
+            return {}
 
     def rechercher_match_par_date(self, dates):
         match_dao = MatchDao()
@@ -70,4 +103,3 @@ class CalendrierEvenement:
 
 r = CalendrierEvenement()
 
-r.afficher_calendrier_annee(2024)

@@ -1,6 +1,7 @@
 from service.calendrier_evenement import CalendrierEvenement
 from view.vue_abstraite import VueAbstraite
 from InquirerPy import inquirer
+import logging
 
 
 class EvenementVue(VueAbstraite):
@@ -23,9 +24,28 @@ class EvenementVue(VueAbstraite):
         """
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
-        annee = input("Quel année?:")
+        try:
+            annee = int(input("Quel année?:"))
+            mois = int(input("Quel mois (en chiffre)?"))
 
-        self.calendrier_evenement.afficher_calendrier_annee(annee)
+            # Vérifications des entrées
+            if not isinstance(annee, int):
+                raise TypeError("L'année doit être un entier.")
+            if not isinstance(mois, int) or not (1 <= mois <= 12):
+                raise ValueError("Le mois doit être un entier entre 1 et 12.")
+
+            self.calendrier_evenement.afficher_calendrier_annee(annee, mois)
+
+        except ValueError as ve:
+            logging.error(f"Entrée invalide : {ve}")
+            print("Erreur : Veuillez rentrer des chiffres adéquats en entrée")
+        except TypeError as te:
+            logging.error(f"Type incorrect : {te}")
+            print("Erreur : Veuillez rentrer des chiffres en entrée")
+        except Exception as e:
+            # Gestion générique des autres erreurs
+            logging.error(f"Une erreur s'est produite : {e}")
+            print(f"Une erreur inattendue est survenue : {e}")
 
         choix = inquirer.select(
             message="",
@@ -41,7 +61,7 @@ class EvenementVue(VueAbstraite):
 
                 return AccueilVue()
 
-            case "Chercher une équipe ou un joueur":
+            case "Chercher un match spécifique":
                 from view.calendrier.recherche_vue import RechercheVue
 
                 return RechercheVue()
