@@ -77,10 +77,6 @@ class ConsulterStats(metaclass=Singleton):
             f"Temps moyen passé en défense : {stat_affiché['time_defensive_third']} secondes"
         )
 
-    # Note pour les vues : Les stats à afficher dans la vue sont : goals, goals par match, assists, assists par match,
-    # saves, saves par match, shots, shots par match, score, score par match, demo infligées, demo infligées par match,
-    # indice de performance, indice offensif, pourcentage de tirs
-
     def stats_equipe(self, nom_equipe):
         """Une fonction qui permet d'afficher les statistiques par équipe"""
 
