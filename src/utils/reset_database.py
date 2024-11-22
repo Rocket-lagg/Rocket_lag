@@ -360,7 +360,76 @@ class ResetDatabase(metaclass=Singleton):
             print(f"Erreur de connexion ou d'exécution : {e}")
 
 
-        
+    def lancer_match_result(self):
+        """Extrait les matchs et insère les 100 premiers dans la table `match_a_parier`."""
+
+        url = "https://liquipedia.net/rocketleague/Liquipedia:Matches"
+        scraper = LiquipediaScraper(url)
+
+        # Étape 1 : Télécharger la page
+
+        scraper.fetch_page()
+        dates = scraper.find_all_dates2()
+        tournaments = scraper.find_tournoi2()
+
+
+        # Étape 3 : Récupérer les matchs
+        matches = scraper.extract_matches()
+
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Création de la table si elle n'existe pas
+                    cursor.execute("""
+                        DROP TABLE IF EXISTS match_result;
+                        CREATE TABLE IF NOT EXISTS match_result (
+                            id_match SERIAL PRIMARY KEY,
+                            tournoi VARCHAR(255),
+                            equipe1 VARCHAR(255),
+                            equipe2 VARCHAR(255),
+                            score_equipe1 INT,
+                            score_equipe2 INT,
+                            date TIMESTAMP WITH TIME ZONE
+                        );
+                    """)
+
+                    # Insérer les 100 premiers matchs complétées
+                    for i in range(100, 200):  # Boucle sur les 100 premiers matchs
+                        try:
+                            # Associer le tournoi au match (en utilisant l'index `i` pour choisir un tournoi)
+                            tournament_name = tournaments[i-100]
+
+                            # Calcul des cotes (par exemple, basé sur le nom des équipes)
+                            score = matches[i]["score"]
+                            part1, part2 = score.split(":")
+
+                            score_equipe1 = convert_score(part1)
+                            score_equipe2 = convert_score(part2)
+
+
+
+                            # Insérer le match dans la base de données
+                            cursor.execute("""
+                                INSERT INTO match_result (tournoi, equipe1, equipe2, score_equipe1, score_equipe2,date)
+                                VALUES (%s, %s, %s, %s, %s, %s);
+                            """, (
+                                tournament_name,
+                                matches[i]['team_left'],
+                                matches[i]['team_right'],
+                                score_equipe1,
+                                score_equipe2,
+                                dates[i-100]
+                            ))
+
+                        except Exception as e:
+                            print(f"Erreur lors de l'insertion d'un match : {e}")
+
+                    print(f"{min(100, len(matches))} matchs insérés dans la table `match_result`.")
+
+        except Exception as e:
+            print(f"Erreur de connexion ou d'exécution : {e}")
+
 
     def lancer(self):
 
@@ -374,6 +443,7 @@ class ResetDatabase(metaclass=Singleton):
         self.lancer_equipe_tournoi()
         self.lancer_match_tournoi()
         self.lancer_match_a_parier()
+        self.lancer_match_result()
 
         # Step 1: Initialiser l'API et le processeur de match
         api = API(base_url="https://api.rlcstatistics.net")
@@ -387,3 +457,6 @@ class ResetDatabase(metaclass=Singleton):
 
         # Step 4: Traiter les matchs et les joueurs
         match_processor.process_matches()
+
+r= ResetDatabase()
+r.lancer_match_result()
