@@ -1,5 +1,6 @@
 from datetime import datetime
 from dao.match_dao import MatchDao
+from dao.paris_dao import ParisDao
 import calendar
 import logging
 
@@ -8,14 +9,32 @@ class CalendrierEvenement:
 
     def __init__(self):
         self.match_dao = MatchDao()
+        self.pari_dao = ParisDao()
 
     def dictionnaire_evenement(self, annee, mois):
         # Dictionnaire des événements par jour (clé = (mois, jour), valeur = liste d'événements)
-        all_matchs = self.match_dao.lister_tous()
+        all_matchs = ParisDao().afficher_infos_paris()
         evenements = {}
         for match in all_matchs:
             date = match.date
-            print(date)
+            if date.year == annee and date.month == mois:
+                # Construire la chaîne de l'événement
+                evenement = (
+                    f"{match.tournoi}: {match.equipe1} vs {match.equipe2} à {date.hour}h{date.minute}"
+                )
+
+                # Ajouter à la clé correspondante dans le dictionnaire
+                if (date.month, date.day) not in evenements:
+                    evenements[(date.month, date.day)] = (
+                        []
+                    )  # Initialiser une liste si la clé n'existe pas
+
+                evenements[(date.month, date.day)].append(
+                    evenement
+                )  # Ajouter l'événement à la liste existante
+        all_matchs_passes = self.match_dao.lister_tous()
+        for match in all_matchs_passes:
+            date = match.date
             if date.year == annee and date.month == mois:
                 # Construire la chaîne de l'événement
                 evenement = (
@@ -103,3 +122,4 @@ class CalendrierEvenement:
 
 r = CalendrierEvenement()
 
+print(r.dictionnaire_evenement(2025, 1))

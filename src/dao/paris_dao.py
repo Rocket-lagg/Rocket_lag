@@ -1,9 +1,11 @@
 from dao.db_connection import DBConnection
 from business_object.Utilisateur import Utilisateur
 from business_object.Pari import Pari
-
 class ParisDao:
     """Classe contenant les méthodes pour accéder aux paris dans la base de données"""
+    def __init__(self):
+        self.Pari = Pari
+
 
     def get_available_tournaments(self):
         """Récupère les tournois disponibles à partir des paris enregistrés."""
@@ -49,8 +51,16 @@ class ParisDao:
 
                     # Parcourir les résultats et créer des objets Pari
                     for row in rows:
-                        id_match, tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2, date = row
-                        pari = Pari(id_match, tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2, date)
+
+                        pari = Pari(
+                            id_match=row["id_match"],
+                            tournoi=row["tournoi"],
+                            equipe1=row["equipe1"],
+                            equipe2=row["equipe2"],
+                            cote_equipe1=row["cote_equipe1"],
+                            cote_equipe2=row["cote_equipe2"],
+                            date=row["date"])
+
                         paris.append(pari)
 
         except Exception as e:
