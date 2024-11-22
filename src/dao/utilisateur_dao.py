@@ -218,6 +218,8 @@ class UtilisateurDao(metaclass=Singleton):
 
         return liste_utilisateurs
 
+
+
     @log
     def modifier(self, utilisateur) -> bool:
         """Modification d'un utilisateur dans la base de données

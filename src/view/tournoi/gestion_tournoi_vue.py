@@ -155,7 +155,9 @@ class GestionTournoiVue(VueAbstraite):
 
         # Itération de tous les tours
         for i in range(1, nb_tours + 2):
+            print('blip')
             tours = self.tournoi.recuperer_tour()
+            print(tours)
             pooling_pour_ce_tour = self.tournoi.pooling_pour_ce_tour(tours)
 
             # Itération du i-ème tour

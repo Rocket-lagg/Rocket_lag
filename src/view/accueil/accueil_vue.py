@@ -92,3 +92,5 @@ class AccueilVue(VueAbstraite):
                 return AccueilVue(Session().afficher())
 
                 return AccueilVue(message)
+
+

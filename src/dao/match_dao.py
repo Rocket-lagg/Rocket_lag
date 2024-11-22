@@ -438,3 +438,49 @@ class MatchDao(metaclass=Singleton):
             return None
 
 
+    def delete_match(match_id):
+        """
+        Supprimer un match dans la table `Match` en fonction de son `match_id`.
+
+        :param match_id: L'identifiant unique du match à supprimer.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        DELETE FROM Match
+                        WHERE match_id = %(match_id)s;
+                        """,
+                        {"match_id": match_id},
+                    )
+                    connection.commit()
+                    logging.info(f"Match avec match_id={match_id} supprimé avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la suppression du match : {e}")
+            raise
+
+
+
+    def add_match(match_details):
+        """
+        Ajouter un match dans la table `Match`.
+
+        :param match_details: Un dictionnaire contenant les informations du match à insérer.
+                            Doit inclure `tournoi`, `equipe1`, `equipe2`, `date`, `cote_equipe1`, `cote_equipe2`.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        INSERT INTO Match (tournoi, equipe1, equipe2, date, cote_equipe1, cote_equipe2)
+                        VALUES (%(tournoi)s, %(equipe1)s, %(equipe2)s, %(date)s, %(cote_equipe1)s, %(cote_equipe2)s);
+                        """,
+                        match_details
+                    )
+                    connection.commit()
+                    logging.info("Match ajouté avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de l'ajout d'un match : {e}")
+            raise

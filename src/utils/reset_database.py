@@ -277,12 +277,13 @@ class ResetDatabase(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
+
                             CREATE TABLE IF NOT EXISTS paris_utilisateur (
                             id_match SERIAL PRIMARY KEY,
                             tournoi VARCHAR(255),
                             equipe_parier VARCHAR(255),
                             equipe_adverse VARCHAR(255),
-                            date TIMESTAMP WITH TIME ZONE
+                            date TIMESTAMP WITH TIME ZONE,
                             cote FLOAT,
                             pseudo VARCHAR(255)
                         );
@@ -382,7 +383,6 @@ class ResetDatabase(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     # Création de la table si elle n'existe pas
                     cursor.execute("""
-                        DROP TABLE IF EXISTS match_result;
                         CREATE TABLE IF NOT EXISTS match_result (
                             id_match SERIAL PRIMARY KEY,
                             tournoi VARCHAR(255),
@@ -459,4 +459,4 @@ class ResetDatabase(metaclass=Singleton):
         match_processor.process_matches()
 
 r= ResetDatabase()
-r.lancer_match_result()
+r.lancer_paris_utilisateur()
