@@ -7,7 +7,8 @@ from business_object.joueur import Joueur
 from dao.equipe_dao import EquipeDao
 from business_object.Equipe import Equipe
 from business_object.Match import Match
-
+from bs4 import BeautifulSoup
+from datetime import datetime, timezone
 from dao.match_dao import MatchDao
 # Charger les variables d'environnement
 dotenv.load_dotenv()
@@ -219,3 +220,162 @@ class MatchProcessor:
             )  * regional_indices[joueur.region], 2
         )
             result = self.joueur_dao.creer(joueur)
+
+
+class LiquipediaScraper:
+    def __init__(self, url):
+        self.url = url
+        self.soup = None
+
+    def fetch_page(self):
+        """Télécharge la page HTML et initialise le parser BeautifulSoup."""
+        try:
+            response = requests.get(self.url)
+            response.raise_for_status()  # Vérifie les erreurs HTTP
+            self.soup = BeautifulSoup(response.text, 'html.parser')
+            print("Page fetched successfully!")
+        except requests.RequestException as e:
+            print(f"An error occurred: {e}")
+            self.soup = None
+
+    def extract_tournaments(self):
+        """Extrait les informations des tournois."""
+        if not self.soup:
+            print("Soup object is not initialized.")
+            return []
+
+        tournaments = []
+
+        # Recherche des éléments des tournois
+        tournament_cells = self.soup.find_all('td', style="text-align:right;font-size:11px;line-height:12px;padding-right:4px")
+
+        for cell in tournament_cells:
+            link = cell.find('a', href=True, title=True)
+            if link:
+                # Extraction des informations de tournoi
+                tournament_name = link.text.strip()
+                tournament_title = link['title']
+
+
+
+                tournaments.append({
+                    'name': tournament_name,
+                    'title': tournament_title,
+                                    })
+
+        return tournaments
+
+    def extract_matches(self):
+        """Extrait les informations des matchs."""
+        if not self.soup:
+            print("Soup object is not initialized.")
+            return []
+
+        rows = self.soup.find_all('tr')
+        matches = []
+
+        for row in rows:
+            left_team_cell = row.find('td', class_='team-left')
+            versus_cell = row.find('td', class_='versus')
+            right_team_cell = row.find('td', class_='team-right')
+
+            if left_team_cell and versus_cell and right_team_cell:
+                matches.append({
+                    'team_left': left_team_cell.text.strip(),
+                    'score': versus_cell.text.strip(),
+                    'team_right': right_team_cell.text.strip()
+                })
+        return matches
+
+    def find_all_dates(self):
+        """Trouve toutes les occurrences de 'timer-object-countdown-time'."""
+        if not self.soup:
+            print("Soup object is not initialized.")
+            return []
+
+        # Recherche globale de tous les éléments avec la classe
+        countdown_elements = self.soup.find_all('span', class_='timer-object-countdown-time')
+
+        dates = []
+        for element in countdown_elements:
+            date_text = element.text.strip()
+            dates.append(date_text)
+
+        countdown_elements = self.soup.find_all('span', class_=lambda c: c and 'countdown' in c)
+        formatted_dates = []
+        for element in countdown_elements:
+            # Récupérer le timestamp
+            timestamp = int(element['data-timestamp'])
+            # Convertir en datetime UTC
+            dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+            # Formater en UTC WITH TIMEZONE
+            formatted_date = dt.isoformat()  # Format ISO 8601 (e.g., 2024-11-23T00:00:00+00:00)
+            formatted_dates.append(formatted_date)
+
+        return formatted_dates
+
+
+
+
+    def find_all_dates2(self):
+        """Récupère toutes les dates avec fuseau horaire en utilisant le timestamp et les données de texte."""
+        if not self.soup:
+            print("Soup object is not initialized.")
+            return []
+
+        # Recherche des éléments avec la classe 'timer-object-datetime-only'
+        datetime_elements = self.soup.find_all('span', class_='timer-object-datetime-only')
+
+        dates = []
+        for element in datetime_elements:
+            try:
+                # Extraire le timestamp
+                timestamp = int(element['data-timestamp'])
+                dt_utc = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+
+                # Optionnel : Extraction de la date brute pour validation
+                date_text_element = element.find('span', class_='timer-object-date')
+                if date_text_element:
+                    date_text = date_text_element.text.strip()
+                    print(f"Date brute récupérée : {date_text}")
+
+                # Convertir en ISO 8601 pour un format standard
+                formatted_date = dt_utc.isoformat()
+                dates.append(formatted_date)
+
+            except (KeyError, ValueError) as e:
+                print(f"Erreur lors de l'extraction de la date : {e}")
+
+        return dates
+
+
+    def find_tournoi2(self):
+        """
+        Extrait les noms des tournois à partir des balises HTML données.
+        """
+        if not self.soup:
+            print("Soup object is not initialized.")
+            return []
+
+        # Recherche des éléments correspondant aux noms de tournoi
+        tournament_elements = self.soup.find_all('td', style=lambda x: x and 'text-align: right' in x)
+
+        # Extraction des noms de tournoi
+        tournaments = []
+        for element in tournament_elements:
+            link = element.find('a')  # Recherche d'un lien
+            if link :  # Vérifie que le lien a un attribut 'title'
+                tournament_name = link.text.strip()
+                tournaments.append(tournament_name)  # Utilise le titre pour récupérer le nom
+
+        return tournaments
+
+
+url = "https://liquipedia.net/rocketleague/Liquipedia:Matches"
+
+scraper = LiquipediaScraper(url)
+scraper.fetch_page()
+dates = scraper.find_all_dates2()
+f=scraper.find_tournoi2()
+
+print(f)

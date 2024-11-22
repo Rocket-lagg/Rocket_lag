@@ -24,23 +24,45 @@ class PariVue(VueAbstraite):
 
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
-        self.paris.afficher_infos_paris()
+        while True:
 
-        choix = inquirer.select(
-            message="Souhaitez-vous faire un nouveau paris?",
+
+            choix = inquirer.select(
+            message="Souhaitez-vous faire un nouveau pari ?",
             choices=[
                 "Parier sur un nouveau match",
                 "Retour",
+                "Voir tous les paris",
+
             ],
         ).execute()
 
-        match choix:
-            case "Retour":
-                from view.accueil.accueil_vue import AccueilVue
+            match choix:
+                case "Parier sur un nouveau match":
+                    # Demander à l'utilisateur de choisir un tournoi parmi les disponibles
+                    tournaments = self.get_available_tournaments()  # Méthode qui récupère les tournois disponibles
 
-                return AccueilVue()
+                    choix_tournoi = inquirer.select(
+                        message="Quel tournoi voulez-vous choisir ?",
+                        choices=tournaments,
+                    ).execute()
 
-            case "Paris":
-                from view.paris.nouveau_paris_vue import NouveauParisVue
+                    # Récupérer les équipes disponibles pour le tournoi choisi
+                    available_teams = self.get_teams_for_tournament(choix_tournoi)  # Méthode qui récupère les équipes disponibles pour ce tournoi
 
-                return NouveauParisVue()
+                    choix_equipe = inquirer.select(
+                        message="Quelle équipe souhaitez-vous parier ?",
+                        choices=available_teams,
+                    ).execute()
+
+                    # Effectuer le pari avec le tournoi et l'équipe choisis
+                    self.parier(choix_tournoi, choix_equipe)
+
+                case "Retour":
+                    # L'utilisateur a choisi "Retour", on revient à la vue d'accueil
+                    from view.accueil.accueil_vue import AccueilVue
+                    return AccueilVue()
+
+                case "Voir tous vos paris passées":
+                    # L'utilisateur a choisi "Voir tous les paris", on affiche les paris possibles
+                    self.paris.info_paris()

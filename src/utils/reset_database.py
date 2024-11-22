@@ -177,11 +177,14 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Equipe
                     cursor.execute(
                         """
+                            DROP TABLE IF EXISTS Paris CASCADE;
                             CREATE TABLE IF NOT EXISTS Paris (
                             id_pari SERIAL PRIMARY KEY,  -- Ajout d'une clé primaire pour paris
-                            id_parieur INT REFERENCES utilisateur(id_utilisateur),
+                            pseudo VARCHAR,
                             id_match VARCHAR REFERENCES Match(match_id),
-                            equipe_nom VARCHAR REFERENCES Equipe(equipe_nom)
+                            equipe_nom VARCHAR REFERENCES Equipe(equipe_nom),
+                            cote FLOAT,
+                            win BOOL
                         );
                             """
                     )
@@ -213,28 +216,6 @@ class ResetDatabase(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création de la table Tournoi Utilisateur: {e}")
 
-    def lancer_paris_utilisateur(self):
-        """
-        Création de la table Tournoi Utilisateur dans la base de données.
-        """
-        try:
-            # Connexion à la base de données
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    # Commande SQL pour supprimer et recréer la table Equipe
-                    cursor.execute(
-                        """
-                            CREATE TABLE IF NOT EXISTS paris_utilisateur (
-                            id_utilisateur INT REFERENCES utilisateur(id_utilisateur),
-                            id_pari INT REFERENCES paris(id_pari),
-                            PRIMARY KEY (id_utilisateur, id_pari)  -- Ajout d'une clé primaire composée
-                        );
-                            """
-                    )
-                    connection.commit()  # Confirmer les modifications
-                    logging.info("Table Paris Utilisateur créée avec succès.")
-        except Exception as e:
-            logging.error(f"Erreur lors de la création de la table Paris Utilisateur: {e}")
 
     def lancer_equipe_tournoi(self):
         """
@@ -285,6 +266,102 @@ class ResetDatabase(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la création de Match Tournoi: {e}")
 
+
+    def lancer_paris_utilisateur(self):
+        """
+        Création de la table Match Tournoi dans la base de données.
+        """
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            CREATE TABLE IF NOT EXISTS paris_utilisateur (
+                            id_match SERIAL PRIMARY KEY,
+                            tournoi VARCHAR(255),
+                            equipe_parier VARCHAR(255),
+                            equipe_adverse VARCHAR(255),
+                            date TIMESTAMP WITH TIME ZONE
+                            cote FLOAT,
+                            pseudo VARCHAR(255)
+                        );
+                            """
+                    )
+                    connection.commit()  # Confirmer les modifications
+                    logging.info("Table paris_utilisateur créée avec succès.")
+        except Exception as e:
+            logging.error(f"Erreur lors de la création de paris_utilisateur: {e}")
+
+    def lancer_match_a_parier(self):
+        """Extrait les matchs et insère les 100 premiers dans la table `match_a_parier`."""
+
+        url = "https://liquipedia.net/rocketleague/Liquipedia:Matches"
+        scraper = LiquipediaScraper(url)
+
+        # Étape 1 : Télécharger la page
+        scraper.fetch_page()
+
+        # Étape 2 : Récupérer les tournois
+        tournaments = scraper.extract_tournaments()
+
+        # Étape 3 : Récupérer les matchs
+        matches = scraper.extract_matches()
+        dates = scraper.find_all_dates()
+
+
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Création de la table si elle n'existe pas
+                    cursor.execute("""
+                        DROP TABLE IF EXISTS match_a_parier;
+                        CREATE TABLE IF NOT EXISTS match_a_parier (
+                            id_match SERIAL PRIMARY KEY,
+                            tournoi VARCHAR(255),
+                            equipe1 VARCHAR(255),
+                            equipe2 VARCHAR(255),
+                            cote_equipe1 FLOAT,
+                            cote_equipe2 FLOAT,
+                            date TIMESTAMP WITH TIME ZONE
+                        );
+                    """)
+
+                    # Insérer les 100 premiers matchs
+                    for i in range(min(100, len(matches))):  # Boucle sur les 100 premiers matchs
+                        try:
+                            # Associer le tournoi au match (en utilisant l'index `i` pour choisir un tournoi)
+                            tournament_name = tournaments[i % len(tournaments)]["name"]
+
+                            # Calcul des cotes (par exemple, basé sur le nom des équipes)
+                            cote_equipe1 = 2  # Exemple de logique pour les cotes, vous pouvez calculer cela dynamiquement
+                            cote_equipe2 = 2  # Exemple de logique pour les cotes
+
+                            # Insérer le match dans la base de données
+                            cursor.execute("""
+                                INSERT INTO match_a_parier (tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2,date)
+                                VALUES (%s, %s, %s, %s, %s, %s);
+                            """, (
+                                tournament_name,
+                                matches[i]['team_left'],
+                                matches[i]['team_right'],
+                                cote_equipe1,
+                                cote_equipe2,
+                                dates[i]
+                            ))
+
+                        except Exception as e:
+                            print(f"Erreur lors de l'insertion d'un match : {e}")
+
+                    print(f"{min(100, len(matches))} matchs insérés dans la table `match_a_parier`.")
+
+        except Exception as e:
+            print(f"Erreur de connexion ou d'exécution : {e}")
+
+
+        
+
     def lancer(self):
 
         self.lancer_joueur()
@@ -296,6 +373,7 @@ class ResetDatabase(metaclass=Singleton):
         self.lancer_tournoi_utilisateur()
         self.lancer_equipe_tournoi()
         self.lancer_match_tournoi()
+        self.lancer_match_a_parier()
 
         # Step 1: Initialiser l'API et le processeur de match
         api = API(base_url="https://api.rlcstatistics.net")

@@ -15,43 +15,28 @@ class ParisService:
         self.equipe_dao = EquipeDao()
         self.match_dao = MatchDao()
 
-    def instancier_paris(self, paris_bdd):
-        equipe_service = EquipeService()
-        match_service = MatchService
-        match = self.match_dao.trouver_par_id_match(paris_bdd["id_match"])
-        equipe = self.equipe_dao.trouver_par_nom_equipe(paris_bdd["nom_equipe"])  # A coder
-        equipe_service.instancier(equipe)
-        match_service.instancier(match)
-        pari = Pari(
-            id_pari=paris_bdd["id_pari"],
-            match=match,
-            equipe=equipe,
-            statut=paris_bdd["statut"],
-            montant=paris_bdd["montant"],
-        )
-        return pari
+    def afficher_infos_paris_possible(self):
 
-    def afficher_infos_paris(self):
-        "Affiche les paris d'un utilisateur"
         nom_utilisateur = Session().utilisateur.nom_utilisateur
-        paris = ParisDao().afficher_infos_paris(nom_utilisateur)
-        if paris == []:
-            print(f"{nom_utilisateur}, vous n'avez pas fait de paris")
-        else:
-            liste_paris = []
-            for pari in paris:
-                liste_paris.append(self.instancier_paris(pari))
-            print(liste_paris)
-        return liste_paris
+        paris_dao = ParisDao()
+        paris = paris_dao.afficher_infos_paris()
 
-    def parier(self, match, equipe, montant):  # créer un menu dans la view
+        return paris
+
+    def info_paris(self):
+        pseudo = Session().utilisateur.nom_utilisateur
+        paris_dao = ParisDao()
+        info_paris = paris_dao.info_paris(pseudo)
+        return info_paris
+
+    def parier(self, tournoi, equipe):  # créer un menu dans la view
         "Enregistre le paris de l'utilisateur dans la base de données"
-        if not isinstance(match, str):
+        if not isinstance(tournoi, str):
             raise TypeError("Match doit être une chaîne de charactères")
-        if not isinstance(montant, int):
-            raise TypeError("Le montant doit être un entier")
-        nom_utilisateur = Session().utilisateur.nom_utilisateur
-        ParisDao().ajouter_un_pari(nom_utilisateur, match, equipe, montant)
+
+        pseudo = Session().utilisateur.nom_utilisateur
+        ParisDao().ajouter_un_pari(tournoi, equipe,pseudo)
+        print(f"Vous avez parié sur {equipe} dans le tournoi {tournoi}.")
 
     def terminer_paris(pari, gagnant):
         "Donne le résultat du paris quand le match a été joué"

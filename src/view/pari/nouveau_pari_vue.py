@@ -25,9 +25,10 @@ class PariVue(VueAbstraite):
         print("\n" + "-" * 50 + "\nAccueil\n" + "-" * 50 + "\n")
 
         match = input("Sur quel match souhaitez-vous parier? ")
-        montant = input("Quel montant souhaitez-vous parier sur ce match? ")
-        self.paris.parier(match, montant)
-        self.paris.afficher_infos_paris()
+
+        self.paris.afficher_infos_paris_possible()
+        self.paris.parier(tournoi,equipe,)
+
         choix = inquirer.select(
             message="Souhaitez-vous faire un nouveau paris?",
             choices=[
