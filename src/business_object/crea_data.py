@@ -371,11 +371,11 @@ class LiquipediaScraper:
         return tournaments
 
 
-url = "https://liquipedia.net/rocketleague/Liquipedia:Matches"
 
-scraper = LiquipediaScraper(url)
-scraper.fetch_page()
-dates = scraper.find_all_dates2()
-f=scraper.find_tournoi2()
-
-print(f)
+def convert_score(part):
+    if part == "W":
+        return 1
+    elif part == "L":
+        return 0
+    else:
+        return int(part)
