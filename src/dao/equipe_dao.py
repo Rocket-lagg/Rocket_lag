@@ -208,3 +208,8 @@ class EquipeDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des moyennes pour le joueur '{equipe_nom}': {e}")
             return {colonne: 0.0 for colonne in colonnes}
+
+
+
+
+    

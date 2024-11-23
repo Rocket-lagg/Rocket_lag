@@ -107,11 +107,16 @@ class MatchProcessor:
 
             # Process teams and players for each match
             for couleur in ['blue', 'orange']:
-                self.process_team(match_data, couleur,ligue,region,stage,date)
-                self.process_players(match_data, couleur,ligue,region,stage,date)
+                try :
+                    self.process_team(match_data, couleur,ligue,region,stage,date)
+                    self.process_players(match_data, couleur,ligue,region,stage,date)
 
+                except KeyError as e:
+                    # Si une clé est manquante dans `match_data` ou dans une fonction appelée
+                    print(f"Erreur de clé manquante pour {couleur}: {e}")
+                    continue
     def process_team(self,match_data,couleur,ligue,region,stage,date):
-        """Process team data for a given match and team color."""
+
         team_data = match_data.get(couleur, {})
 
         # Vérification de l'existence du score

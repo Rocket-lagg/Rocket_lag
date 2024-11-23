@@ -332,13 +332,14 @@ class ResetDatabase(metaclass=Singleton):
                             tournament_name = tournaments[i % len(tournaments)]["name"]
 
                             # Calcul des cotes (par exemple, basé sur le nom des équipes)
-                            cote_equipe1 = 2  # Exemple de logique pour les cotes, vous pouvez calculer cela dynamiquement
-                            cote_equipe2 = 2  # Exemple de logique pour les cotes
+                            cote_equipe1 = 2
+                            cote_equipe2 = 2
 
                             # Insérer le match dans la base de données
                             cursor.execute("""
                                 INSERT INTO match_a_parier (tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2,date)
-                                VALUES (%s, %s, %s, %s, %s, %s);
+                                VALUES (%s, %s, %s, %s, %s, %s)
+                                ON CONFLICT (tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2,date) DO NOTHING;
                             """, (
                                 tournament_name,
                                 matches[i]['team_left'],
@@ -349,7 +350,7 @@ class ResetDatabase(metaclass=Singleton):
                             ))
 
                         except Exception as e:
-                            print(f"Erreur lors de l'insertion d'un match : {e}")
+                            print(f"")
 
                     print(f"{min(100, len(matches))} matchs insérés dans la table `match_a_parier`.")
 
@@ -408,7 +409,8 @@ class ResetDatabase(metaclass=Singleton):
                             # Insérer le match dans la base de données
                             cursor.execute("""
                                 INSERT INTO match_result (tournoi, equipe1, equipe2, score_equipe1, score_equipe2,date)
-                                VALUES (%s, %s, %s, %s, %s, %s);
+                                VALUES (%s, %s, %s, %s, %s, %s)
+                                ON CONFLICT (tournoi, equipe1, equipe2, score_equipe1, score_equipe2,date) DO NOTHING;
                             """, (
                                 tournament_name,
                                 matches[i]['team_left'],
@@ -419,7 +421,7 @@ class ResetDatabase(metaclass=Singleton):
                             ))
 
                         except Exception as e:
-                            print(f"Erreur lors de l'insertion d'un match : {e}")
+                            print(f"")
 
                     print(f"{min(100, len(matches))} matchs insérés dans la table `match_result`.")
 
@@ -442,14 +444,14 @@ class ResetDatabase(metaclass=Singleton):
         self.lancer_match_result()
 
         # Step 1: Initialiser l'API et le processeur de match
-        #api = API(base_url="https://api.rlcstatistics.net")
-        #match_processor = MatchProcessor(api)
+        api = API(base_url="https://api.rlcstatistics.net")
+        match_processor = MatchProcessor(api)
 
         # Step 2: Récupérer les matchs
-        #match_processor.recup_matches(page=1, page_size=100000000000)
+        match_processor.recup_matches(page=1, page_size=100000000000)
 
         # Step 3: Récupérer les données des matchs
-        #match_processor.recup_match_data()
+        match_processor.recup_match_data()
 
         # Step 4: Traiter les matchs et les joueurs
-        #match_processor.process_matches()
+        match_processor.process_matches()
