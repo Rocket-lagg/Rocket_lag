@@ -69,7 +69,9 @@ class TournoiVue(VueAbstraite):
 
             case "Gérer mes tournois":
                 tournois = self.tournoi.recuperer_tournois()
+
                 tournois_choix = [{"name": t.nom_tournoi, "value": t} for t in tournois]
+
                 tournois_choix.append({"name": "Retour", "value": "quit"})
                 tournois_questions = inquirer.select(
                     message="Quel tournoi voulez-vous modifier?",

@@ -97,7 +97,7 @@ class PariVue(VueAbstraite):
                             # Afficher la table
                             print("Paris effectué")
                             print(table)
-                            
+
 
 
 
@@ -112,6 +112,4 @@ class PariVue(VueAbstraite):
         from view.accueil.accueil_vue import AccueilVue
         return AccueilVue("Retour à l'accueil")
 
-    def message_info(self):
-        """Affiche un message ou reste vide."""
-        print("Puisse la chance être avec vous...")
+ 

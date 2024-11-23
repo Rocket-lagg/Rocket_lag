@@ -60,38 +60,6 @@ class ParisService:
         t=ParisDao().ajouter_paris(tournoi, equipe,pseudo)
         print(f"Vous avez parié sur {equipe} dans le tournoi {tournoi}.")
 
-    def terminer_paris(pari, gagnant):
-        """
-        Détermine le résultat d'un pari après la fin du match. Met à jour le statut du pari en fonction du gagnant.
-
-        Parameters
-        ----------
-        pari : Pari
-            Le pari à évaluer, de type Pari.
-        gagnant : str
-            Le nom de l'équipe gagnante du match.
-        """
-        if not isinstance(pari, Pari):
-            raise TypeError("Le pari doit être de type Pari")
-        if pari.pari == gagnant:
-            pari.statut = "Remporté"
-        else:
-            pari.statut = "Perdu"
-        ParisDao().changer_statut(pari.statut)
-
-    def supprimer_paris(pari):
-        """
-        Supprime un pari de l'utilisateur dans la base de données.
-
-        Parameters
-        ----------
-        pari : Pari
-            Le pari à supprimer, de type Pari.
-        """
-        if not isinstance(pari, Pari):
-            raise TypeError("Le pari doit être de type Pari")
-        ParisDao().supprimer_paris(pari)
-
 
     def voir_paris(self):
         """
