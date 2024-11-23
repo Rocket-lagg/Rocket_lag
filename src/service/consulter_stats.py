@@ -124,8 +124,6 @@ class ConsulterStats(metaclass=Singleton):
         if n == 0:
             raise ValueError(f"Aucun match n'a été trouvé pour l'équipe {nom_equipe}.")
 
-        # indice de pression TODO -> besoin du nombre de boosts volés, du temps passé dans la partie de terrain adverse, et des démolitions
-
         collonne = [
             "goals",
             "assists",
@@ -334,9 +332,7 @@ class ConsulterStats(metaclass=Singleton):
                         "time_neutral_third": joueur_stats.get("time_neutral_third"),
                         "demo_inflige": joueur_stats.get("demo_inflige"),
                         "demo_recu": joueur_stats.get("demo_recu"),
-                        "goal_participation": joueur_stats.get(
-                            "goal_participation"
-                        ),  # Gardée ici pour les joueurs
+                        "goal_participation": joueur_stats.get("goal_participation"),
                         "indice_offensif": joueur_stats.get("indice_offensif"),
                         "indice_performance": joueur_stats.get("indice_performance"),
                     }
