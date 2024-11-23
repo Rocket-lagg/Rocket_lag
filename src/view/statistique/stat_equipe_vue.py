@@ -25,7 +25,10 @@ class EquipeVue(VueAbstraite):
         print("\n" + "-" * 50 + "\nConsulter Statistique - Equipe\n" + "-" * 50 + "\n")
 
         reponse = input("Nom de l'équipe: ")
-        self.consulter_stats.stats_equipe(reponse)
+        try:
+            self.consulter_stats.stats_equipe(reponse)
+        except ValueError as e:
+            print(f"\nErreur : {e}")
 
         choix = inquirer.select(
             message="",

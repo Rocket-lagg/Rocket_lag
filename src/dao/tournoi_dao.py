@@ -156,6 +156,7 @@ class TournoiDao(metaclass=Singleton):
                         },
                     )
                     res = cursor.fetchall()
+                    print(res)
                     if not res:
                         return []
                     liste_equipe = []
@@ -536,3 +537,179 @@ class TournoiDao(metaclass=Singleton):
                         print("Aucun match trouvé dans le tournoi.")
         except Exception as e:
             print(f"Erreur lors de l'affichage du pooling : {e}")
+
+    def recuperer_tournoi_par_clef(self, clef):
+        res = None
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT *
+                        FROM tournoi
+                        WHERE id_tournoi = %(id_tournoi)s
+                        """,
+                        {
+                            "id_tournoi": clef,
+                        },
+                    )
+                    res = cursor.fetchone()
+                    print(res)
+                    if not res:
+                        return []
+                    tournoi = Tournoi(
+                        nom_tournoi=res["nom"],
+                        createur=res["nom_createur"],
+                        id_tournoi=res["id_tournoi"],
+                        tour=res["tours"],
+                        type_match=res["type_match"],
+                        officiel=res["officiel"],
+                    )
+                    return [tournoi]
+
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des tournois : {e}")
+            return False
+
+    def recuperer_joueur_par_equipe(self, nom):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            SELECT joueur1, joueur2, joueur3
+                            FROM equipe_tournoi
+                            WHERE nom_equipe = %(nom)s
+                            """,
+                        {
+                            "nom": nom,
+                        },
+                    )
+                    res = cursor.fetchone()
+                    if res:
+                        return [res["joueur1"], res["joueur2"], res["joueur3"]]
+                    else:
+                        return []
+        except Exception as e:
+            logging.error(f"Erreur lors de la recherche des joueurs : {e}")
+            return False
+
+    def ajouter_joueur_equipe(self, joueur, equipe):
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            UPDATE equipe_tournoi
+                            SET
+                                joueur1 = CASE WHEN joueur1 IS NULL THEN %(joueur)s ELSE joueur1 END,
+                                joueur2 = CASE WHEN joueur1 IS NOT NULL AND joueur2 IS NULL THEN %(joueur)s ELSE joueur2 END,
+                                joueur3 = CASE WHEN joueur1 IS NOT NULL AND joueur2 IS NOT NULL AND joueur3 IS NULL THEN %(joueur)s ELSE joueur3 END
+                            WHERE nom_equipe = %(equipe)s
+                            AND (
+                                joueur1 IS NULL
+                                OR joueur2 IS NULL
+                                OR joueur3 IS NULL
+                                );
+                            """,
+                        {"joueur": joueur, "equipe": equipe},
+                    )
+        except Exception as e:
+            print(f"Erreur lors de la création des joueurs : {e}")
+            return False
+
+    def ajouter_joueur_tournoi(self, nom_utilisateur, id_tournoi):
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                            INSERT INTO tournois_utilisateur (nom_utilisateur, id_tournoi)
+                            VALUES (%(nom_utilisateur)s, %(id_tournoi)s);
+                            """,
+                        {"nom_utilisateur": nom_utilisateur, "id_tournoi": id_tournoi},
+                    )
+        except Exception as e:
+            print(f"Erreur lors de l'inscription des utilisateurs et des tournois : {e}")
+            return False
+
+    def recuperer_tournoi_utilisateur(utilisateur):
+        try:
+            # Connexion à la base de données
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT id_tournoi
+                        FROM utilisateur_tournoi
+                        WHERE nom_utilisateur = %(utilisateur)s;
+                        """,
+                        {"utilisateur": utilisateur},
+                    )
+                    tournois = cursor.fetchall()
+                    return [tournoi["id_tournoi"] for tournoi in tournois]
+        except Exception as e:
+            print(
+                f"Erreur lors de la récupération des tournois pour l'utilisateur {utilisateur} : {e}"
+            )
+            return None
+
+    def recuperer_tournoi_info(self, id_tournoi):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT nom, nom_createur, type_match, tours, officiel
+                        FROM tournoi
+                        WHERE id_tournoi = %(id_tournoi)s;
+                        """,
+                        {"id_tournoi": id_tournoi},
+                    )
+                    # Récupérer le résultat AVANT la fermeture du curseur
+                    result = cursor.fetchone()
+            return result
+        except Exception as e:
+            print(f"Erreur lors de la récupération des informations du tournoi {id_tournoi} : {e}")
+            return None
+
+    def recuperer_equipes_tournoi(self, id_tournoi):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT nom_equipe, tour, joueur1, joueur2, joueur3
+                        FROM equipe_tournoi
+                        WHERE id_tournoi = %(id_tournoi)s
+                        ORDER BY tour, nom_equipe;
+                        """,
+                        {"id_tournoi": id_tournoi},
+                    )
+                    result = cursor.fetchall()
+            return result
+        except Exception as e:
+            print(f"Erreur lors de la récupération des équipes du tournoi {id_tournoi} : {e}")
+            return None
+
+    def recuperer_matchs_tournoi(self, id_tournoi):
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT id_match, equipe1, equipe2, score_equipe1, score_equipe2, tour
+                        FROM match_tournoi
+                        WHERE id_tournoi = %(id_tournoi)s
+                        ORDER BY tour, id_match;
+                        """,
+                        {"id_tournoi": id_tournoi},
+                    )
+                    result = cursor.fetchall()
+                return result
+        except Exception as e:
+            print(f"Erreur lors de la récupération des matchs du tournoi {id_tournoi} : {e}")
+            return None

@@ -205,9 +205,9 @@ class ResetDatabase(metaclass=Singleton):
                     cursor.execute(
                         """
                             CREATE TABLE IF NOT EXISTS tournois_utilisateur (
-                            id_utilisateur INT REFERENCES utilisateur(id_utilisateur),
+                            nom_utilisateur VARCHAR REFERENCES utilisateur(pseudo),
                             id_tournoi VARCHAR(255) REFERENCES tournoi(id_tournoi),
-                            PRIMARY KEY (id_utilisateur, id_tournoi)  -- Ajout d'une clé primaire composée
+                            PRIMARY KEY (nom_utilisateur, id_tournoi)  -- Ajout d'une clé primaire composée
                         );
                             """
                     )
@@ -231,7 +231,10 @@ class ResetDatabase(metaclass=Singleton):
                             CREATE TABLE IF NOT EXISTS equipe_tournoi (
                             id_tournoi VARCHAR(255) REFERENCES tournoi(id_tournoi),
                             nom_equipe VARCHAR(255),
-                            tour INT
+                            tour INT,
+                            joueur1 VARCHAR(255),
+                            joueur2 VARCHAR(255),
+                            joueur3 VARCHAR(255)
                         );
                             """
                     )
