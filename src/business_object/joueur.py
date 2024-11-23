@@ -61,6 +61,18 @@ class Joueur(EntiteSportive):
 
     rating : float
         Note ou évaluation de la performance du joueur.
+
+    date : datetime
+        Date et heure du match.
+
+    ligue : str
+        Nom de la ligue ou compétition dans laquelle se déroule le match.
+
+    region : str
+        Région où le match se joue.
+        
+    stage : str
+        Phase ou étape du match (par exemple : "quart de finale").
     """
 
     def __init__(
@@ -176,7 +188,3 @@ class Joueur(EntiteSportive):
                 f"Demo Infligé per Match: {self.demo_inflige_par_match}, "
                 f"Indice Offensif: {self.indice_offensif}, "
                 f"Indice Performance: {self.indice_performance})")
-
-
-
-

@@ -84,13 +84,13 @@ class EquipeDao(metaclass=Singleton):
 
         Parameters
         ----------
-        joueur_id : int
-            L'ID du joueur à récupérer
+        equipe_nom : str
+            Nom de l'équipe à récupérer
 
         Returns
         -------
-        joueur : Joueur
-            Une instance du joueur récupéré
+        equipe : Equipe
+            Une instance de l'équipe à récupéré
         """
         try:
             with DBConnection().connection as connection:
@@ -168,8 +168,8 @@ class EquipeDao(metaclass=Singleton):
 
         Parameters
         ----------
-        joueur_nom : str
-            Le nom du joueur pour lequel récupérer les moyennes.
+        equipe_nom : str
+            Le nom de l'équipe pour laquelle récupérer les moyennes.
         colonnes : list
             Une liste des colonnes dont on veut calculer la moyenne (ex : ['score', 'rating', 'goals']).
 
@@ -208,4 +208,3 @@ class EquipeDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des moyennes pour le joueur '{equipe_nom}': {e}")
             return {colonne: 0.0 for colonne in colonnes}
-

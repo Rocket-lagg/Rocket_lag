@@ -1,4 +1,36 @@
 class Match:
+    """
+    Représente un match de sport avec toutes ses informations associées.
+
+    Attributs
+    ---------
+    match_id : int
+        Identifiant unique du match.
+    equipe1 : str
+        Nom de la première équipe.
+    equipe2 : str
+        Nom de la deuxième équipe.
+    score1 : int
+        Score de la première équipe.
+    score2 : int
+        Score de la deuxième équipe.
+    date : datetime
+        Date et heure du match.
+    ligue : str
+        Nom de la ligue ou compétition dans laquelle se déroule le match.
+    region : str
+        Région où le match se joue.
+    stage : str
+        Phase ou étape du match (par exemple : "quart de finale").
+    perso : bool, optionnel
+        Indique si le match a été créé de manière personnalisée par l'utilisateur.
+        Par défaut, cette valeur est `False`.
+    cote_equipe1 : float, optionnel
+        Cote associée à la première équipe. Par défaut, elle est de `2`.
+    cote_equipe2 : float, optionnel
+        Cote associée à la deuxième équipe. Par défaut, elle est de `2`.
+    """
+    
     def __init__(
         self,
         match_id,

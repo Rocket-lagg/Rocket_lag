@@ -46,23 +46,25 @@ class Equipe(EntiteSportive):
     demo_recu : int
         Nombre de démolitions reçues par l'équipe.
 
-    goal_participation : float
-        Taux de participation aux buts, calculé comme la somme des buts et des
-        passes décisives divisée par le nombre total de buts marqués par
-        l'équipe.
-
     Nouveaux attributs propres à Equipe:
     ------------------------------------
     equipe_score : int
         Score total obtenu par l'équipe dans le match.
 
-    equipe_winner : bool
-        Indicateur si l'équipe a gagné le match (True pour gagnante, False pour perdante).
+    boost_stole : int
+        Nombre de boost volé durant la partie
+
+    date : datetime
+        Date et heure du match.
+
+    ligue : str
+        Nom de la ligue ou compétition dans laquelle se déroule le match.
 
     region : str
-        Région géographique à laquelle l'équipe appartient.
+        Région où le match se joue.
 
-
+    stage : str
+        Phase ou étape du match (par exemple : "quart de finale").
     """
 
     def __init__(

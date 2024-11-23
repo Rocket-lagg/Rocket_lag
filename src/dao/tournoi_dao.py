@@ -9,8 +9,28 @@ class TournoiDao(metaclass=Singleton):
 
     def creer_tournoi(
         self, nom_utilisateur, id_tournois, nom_tournois, type_tournoi, tours
-    ) -> bool:
-        """Création d'un tournoi dans la base de données"""
+        ) -> bool:
+        """
+        Crée un tournoi dans la base de données.
+
+        Parameters
+        ----------
+        nom_utilisateur : str
+            Le nom de l'utilisateur qui crée le tournoi.
+        id_tournois : str
+            L'identifiant unique du tournoi.
+        nom_tournois : str
+            Le nom du tournoi à créer.
+        type_tournoi : int
+            Le type de tournoi ("1vs1", "2vs2", "3vs3").
+        tours : int
+            Le nombre de tours ou phases dans le tournoi.
+
+        Return
+        -------
+        bool : Bool
+            True si le tournoi a été créé avec succès, False sinon.
+        """
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
@@ -40,6 +60,19 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def recuperer_tournois_par_utilisateur(self, nom_createur):
+        """
+        Récupère la liste des tournois d'un utilisateur
+
+        Parameters
+        ----------
+        nom_createur : str
+            Le nom de l'utilisateur qui crée le tournoi.
+
+        Return
+        -------
+        liste_tournois : List[Tournoi]
+            Liste des tournois créés par l'utilisateur
+        """
         res = None
         try:
             # Connexion à la base de données
@@ -87,6 +120,24 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def recuperer_equipe(self, id_tournoi, tour):
+        """
+        Récupère les équipes d'un tournoi pour un tour donné.
+
+        Parameters
+        ----------
+        id_tournoi : int
+            L'identifiant unique du tournoi.
+        tour : int
+            Le numéro du tour pour lequel les équipes doivent être récupérées.
+
+        Return
+        ------
+        liste_equipe : List[str]
+            Une liste contenant les noms des équipes participant au tour spécifié dans le tournoi.
+            Retourne une liste vide si aucune équipe n'est trouvée.
+        False : bool
+            Retourne False en cas d'erreur lors de l'exécution de la requête.
+        """
         res = None
         print("cc")
         try:
@@ -119,6 +170,24 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def ajouter_score_match(self, score1, score2, match_id):
+        """
+        Met à jour les scores d'un match spécifique dans la base de données.
+
+        Parameters
+        ----------
+        score1 : int
+            Le score de l'équipe 1.
+        score2 : int
+            Le score de l'équipe 2.
+        match_id : int
+            L'identifiant unique du match à mettre à jour.
+
+        Return
+        ------
+        success : bool
+            Retourne False en cas d'erreur lors de la mise à jour des scores.
+            Aucun retour explicite (None) si l'opération est réussie.
+        """
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
@@ -137,6 +206,24 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def creer_equipe(self, id_tournoi, nom_equipe, tour):
+        """
+        Ajoute une équipe dans un tournoi spécifique pour un tour donné.
+
+        Parameters
+        ----------
+        id_tournoi : int
+            L'identifiant unique du tournoi auquel l'équipe est associée.
+        nom_equipe : str
+            Le nom de l'équipe à ajouter.
+        tour : int
+            Le numéro du tour auquel l'équipe participe.
+
+        Return
+        ------
+        success : bool
+            Retourne False en cas d'erreur lors de l'insertion de l'équipe dans la base de données.
+            Aucun retour explicite (None) si l'opération est réussie.
+        """
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
@@ -158,6 +245,26 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def creer_match(self, id_tournoi, equipe1, equipe2, tour):
+        """
+        Ajoute un match entre deux équipes dans un tournoi spécifique pour un tour donné.
+
+        Parameters
+        ----------
+        id_tournoi : int
+            L'identifiant unique du tournoi auquel le match est associé.
+        equipe1 : str
+            Le nom de la première équipe participant au match.
+        equipe2 : str
+            Le nom de la deuxième équipe participant au match.
+        tour : int
+            Le numéro du tour auquel le match appartient.
+
+        Return
+        ------
+        success : bool
+            Retourne False en cas d'erreur lors de l'insertion du match dans la base de données.
+            Aucun retour explicite (None) si l'opération est réussie.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -178,6 +285,24 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def trouver_matchs_par_tournoi(self, id_tournoi, tour):
+        """
+        Récupère la liste des matchs d'un tournoi spécifique pour un tour donné.
+
+        Parameters
+        ----------
+        id_tournoi : int
+            L'identifiant unique du tournoi pour lequel les matchs sont recherchés.
+        tour : int
+            Le numéro du tour auquel les matchs appartiennent.
+
+        Return
+        ------
+        liste_matchs : List[List[Any]]
+            Une liste contenant les informations des matchs (id_match, equipe1, equipe2) pour le tour spécifié.
+            Retourne une liste vide si aucun match n'est trouvé.
+        success : bool
+            Retourne False en cas d'erreur lors de la récupération des données depuis la base de données.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -205,6 +330,23 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def recuperer_score_match(self, equipe1, equipe2):
+        """
+        Récupère les scores d'un match entre deux équipes spécifiques.
+
+        Parameters
+        ----------
+        equipe1 : str
+            Le nom de la première équipe.
+        equipe2 : str
+            Le nom de la deuxième équipe.
+
+        Return
+        ------
+        scores : List[int]
+            Une liste contenant les scores des deux équipes. Si le match n'est pas trouvé, retourne une liste vide.
+        success : bool
+            Retourne False en cas d'erreur lors de la récupération des données depuis la base de données.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -229,6 +371,19 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def modifier_tour_gagnant_equipe(self, equipe):
+        """
+        Modifie le tour d'une équipe gagnante en incrémentant le tour dans la base de données.
+
+        Parameters
+        ----------
+        equipe : str
+            Le nom de l'équipe dont le tour doit être incrémenté.
+
+        Return
+        ------
+        success : bool
+            Retourne `True` si la mise à jour a réussi, `False` en cas d'erreur lors de l'incrémentation du tour dans la base de données.
+        """
         try:
             # Connexion à la base de données
             with DBConnection().connection as connection:
@@ -245,7 +400,19 @@ class TournoiDao(metaclass=Singleton):
             print(f"Erreur lors de l'incrémentation du tour dans equipe_tournoi : {e}")
             return False
 
-    def recuperer_tour(self):   
+    def recuperer_tour(self):
+        """
+        Récupère le numéro du tour le plus élevé dans la table equipe_tournoi.
+
+        Cette fonction exécute une requête pour récupérer le tour maximal auquel une équipe a participé,
+        en fonction des données présentes dans la base de données. Si aucune donnée n'est trouvée,
+        le tour est considéré comme étant le tour 1 par défaut.
+
+        Return
+        ------
+        max_tour : int
+            Le numéro du tour le plus élevé. Si aucune donnée n'est disponible, renvoie 1.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -266,6 +433,15 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def donner_nombre_equipe(self):
+        """
+        Récupère le nombre total d'équipes présentes dans la table equipe_tournoi.
+
+        Return
+        ------
+        nombre_lignes : int
+            Le nombre d'équipes présentes dans la table equipe_tournoi.
+            Si une erreur survient, la fonction retourne None.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -282,6 +458,15 @@ class TournoiDao(metaclass=Singleton):
             return None
 
     def recuperer_tour_depuis_match(self):
+        """
+        Récupère le numéro du tour le plus élevé des matchs dans la table match_tournoi.
+
+        Return
+        ------
+        max_tour : int
+            Le numéro du tour le plus élevé. Si aucune donnée n'est disponible, renvoie 1.
+            En cas d'erreur, retourne False.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -301,6 +486,14 @@ class TournoiDao(metaclass=Singleton):
             return False
 
     def afficher_pooling_tournoi(self):
+        """
+        Affiche un tableau des matchs d'un tournoi, incluant les scores et les informations sur les équipes.
+
+        Return
+        ------
+        None
+            Cette fonction n'a pas de valeur de retour. Elle se charge uniquement de l'affichage des résultats.
+        """
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:

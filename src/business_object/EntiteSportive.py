@@ -46,10 +46,17 @@ class EntiteSportive(ABC):
     demo_recu : int
         Nombre de démolitions reçues par l'entité sportive.
 
-    goal_participation : float
-        Taux de participation aux buts, calculé comme la somme des buts et des
-        passes décisives divisée par le nombre total de buts marqués par
-        l'équipe.
+    date : datetime
+        Date et heure du match.
+
+    ligue : str
+        Nom de la ligue ou compétition dans laquelle se déroule le match.
+
+    region : str
+        Région où le match se joue.
+
+    stage : str
+        Phase ou étape du match (par exemple : "quart de finale").
     """
 
     def __init__(

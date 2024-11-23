@@ -277,7 +277,6 @@ class ResetDatabase(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-
                             CREATE TABLE IF NOT EXISTS paris_utilisateur (
                             id_match SERIAL PRIMARY KEY,
                             tournoi VARCHAR(255),

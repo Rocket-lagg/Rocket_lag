@@ -75,12 +75,21 @@ class ParisDao:
 
     def ajouter_paris(self, tournoi_voulu, equipe_voulue,pseudo):
         """
-        Filtre les paris selon le tournoi et l'équipe spécifiés, insère les résultats
-        dans la table `paris_utilisateur`, et retourne les données insérées.
+        Ajoute les paris selon le tournoi et l'équipe spécifiés
+        dans la table paris_utilisateur, et retourne les données insérées.
 
-        :param tournoi_voulu: Nom du tournoi à filtrer (chaîne).
-        :param equipe_voulue: Nom de l'équipe à filtrer (chaîne).
-        :return: Liste de tuples (equipe, cote, tournoi) correspondant aux données insérées.
+        Parameters
+        ----------
+        tournoi_voulu : str
+            Nom du tournoi
+
+        equipe_voulu : str
+            Nom de l'équipe
+
+        Return
+        ------
+        filtered_results : Tuple
+            Liste de tuples (equipe, cote, tournoi) correspondant aux données insérées.
         """
         try:
             # Connexion à la base de données principale
@@ -126,6 +135,19 @@ class ParisDao:
 
 
     def info_paris(self, pseudo):
+        """
+        Trouve les paris d'un utilisateur selon son pseudo
+
+        Parameters
+        ----------
+        pseudo : str
+            Pseudo de l'utilisateur
+
+        Return
+        ------
+        rows : List[Tuple(str)]
+            Liste des infos sur les paris de l'utilisateur
+        """
         try:
             # Connexion à la base de données principale
             with DBConnection().connection as connection:
@@ -159,7 +181,7 @@ class ParisDao:
 
         Parameters
         ----------
-        utilisateur : Utilisateur
+        paris : Utilisateur
 
         Returns
         -------
@@ -252,4 +274,4 @@ class ParisDao:
 
 
 
-print(ParisDao().lister_tous_paris_utilisateur('momo'))
+

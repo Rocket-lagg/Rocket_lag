@@ -11,11 +11,37 @@ class ConsulterStats(metaclass=Singleton):
 
     @staticmethod
     def stats_par_match(total, n):
-        """Calculer la moyenne par match tout en évitant la division par zéro"""
+        """
+        Calculer la moyenne par match tout en évitant la division par zéro.
+
+        Parameters
+        ----------
+        total : int or float
+            Le total des scores ou autres statistiques à diviser par le nombre de matchs.
+        n : int
+            Le nombre de matchs sur lequel calculer la moyenne.
+
+        Return
+        ------
+        float
+            La moyenne calculée.
+        """
         return total / n if n > 0 else 0
 
     def stats_joueurs(self, nom_joueur):
-        """Une fonction qui permet d'afficher les statistiques par joueur"""
+        """Une fonction qui permet d'afficher les statistiques par joueur
+
+        Parameters
+        ----------
+        nom_joueur : str
+            Nom du joueur dont on recherche les statistiques
+
+        Return
+        ------
+        None
+            La fonction affiche directement les statistiques de l'équipe dans la console.
+
+        """
         if not isinstance(nom_joueur, str):
             raise TypeError("nom_joueur doit être une instance de str")
 
@@ -78,7 +104,19 @@ class ConsulterStats(metaclass=Singleton):
         )
 
     def stats_equipe(self, nom_equipe):
-        """Une fonction qui permet d'afficher les statistiques par équipe"""
+        """
+        Une fonction qui permet d'afficher les statistiques par équipe.
+
+        Parameters
+        ----------
+        nom_equipe : str
+            Le nom de l'équipe pour laquelle afficher les statistiques.
+
+        Return
+        ------
+        None
+            La fonction affiche directement les statistiques de l'équipe dans la console.
+        """
 
         equipedao = EquipeDao()
         equipe_data = equipedao.obtenir_par_nom(nom_equipe)
@@ -125,6 +163,20 @@ class ConsulterStats(metaclass=Singleton):
         )
 
     def choix_match_joueur(self, nom_joueur):
+        """
+        Récupère les matchs associés à un joueur et retourne un dictionnaire de matchs.
+
+        Parameters
+        ----------
+        nom_joueur : str
+            Le nom du joueur pour lequel récupérer les matchs.
+
+        Return
+        ------
+        dict
+            Un dictionnaire où les clés sont des chaînes de caractères représentant les matchs sous la forme
+        """
+
         if not isinstance(nom_joueur, str):
             raise TypeError("'nom_joueur' doit être une instance de str.")
 
@@ -149,6 +201,20 @@ class ConsulterStats(metaclass=Singleton):
         return match_dict
 
     def choix_match_equipe(self, nom_equipe):
+        """
+        Récupère les matchs associés à une équipe et retourne un dictionnaire de matchs.
+
+        Parameters
+        ----------
+        nom_equipe : str
+            Le nom de l'équipe pour laquelle récupérer les matchs.
+
+        Return
+        ------
+        dict
+            Un dictionnaire où les clés sont des chaînes de caractères représentant les matchs sous la forme
+
+        """
         if not isinstance(nom_equipe, str):
             raise TypeError("'nom_equipe' doit être une instance de str.")
 
@@ -173,7 +239,19 @@ class ConsulterStats(metaclass=Singleton):
         return match_dict
 
     def stats_completes_match(self, match_id):
-        """Renvoie toutes les statistiques pour les deux équipes d'un match donné, avec calcul des stats des équipes et des joueurs."""
+        """
+        Renvoie toutes les statistiques pour les deux équipes d'un match donné, avec calcul des stats des équipes et des joueurs.
+
+        Parameters
+        ----------
+        match_id : str
+            L'ID unique du match pour lequel les statistiques doivent être récupérées.
+
+        Return
+        ------
+        dict
+            Un dictionnaire contenant toutes les informations sur le match et les statistiques détaillées des joueurs et des équipes.
+        """
         if not isinstance(match_id, str):
             raise TypeError("L'ID du match doit être une chaîne de caractères.")
 

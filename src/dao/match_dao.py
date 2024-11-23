@@ -96,8 +96,8 @@ class MatchDao(metaclass=Singleton):
 
         Parameters
         ----------
-        dates : dates
-            dates du match que l'on souhaite trouver
+        date : datetime
+            date du match que l'on souhaite trouver
 
         Returns
         -------
@@ -368,15 +368,15 @@ class MatchDao(metaclass=Singleton):
 
         Parameters
         ----------
-        joueur : str
-            Nom unique du joueur.
+        equipe : str
+            Nom unique de l'équipe.
         match_id : str
             L'ID du match.
 
         Returns
         -------
         Match :
-            Objet Match correspondant au joueur et au match.
+            Objet Match correspondant à l'équipe et au match.
             Retourne None si aucun résultat n'est trouvé.
         """
         try:
@@ -440,9 +440,13 @@ class MatchDao(metaclass=Singleton):
 
     def delete_match(match_id):
         """
-        Supprimer un match dans la table `Match` en fonction de son `match_id`.
+        Supprimer un match dans la table `Match` en fonction de son match_id.
 
-        :param match_id: L'identifiant unique du match à supprimer.
+        Parameters
+        ----------
+        match_id : str
+            L'ID du match à supprimer.
+
         """
         try:
             with DBConnection().connection as connection:
@@ -464,10 +468,13 @@ class MatchDao(metaclass=Singleton):
 
     def add_match(match_details):
         """
-        Ajouter un match dans la table `Match`.
+        Ajouter un match dans la table Match.
 
-        :param match_details: Un dictionnaire contenant les informations du match à insérer.
-                            Doit inclure `tournoi`, `equipe1`, `equipe2`, `date`, `cote_equipe1`, `cote_equipe2`.
+        Parameters
+        ----------
+        match_details : Dictionnaire
+            Un dictionnaire contenant les informations du match à insérer.
+
         """
         try:
             with DBConnection().connection as connection:

@@ -80,8 +80,8 @@ class JoueurDao(metaclass=Singleton):
 
         Parameters
         ----------
-        joueur_id : int
-            L'ID du joueur à récupérer
+        joueur_nom : str
+            Le nom du joueur à récupérer
 
         Returns
         -------
@@ -353,9 +353,3 @@ class JoueurDao(metaclass=Singleton):
             return None
 
 
-
-
-#si tu veux les deux equipe tu fais n= len(r.r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0"))+1 et
-# r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[0].equipe_nom (equipe1)
-# r.obtenir_par_match("65fda0fd5e3cd1fbef8217e0")[n].equipe_nom
-# les joueurs sont dans les bonnes equipes avec .nom

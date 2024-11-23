@@ -12,6 +12,22 @@ class CalendrierEvenement:
         self.pari_dao = ParisDao()
 
     def dictionnaire_evenement(self, annee, mois):
+        """
+        Récupère les événements de paris et de matchs pour une année et un mois donnés.
+
+        Parameters
+        ----------
+        annee : int
+            L'année pour laquelle les événements sont récupérés.
+        mois : int
+            Le mois pour lequel les événements sont récupérés (compris entre 1 et 12).
+
+        Return
+        ------
+        evenements : dict
+            Un dictionnaire des événements, où la clé est un tuple `(mois, jour)` et la valeur est une liste d'événements.
+            Chaque événement est une chaîne de caractères décrivant le match ou le pari.
+        """
         # Dictionnaire des événements par jour (clé = (mois, jour), valeur = liste d'événements)
         all_matchs = ParisDao().afficher_infos_paris()
         evenements = {}
@@ -56,6 +72,23 @@ class CalendrierEvenement:
     # Fonction pour afficher un calendrier d'une année complète avec des événements
 
     def afficher_calendrier_annee(self, annee, mois):
+        """
+        Affiche le calendrier d'un mois avec les événements associés.
+
+        Parameters
+        ----------
+        annee : int
+            L'année du calendrier à afficher.
+        mois : int
+            Le mois du calendrier à afficher (compris entre 1 et 12).
+
+        Return
+        ------
+        evenements : dict
+            Un dictionnaire des événements associés aux jours du mois, où la
+            clé est un tuple (mois, jour) et la valeur est une liste d'événements.
+            Cette valeur est retournée en cas d'erreur pour assurer la gestion des erreurs.
+        """
         try:
             # Vérifications des entrées
             if not isinstance(annee, int):
@@ -107,6 +140,22 @@ class CalendrierEvenement:
             return {}
 
     def rechercher_match_par_date(self, dates):
+        """
+        Recherche et affiche les matchs d'une date donnée.
+
+        Cette méthode recherche les matchs programmés pour une date spécifique et les affiche.
+        Si aucun match n'est trouvé pour cette date, un message indiquant l'absence de matchs est affiché.
+
+        Parameters
+        ----------
+        dates : str
+            La date sous forme de chaîne de caractères à rechercher (format : "YYYY-MM-DD").
+
+        Return
+        ------
+        None
+            Cette fonction n'a pas de valeur de retour. Elle se charge uniquement d'afficher les matchs ou l'absence de matchs.
+        """
         match_dao = MatchDao()
         liste_match = match_dao.trouver_par_dates(dates)
 
