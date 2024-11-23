@@ -73,21 +73,68 @@ class BallchasingAPI:
         replay_url = f"{self.base_url}/replays/{replay_id}"
         return self.get_data(replay_url)
 
+    def add_major2(self):
+        group_id = "lan-nu92kpr2hf"
+        all_replays = ballchasing_api.compile_groups(group_id)
+        if all_replays:
+            for i in range(len(all_replays)):
+                replay_id = all_replays[i]
+                match_details = ballchasing_api.match_data(replay_id)
+                match_process(replay)
 
-# Example usage:
-if __name__ == "__main__":
-    # Instantiate the API class
-    ballchasing_api = BallchasingAPI()
+    def add_world(self):
+        group_id = "2-playoffs-48kyvcspq9"
+        all_replays = ballchasing_api.compile_groups(group_id)
+        if all_replays:
+            for i in range(len(all_replays)):
+                replay_id = all_replays[i]
+                match_details = ballchasing_api.match_data(replay_id)
+                match_process(replay)
+        group_id ="1-swiss-stage-4ws5jld17r"
+        all_replays = ballchasing_api.compile_groups(group_id)
+        ligue="RLCS 2024 WORLDS"
+        stage ="Swiss stage"
+        region="INT"
+        if all_replays:
+            for i in range(len(all_replays)):
+                replay_id = all_replays[i]
+                match_details = ballchasing_api.match_data(replay_id)
+                match_process(replay)
 
-    # Example: Get replays in a specific group
-    group_id = "lan-nu92kpr2hf"
-    all_replays = ballchasing_api.compile_groups(group_id)
-    print(f"Replays: {all_replays}")
+    def match_process(self,replay,ligue,stage,region):
+            team_blue = match_data.get("blue", {}).get("name", "Équipe inconnue")
+            team_orange = match_data.get("orange", {}).get("name", "Équipe inconnue")
+            date = match_data.get("date", "Date inconnue")
+            players_blue = [player.get("name", "Joueur inconnu") for player in match_data.get("blue", {}).get("players", [])]
+            players_orange = [player.get("name", "Joueur inconnu") for player in match_data.get("orange", {}).get("players", [])]
 
-    # Example: Get match data for a specific replay
-    if all_replays:
-        replay_id = all_replays[0]  # Get the first replay ID as an example
-        match_details = ballchasing_api.match_data(replay_id)
-        print(f"Match Data: {match_details}")
 
-# noter les groupes de ballchasing c important
+            perso = False
+
+            for j in range(3):  # Assume 3 players per team
+                shots = match_data["blue"]["players"][i]["stats"]["core"]["shots"]
+                joueur_nom = players_blue[j]
+                joueur_nationalite = "inconnu"
+                joueur_goals = match_data["blue"]["players"][i]["stats"]["core"]["goals"]
+                joueur_core
+
+
+
+            match1 = {
+                "date": date,
+                "stage": stage,
+                "ligue": ligue,
+                "region": region,
+                "score1": equipe_score_blue,
+                "score2": equipe_score_orange,
+                "equipe1": team_blue,  # Nom de l'équipe
+                "equipe2": team_orange,  # Nom de l'équipe
+                "perso": perso,
+                "cote_equipe1" = 2.0,
+                "cote_equipe2" = 2.0
+            }
+
+            # Créer l'objet Match et l'enregistrer
+
+            result_match = self.match_dao.add_match(match1)
+              shots = match_data["blue"]["players"][i]["stats"]["core"]["shots"]

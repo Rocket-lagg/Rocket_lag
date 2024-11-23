@@ -189,8 +189,7 @@ class MatchProcessor:
             "shooting_percentage": round(joueur_core['shootingPercentage'],2),
             "demo_inflige": joueur_stats['stats']['demo']['inflicted'],
             "demo_recu": joueur_stats['stats']['demo']['taken'],
-            "goal_participation": round(joueur_stats['advanced']['goalParticipation'],2),
-            "rating": round(joueur_stats['advanced']['rating'],2),
+            "goal_participation": round(joueur_core.get('goalParticipation', 0) if joueur_core.get('goalParticipation', 0) else 0, 2),
             "time_defensive_third": joueur_stats['stats']['positioning']['timeDefensiveThird'],
             "time_neutral_third": joueur_stats['stats']['positioning']['timeNeutralThird'],
             "time_offensive_third": joueur_stats['stats']['positioning']['timeOffensiveThird'],
@@ -204,14 +203,14 @@ class MatchProcessor:
             joueur = Joueur(**joueur_data)
             joueur.indice_offensif = round(
             (
-                joueur.goals / 1.05 +
+                joueur.goals / 1.05 + # ce sont les averages
                 joueur.assists / 0.5 +
                 joueur.shots / 3.29 +
                 joueur.demo_inflige / 0.56 +
                 joueur.time_offensive_third / 201.1
             ) , 2)
             joueur.indice_performance = round(
-            (
+            ( # les valeurs sont fixées arbitrairement en s'insipirant d'un article sur medium sur les statistiques sur rocket league
                 joueur.goals * 1 +
                 joueur.assists * 0.75 +
                 joueur.saves * 0.6 +
@@ -309,7 +308,7 @@ class LiquipediaScraper:
             # Convertir en datetime UTC
             dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
             # Formater en UTC WITH TIMEZONE
-            formatted_date = dt.isoformat()  # Format ISO 8601 (e.g., 2024-11-23T00:00:00+00:00)
+            formatted_date = dt.isoformat()  # Format ISO 8601
             formatted_dates.append(formatted_date)
 
         return formatted_dates
@@ -373,6 +372,7 @@ class LiquipediaScraper:
 
 
 def convert_score(part):
+    """Convertit le score car il est parfois donnée avec W et L"""
     if part == "W":
         return 1
     elif part == "L":

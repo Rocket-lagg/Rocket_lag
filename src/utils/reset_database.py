@@ -30,11 +30,9 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Joueur
                     cursor.execute(
                         """
-                        DROP TABLE IF EXISTS Joueur;
-                        CREATE TABLE Joueur (
+                        CREATE TABLE IF NOT EXISTS Joueur (
                             nom VARCHAR(100) NOT NULL,
                             nationalite VARCHAR(50),
-                            rating FLOAT,
                             match_id VARCHAR(50) NOT NULL,
                             equipe_nom VARCHAR(100),
                             shots INTEGER,
@@ -75,8 +73,7 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Equipe
                     cursor.execute(
                         """
-                        DROP TABLE IF EXISTS Equipe CASCADE;
-                        CREATE TABLE  Equipe (
+                        CREATE TABLE IF NOT EXISTS Equipe (
                             match_id VARCHAR(255),                 -- Identifiant unique du match
                             equipe_nom VARCHAR(255) UNIQUE, -- Nom de l'équipe
                             equipe_score INT,                      -- Score de l'équipe
@@ -118,8 +115,7 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Equipe
                     cursor.execute(
                         """
-                        DROP TABLE IF EXISTS match CASCADE;
-                        CREATE TABLE  match (
+                        CREATE TABLE IF NOT EXISTS match (
                             match_id VARCHAR(255) PRIMARY KEY,
                             equipe1 VARCHAR(255),
                             equipe2 VARCHAR(255),
@@ -177,11 +173,9 @@ class ResetDatabase(metaclass=Singleton):
                     # Commande SQL pour supprimer et recréer la table Equipe
                     cursor.execute(
                         """
-                            DROP TABLE IF EXISTS Paris CASCADE;
                             CREATE TABLE IF NOT EXISTS Paris (
                             id_pari SERIAL PRIMARY KEY,  -- Ajout d'une clé primaire pour paris
                             pseudo VARCHAR,
-                            id_match VARCHAR REFERENCES Match(match_id),
                             equipe_nom VARCHAR REFERENCES Equipe(equipe_nom),
                             cote FLOAT,
                             win BOOL
@@ -364,7 +358,7 @@ class ResetDatabase(metaclass=Singleton):
 
 
     def lancer_match_result(self):
-        """Extrait les matchs et insère les 100 premiers dans la table `match_a_parier`."""
+        """Extrait les résultats des matchs."""
 
         url = "https://liquipedia.net/rocketleague/Liquipedia:Matches"
         scraper = LiquipediaScraper(url)
@@ -448,17 +442,14 @@ class ResetDatabase(metaclass=Singleton):
         self.lancer_match_result()
 
         # Step 1: Initialiser l'API et le processeur de match
-        api = API(base_url="https://api.rlcstatistics.net")
-        match_processor = MatchProcessor(api)
+        #api = API(base_url="https://api.rlcstatistics.net")
+        #match_processor = MatchProcessor(api)
 
         # Step 2: Récupérer les matchs
-        match_processor.recup_matches(page=265, page_size=4)
+        #match_processor.recup_matches(page=1, page_size=100000000000)
 
         # Step 3: Récupérer les données des matchs
-        match_processor.recup_match_data()
+        #match_processor.recup_match_data()
 
         # Step 4: Traiter les matchs et les joueurs
-        match_processor.process_matches()
-
-r= ResetDatabase()
-r.lancer_paris_utilisateur()
+        #match_processor.process_matches()

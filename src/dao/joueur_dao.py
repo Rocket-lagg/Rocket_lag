@@ -30,11 +30,11 @@ class JoueurDao(metaclass=Singleton):
                     # Requête d'insertion SQL
                     cursor.execute(
                         """
-                        INSERT INTO Joueur (nom, nationalite, rating, match_id, equipe_nom, shots, goals, saves, assists, score,
+                        INSERT INTO Joueur (nom, nationalite, match_id, equipe_nom, shots, goals, saves, assists, score,
                                             shooting_percentage, time_offensive_third, time_defensive_third, time_neutral_third,
                                             demo_inflige, demo_recu, goal_participation, date, ligue, region, stage,indice_offensif,
                                              indice_performance)
-                         VALUES (%(nom)s, %(nationalite)s,  %(rating)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
+                         VALUES (%(nom)s, %(nationalite)s, %(match_id)s, %(equipe_nom)s, %(shots)s, %(goals)s,
                                 %(saves)s, %(assists)s, %(score)s, %(shooting_percentage)s, %(time_offensive_third)s,
                                 %(time_defensive_third)s, %(time_neutral_third)s, %(demo_inflige)s, %(demo_recu)s,
                                 %(goal_participation)s, %(date)s, %(ligue)s, %(region)s, %(stage)s, %(indice_offensif)s,
@@ -44,7 +44,6 @@ class JoueurDao(metaclass=Singleton):
                         {
                             "nom": joueur.nom,
                             "nationalite": joueur.nationalite,
-                            "rating": joueur.rating,
                             "match_id": joueur.match_id,
                             "equipe_nom": joueur.equipe_nom,
                             "shots": joueur.shots,
@@ -107,7 +106,6 @@ class JoueurDao(metaclass=Singleton):
                         return Joueur(
                         nom=row["nom"],
                         nationalite=row["nationalite"],
-                        rating=row["rating"],
                         match_id=row["match_id"],
                         shots=row["shots"],
                         goals=row["goals"],
@@ -155,7 +153,7 @@ class JoueurDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         UPDATE Joueur
-                        SET nom = %(nom)s, nationalite = %(nationalite)s, region = %(region)s, rating = %(rating)s,
+                        SET nom = %(nom)s, nationalite = %(nationalite)s, region = %(region)s,
                             match_id = %(match_id)s, shots = %(shots)s, goals = %(goals)s, saves = %(saves)s,
                             assists = %(assists)s, score = %(score)s, shooting_percentage = %(shooting_percentage)s,
                             time_offensive_third = %(time_offensive_third)s, time_defensive_third = %(time_defensive_third)s,
@@ -167,7 +165,6 @@ class JoueurDao(metaclass=Singleton):
                             "nom": joueur.nom,
                             "nationalite": joueur.nationalite,
                             "region": joueur.region,
-                            "rating": joueur.rating,
                             "match_id": joueur.match_id,
                             "shots": joueur.shots,
                             "goals": joueur.goals,
@@ -263,13 +260,13 @@ class JoueurDao(metaclass=Singleton):
         joueur_nom : str
             Le nom du joueur pour lequel récupérer les moyennes.
         colonnes : list
-            Une liste des colonnes dont on veut calculer la moyenne (ex : ['score', 'rating', 'goals']).
+            Une liste des colonnes dont on veut calculer la moyenne (ex : ['score', 'goals']).
 
         Returns
         -------
         dict
             Un dictionnaire contenant les moyennes des statistiques demandées.
-            Exemple : {'score': 500.0, 'rating': 4.5, 'goals': 1.2}
+            Exemple : {'score': 500.0, 'goals': 1.2}
         """
         try:
             with DBConnection().connection as connection:
@@ -353,3 +350,4 @@ class JoueurDao(metaclass=Singleton):
             return None
 
 
+    

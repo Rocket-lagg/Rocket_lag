@@ -129,7 +129,6 @@ class MatchEquipeVue(VueAbstraite):
                 # Liste des joueurs et leurs statistiques
                 for joueur in joueurs:
                     print(f"\nJoueur: {joueur['nom']} ({joueur['nationalite']})")
-                    print(f"Rating: {joueur['rating']}")
                     print(f"Goals: {joueur['goals']}, Assists: {joueur['assists']}")
                     print(f"Saves: {joueur['saves']}, Shots: {joueur['shots']}")
                     print(f"Score: {joueur['score']}")

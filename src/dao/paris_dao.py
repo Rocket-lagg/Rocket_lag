@@ -155,7 +155,7 @@ class ParisDao:
                     # Requête pour filtrer les paris selon le pseudo
                     cursor.execute("""
                         SELECT *
-                        FROM paris_utilisateur
+                        FROM paris
                         WHERE pseudo = %s;
                     """, (pseudo,))  # Ajout de la virgule pour passer un tuple
 
@@ -175,49 +175,6 @@ class ParisDao:
             print(f"Erreur lors de la récupération des paris pour le pseudo {pseudo}: {e}")
 
 
-
-    def supprimer_un_paris(self, paris) -> bool:
-        """Suppression d'un pari dans la base de données
-
-        Parameters
-        ----------
-        paris : Utilisateur
-
-        Returns
-        -------
-        created : bool
-            True si la création est un succès
-            False sinon
-        """
-
-        res = None
-
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        """
-                        INSERT INTO utilisateur(pseudo, mdp, mail, points)
-                        VALUES(%(pseudo)s, %(mdp)s, %(mail)s, 0)
-                        RETURNING id_utilisateur;
-                        """,
-                        {
-                            "pseudo": utilisateur.nom_utilisateur,
-                            "mdp": utilisateur.mot_de_passe,
-                            "mail": utilisateur.email,
-                        },
-                    )
-                    res = cursor.fetchone()
-        except Exception as e:
-            print(e)
-
-        created = False
-        if res:
-            if isinstance(res["id_utilisateur"], int):
-                created = True
-        return created
-
-
     def lister_tous_paris_utilisateur(self,pseudo):
         try:
             # Connexion à la base de données principale
@@ -231,47 +188,87 @@ class ParisDao:
                         # Liste pour stocker les résultats détaillés
                         results = []
 
-                        # Récupérer les paris et associer les informations des matchs
-                        for row in rows:
-                            cursor.execute("""
-                                SELECT *
-                                FROM paris_utilisateur p
-                                JOIN match_result m
-                                    ON p.tournoi = m.tournoi
-                                    AND p.date = m.date
-                                    AND (p.equipe_adverse = m.equipe1 OR p.equipe_adverse = m.equipe2)
-                                    AND (p.equipe_parier = m.equipe1 OR p.equipe_parier = m.equipe2);
-                            """, (pseudo,))  # Ici, vous n'avez pas besoin de `pseudo`, car la condition est déjà dans `paris_utilisateur`
+                        # Récupérer les paris et associer les informations des matchs en une seule requête
+                        query = """
+                            SELECT DISTINCT p.tournoi, p.equipe_parier, p.equipe_adverse, p.date, p.cote, p.pseudo,
+                                m.score_equipe1, m.score_equipe2,m.equipe1,m.equipe2
+                            FROM paris_utilisateur p
+                            JOIN match_result m
+                                ON p.tournoi = m.tournoi
+                                AND p.date = m.date
+                                AND (p.equipe_adverse = m.equipe1 OR p.equipe_adverse = m.equipe2)
+                                AND (p.equipe_parier = m.equipe1 OR p.equipe_parier = m.equipe2);
+                        """
+                        cursor.execute(query)
+                        match_results = cursor.fetchall()
 
-                            match_result = cursor.fetchall()
+                        # Traiter chaque résultat du match
+                        for match in match_results:
+                            # Créer un dictionnaire pour chaque match
+                            if (match['score_equipe1'] > match['score_equipe2'] and match['equipe_parier'] == match['equipe1']) or \
+                                (match['score_equipe1'] < match['score_equipe2'] and match['equipe_parier'] == match['equipe2']):
+                                win = True
+                            else:
+                                win = False
 
-                            # Traiter chaque résultat du match
-                            for match in match_result:
-                                ole = {
-                                    'tournoi': match['tournoi'],
-                                    'equipe_parier': match['equipe_parier'],
-                                    'equipe_adverse': match['equipe_adverse'],
-                                    'date': match['date'],
-                                    'cote': match['cote'],
-                                    'pseudo': match['pseudo']
-                                }
-                                results.append(ole)  # Ajouter le résultat à la liste
 
-                        if results:
-                            return results  # Retourner la liste des résultats détaillés
-                        else:
-                            print(f"Aucun pari trouvé pour le pseudo {pseudo}.")
-                            return []  # Retourne une liste vide si aucun match n'est trouvé
+                            # Vérifier si un pari pour cet utilisateur et cette équipe existe déjà
+                            check_query = """
+                                SELECT * FROM paris
+                                WHERE pseudo = %s AND equipe_nom = %s;
+                            """
+                            cursor.execute(check_query, (pseudo, match['equipe_parier']))
+                            existing_paris = cursor.fetchone()
 
-                    else:
-                        print(f"Aucun pari trouvé pour le pseudo {pseudo}.")
-                        return []  # Retourne une liste vide si aucun pari n'est trouvé
+                            if existing_paris:
+                                # Si le pari existe, mettre à jour les informations
+                                update_query = """
+                                    UPDATE paris
+                                    SET cote = %s, win = %s
+                                    WHERE pseudo = %s AND equipe_nom = %s;
+                                """
+                                cursor.execute(update_query, (
+                                    match['cote'],         # Nouvelle cote
+                                    win,                   # Résultat calculé (win/lose)
+                                    pseudo,                # Utilisateur
+                                    match['equipe_parier'] # Équipe pariée
+                                ))
+                            else:
+                                # Sinon, insérer un nouveau pari
+                                insert_query = """
+                                    INSERT INTO paris (pseudo, equipe_nom, cote, win)
+                                    VALUES (%s, %s, %s, %s);
+                                """
+                                cursor.execute(insert_query, (
+                                    pseudo,                # Utilisateur
+                                    match['equipe_parier'],# Équipe pariée
+                                    match['cote'],         # Cote
+                                    win                    # Résultat calculé (win/lose)
+                                ))
+
+                            # Ajouter les détails à la liste des résultats
+                            ole = {
+                                'tournoi': match['tournoi'],
+                                'equipe_parier': match['equipe_parier'],
+                                'equipe_adverse': match['equipe_adverse'],
+                                'date': match['date'],
+                                'cote': match['cote'],
+                                'pseudo': match['pseudo'],
+                                'score_equipe1': match['score_equipe1'],
+                                'score_equipe2': match['score_equipe2'],
+                                'win': win
+                            }
+                            results.append(ole)
+
+                        # Confirmer les changements dans la base de données
+                        connection.commit()
+
+                        # Retourner la liste des paris insérés ou mis à jour
+                        return results
+
+                    # Si aucun pari n'est trouvé
+                    return []
 
         except Exception as e:
-            print(f"Erreur lors de la récupération des paris pour le pseudo {pseudo}: {e}")
+            print(f"Une erreur est survenue : {e}")
             return []
-
-
-
-
-

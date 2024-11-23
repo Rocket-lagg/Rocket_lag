@@ -59,9 +59,6 @@ class Joueur(EntiteSportive):
     nationalite : str
         Nationalité du joueur.
 
-    rating : float
-        Note ou évaluation de la performance du joueur.
-
     date : datetime
         Date et heure du match.
 
@@ -70,7 +67,7 @@ class Joueur(EntiteSportive):
 
     region : str
         Région où le match se joue.
-        
+
     stage : str
         Phase ou étape du match (par exemple : "quart de finale").
     """
@@ -93,7 +90,6 @@ class Joueur(EntiteSportive):
         goal_participation,
         nom,
         nationalite,
-        rating,
         date,
         region,
         ligue,
@@ -133,12 +129,10 @@ class Joueur(EntiteSportive):
         # Vérifications des types pour les nouveaux attributs spécifiques à Joueur
         assert isinstance(nom, str), "nom doit être une chaîne de caractères"
         assert isinstance(nationalite, str), "nationalite doit être une chaîne de caractères"
-        assert isinstance(rating, float), "rating doit être un flottant"
 
         # Initialisation des nouveaux attributs spécifiques à Joueur
         self.nom = nom
         self.nationalite = nationalite
-        self.rating = rating
         self.demo_inflige = demo_inflige
         self.goal_participation = goal_participation
         self.shots_par_match = shots_par_match
@@ -178,7 +172,6 @@ class Joueur(EntiteSportive):
                 f"Demo Infligé: {self.demo_inflige}, "
                 f"Demo Reçu: {self.demo_recu}, "
                 f"Goal Participation: {self.goal_participation}, "
-                f"Rating: {self.rating}, "
                 f"Date: {self.date}, "
                 f"Shots per Match: {self.shots_par_match}, "
                 f"Goals per Match: {self.goals_par_match}, "

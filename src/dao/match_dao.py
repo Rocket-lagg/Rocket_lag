@@ -6,6 +6,7 @@ from utils.log_decorator import log
 from dao.db_connection import DBConnection
 
 from business_object.Match import Match
+import uuid  # Importer la bibliothèque uuid pour générer des identifiants uniques
 
 
 class MatchDao(metaclass=Singleton):
@@ -438,9 +439,9 @@ class MatchDao(metaclass=Singleton):
             return None
 
 
-    def delete_match(match_id):
+    def delete_match(self,match_id):
         """
-        Supprimer un match dans la table `Match` en fonction de son match_id.
+        Supprimer un match dans la table `match` en fonction de son match_id.
 
         Parameters
         ----------
@@ -453,7 +454,7 @@ class MatchDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         """
-                        DELETE FROM Match
+                        DELETE FROM match
                         WHERE match_id = %(match_id)s;
                         """,
                         {"match_id": match_id},
@@ -466,28 +467,35 @@ class MatchDao(metaclass=Singleton):
 
 
 
-    def add_match(match_details):
+
+    def add_match(self, match_details):
         """
         Ajouter un match dans la table Match.
 
         Parameters
         ----------
-        match_details : Dictionnaire
+        match_details : dict
             Un dictionnaire contenant les informations du match à insérer.
-
         """
         try:
+            # Générer un match_id unique avec UUID
+            match_id = str(uuid.uuid4())  # Génère un UUID et le convertit en chaîne de caractères
+
+            # Ajouter l'UUID généré dans le dictionnaire match_details
+            match_details["match_id"] = match_id
+
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        """
-                        INSERT INTO Match (tournoi, equipe1, equipe2, date, cote_equipe1, cote_equipe2)
-                        VALUES (%(tournoi)s, %(equipe1)s, %(equipe2)s, %(date)s, %(cote_equipe1)s, %(cote_equipe2)s);
-                        """,
-                        match_details
-                    )
+                    # Exécution de la requête pour insérer les données du match
+                    cursor.execute("""
+                        INSERT INTO match (match_id, equipe1, equipe2, date, score1, score2, region, stage, ligue, perso, cote_equipe1, cote_equipe2)
+                        VALUES (%(match_id)s, %(equipe1)s, %(equipe2)s, %(date)s, %(score1)s, %(score2)s, %(region)s, %(stage)s, %(ligue)s, %(perso)s, %(cote_equipe1)s, %(cote_equipe2)s);
+                    """, match_details)
+
                     connection.commit()
                     logging.info("Match ajouté avec succès.")
         except Exception as e:
             logging.error(f"Erreur lors de l'ajout d'un match : {e}")
             raise
+
+

@@ -19,8 +19,7 @@ valid_values = {
     "goal_participation": 0.75,
     "nom": "John Doe",
     "nationalite": "Française",
-    "region": "Europe",
-    "rating": 8.5,
+    "region": "Europe"
 }
 
 # Dictionnaire contenant des valeurs invalides pour chaque attribut
@@ -41,8 +40,7 @@ invalid_values = {
     "goal_participation": "0.75",  # str au lieu de float
     "nom": 123,  # int au lieu de str
     "nationalite": 456,  # int au lieu de str
-    "region": None,  # NoneType au lieu de str
-    "rating": "8.5",  # str au lieu de float
+    "region": None  # NoneType au lieu de str
 }
 
 
@@ -75,11 +73,9 @@ def test_initialisation_valide():
     assert joueur.nom == "John Doe"
     assert joueur.nationalite == "Française"
     assert joueur.region == "Europe"
-    assert joueur.rating == 8.5
-
 
 def test_str_representation():
     """Test de la méthode __str__"""
     joueur = Joueur(**valid_values)
-    expected_str = "Joueur(John Doe, Nationalité: Française, Région: Europe, Rating: 8.5)"
+    expected_str = "Joueur(John Doe, Nationalité: Française, Région: Europe)"
     assert str(joueur) == expected_str
