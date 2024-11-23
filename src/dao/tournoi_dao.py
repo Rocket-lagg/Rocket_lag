@@ -246,7 +246,7 @@ class TournoiDao(metaclass=Singleton):
             print(f"Erreur lors de l'incrémentation du tour dans equipe_tournoi : {e}")
             return False
 
-    def recuperer_tour(self):
+    def recuperer_tour(self):   
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -257,6 +257,7 @@ class TournoiDao(metaclass=Singleton):
                         """
                     )
                     res = cursor.fetchone()
+                    print(res)
                     if res:
                         return res["max_tour"]  # Renvoie uniquement la valeur de max_tour
                     else:

@@ -128,7 +128,7 @@ def test_supprimer_ok():
     """Suppression de Utilisateur réussie"""
 
     # GIVEN
-    utilisateur = Utilisateur(nom_utilisateur="miguel", email="miguel@projet.fr")
+    utilisateur = Utilisateur(nom_utilisateur="miguel", email="miguel@projet.fr", mot_de_passe="abcd")
 
     # WHEN
     suppression_ok = UtilisateurDao().supprimer(utilisateur)

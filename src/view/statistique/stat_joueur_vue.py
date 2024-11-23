@@ -25,8 +25,11 @@ class JoueurVue(VueAbstraite):
         print("\n" + "-" * 50 + "\nConsulter Statistique - Joueur\n" + "-" * 50 + "\n")
 
         reponse = input("Nom du joueur: ")
-        joueur_stat = self.consulter_stats.stats_joueurs(reponse)
-        print(joueur_stat)
+        try:
+            joueur_stat = self.consulter_stats.stats_joueurs(reponse)
+            print(joueur_stat)
+        except ValueError as e:
+            print(f"\nErreur : {e}")
 
         choix = inquirer.select(
             message="Que voulez-vous faire maintenant?",

@@ -207,8 +207,8 @@ class UtilisateurDao(metaclass=Singleton):
             for row in res:
                 utilisateur = Utilisateur(
                     nom_utilisateur=row["pseudo"],
-                    mdp=row["mdp"],
-                    mail=row["mail"],
+                    mot_de_passe=row["mdp"],
+                    email=row["mail"],
                     tournois_crees=row["tournois_crees"],
                     points=row["points"],
                     paris=row["paris"],
@@ -217,6 +217,8 @@ class UtilisateurDao(metaclass=Singleton):
                 liste_utilisateurs.append(utilisateur)
 
         return liste_utilisateurs
+
+
 
     @log
     def modifier(self, utilisateur) -> bool:
@@ -283,8 +285,8 @@ class UtilisateurDao(metaclass=Singleton):
                     # Supprimer le compte d'un utilisateur
                     cursor.execute(
                         "DELETE FROM utilisateur                  "
-                        " WHERE id_utilisateur=%(id_utilisateur)s      ",
-                        {"id_utilisateur": utilisateur.id_utilisateur},
+                        " WHERE pseudo=%(nom_utilisateur)s      ",
+                        {"nom_utilisateur": utilisateur.nom_utilisateur},
                     )
                     res = cursor.rowcount
         except Exception as e:
