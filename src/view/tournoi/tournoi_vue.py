@@ -33,6 +33,7 @@ class TournoiVue(VueAbstraite):
                 "Créer un tournoi",
                 "Gérer mes tournois",
                 "Rejoindre un tournoi",
+                "Afficher mes tournois",
                 "Retour",
             ],
         ).execute()
@@ -50,13 +51,21 @@ class TournoiVue(VueAbstraite):
                     print("La clef ne correspond à aucun tournoi")
                     time.sleep(2)
                     return self
+                print(tournoi)
+                Session().tournoi = tournoi[0]
+                from view.tournoi.rejoindre_tournoi_vue import RejoindreTournoiVue
 
-                return GestionTournoiVue()
+                return RejoindreTournoiVue()
 
             case "Créer un tournoi":
                 from view.tournoi.nouveau_tournoi_vue import NouveauTournoiVue
 
                 return NouveauTournoiVue()
+
+            case "Afficher mes tournois":
+                from view.tournoi.info_tournoi_vue import InfoTournoiVue
+
+                return InfoTournoiVue()
 
             case "Gérer mes tournois":
                 tournois = self.tournoi.recuperer_tournois()

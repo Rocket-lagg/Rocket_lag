@@ -20,8 +20,9 @@ class TournoiService:
         tournoi = Tournoi(nom_tournoi, Session().utilisateur, id_tournoi, tour, type_tournoi)
         return tournoi
 
-    def recuperer_tournois(self):
-        nom_utilisateur = Session().utilisateur.nom_utilisateur
+    def recuperer_tournois(self, nom_utilisateur=None):
+        if not nom_utilisateur:
+            nom_utilisateur = Session().utilisateur.nom_utilisateur
         tournois = self.tournoi_dao.recuperer_tournois_par_utilisateur(nom_utilisateur)
         return tournois
 
@@ -56,19 +57,6 @@ class TournoiService:
     def modifier_tour_gagnant(self, equipe):
         self.tournoi_dao.modifier_tour_gagnant_equipe(equipe)
 
-    def afficher_infos_tournois(self):  # A modifier
-        "Affiche les tournois d'un utilisateur"
-        nom_utilisateur = Session().utilisateur.nom_utilisateur
-        tournois = self.tournoi().afficher_infos_tournois(nom_utilisateur)
-        if tournois == []:
-            print(f"{nom_utilisateur}, vous n'avez pas fait de tournois")
-        else:
-            liste_tournois = []
-            for tournoi in tournois:
-                liste_tournois.append(self.instancier_tournois(tournoi))
-            print(liste_tournois)
-        return liste_tournois
-
     def recuperer_tour(self):
         tours = self.tournoi_dao.recuperer_tour()
         return tours
@@ -86,3 +74,39 @@ class TournoiService:
 
     def afficher_pooling_tournoi(self):
         self.tournoi_dao.afficher_pooling_tournoi()
+
+    def recuperer_tournoi_par_clef(self, clef):
+        tournoi = self.tournoi_dao.recuperer_tournoi_par_clef(clef)
+        return tournoi
+
+    def recuperer_joueur_par_equipe(self, nom):
+        joueurs = self.tournoi_dao.recuperer_joueur_par_equipe(nom)
+        return joueurs
+
+    def recuperer_equipe_joueur(self, id_tournoi, type_tournoi):
+        noms_equipes = self.tournoi_dao.recuperer_equipe(id_tournoi, 1)
+        for noms in noms_equipes:
+            joueur = self.tournoi_dao.recuperer_joueur_par_equipe(noms)
+            if len(joueur) == type_tournoi:
+                noms_equipes.remove(noms)
+        return noms_equipes
+
+    def ajouter_joueur_equipe(self, equipe):
+        joueur = Session().utilisateur.nom_utilisateur
+        tournoi = Session().tournoi.id_tournoi
+        self.tournoi_dao.ajouter_joueur_equipe(joueur, equipe)
+        self.tournoi_dao.ajouter_joueur_tournoi(joueur, tournoi)
+
+    def recuperer_tournoi_info(self, id_tournoi):
+        tournoi_info = self.tournoi_dao.recuperer_tournoi_info(id_tournoi)
+        equipes = self.tournoi_dao.recuperer_equipes_tournoi(id_tournoi)
+        matchs = self.tournoi_dao.recuperer_matchs_tournoi(id_tournoi)
+
+        if not tournoi_info:
+            raise ValueError(f"Aucun tournoi trouvé avec l'ID {id_tournoi}")
+
+        return {
+            "tournoi_info": tournoi_info,
+            "equipes": equipes,
+            "matchs": matchs,
+        }

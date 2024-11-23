@@ -90,7 +90,7 @@ class GestionTournoiVue(VueAbstraite):
         if matches_questions == "quit":
             from view.tournoi.tournoi_vue import TournoiVue
 
-            return TournoiVue
+            return TournoiVue()
         else:
             match1 = matches_questions
             print("\n")
@@ -144,6 +144,7 @@ class GestionTournoiVue(VueAbstraite):
         nb_tours = tournoi.tour
         nb_equipe = 2**nb_tours
         nb_equipe_crees = self.tournoi.donner_nombre_equipe()
+        fin = False
 
         # Vérification de la création des équipes
         if nb_equipe_crees != nb_equipe:

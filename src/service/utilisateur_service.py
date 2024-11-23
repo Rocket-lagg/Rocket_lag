@@ -8,15 +8,17 @@ from dao.utilisateur_dao import UtilisateurDao
 from dao.match_dao import MatchDao
 from dao.tournoi_dao import TournoiDao
 from dao.paris_dao import ParisDao
+from service.tournoi_service import TournoiService
+
 
 class UtilisateurService:
     """Classe contenant les méthodes de service des utilisateurs"""
 
-
     def __init__(self):
-        self.match_dao = MatchDao() # créer ou enlever pour utilisateur
-        self.tournoi_dao = TournoiDao() # créer ou enlever pour utilisateur
-        self.pari_dao = ParisDao() # créer ou enlever pour utilisateur
+        self.match_dao = MatchDao()  # créer ou enlever pour utilisateur
+        self.tournoi_dao = TournoiDao()  # créer ou enlever pour utilisateur
+        self.pari_dao = ParisDao()  # créer ou enlever pour utilisateur
+        self.tournoi_service = TournoiService()
 
     @log
     def creer_utilisateur(
@@ -98,9 +100,13 @@ class UtilisateurService:
     @log
     def se_connecter(self, nom_utilisateur, mot_de_passe) -> Utilisateur:
         """Se connecter à partir de nom_utilisateur et mot_de_passe"""
-        return UtilisateurDao().se_connecter(
+
+        utilisateur = UtilisateurDao().se_connecter(
             nom_utilisateur, hash_password(mot_de_passe, nom_utilisateur)
         )
+        tournoi_utilisateur = self.tournoi_service.recuperer_tournois(nom_utilisateur)
+        utilisateur.tournois_crees = tournoi_utilisateur
+        return utilisateur
 
     @log
     def nom_utilisateur_deja_utilise(self, nom_utilisateur) -> bool:
@@ -109,12 +115,13 @@ class UtilisateurService:
         utilisateurs = UtilisateurDao().lister_tous()
         return nom_utilisateur in [j.nom_utilisateur for j in utilisateurs]
 
-
     def afficher_paris_utilisateur(self, utilisateur_id: int):
         try:
             paris = self.pari_dao.trouver_par_utilisateur_id(utilisateur_id)
             for pari in paris:
-                print(f"Pari ID: {pari.id}, Match: {pari.match_id}, Montant: {pari.montant}, Statut: {pari.statut}")
+                print(
+                    f"Pari ID: {pari.id}, Match: {pari.match_id}, Montant: {pari.montant}, Statut: {pari.statut}"
+                )
             return paris
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des paris : {e}")
@@ -176,10 +183,14 @@ class UtilisateurService:
         try:
             matchs = self.match_dao.trouver_par_tournoi_id(tournoi_id)
             for match in matchs:
-                print(f"Match ID: {match.id}, Équipe 1: {match.equipe_1_id}, Équipe 2: {match.equipe_2_id}, Score: {match.score}")
+                print(
+                    f"Match ID: {match.id}, Équipe 1: {match.equipe_1_id}, Équipe 2: {match.equipe_2_id}, Score: {match.score}"
+                )
             return matchs
         except Exception as e:
-            logging.error(f"Erreur lors de la récupération des matchs du tournoi {tournoi_id} : {e}")
+            logging.error(
+                f"Erreur lors de la récupération des matchs du tournoi {tournoi_id} : {e}"
+            )
             return []
 
     def ajouter_match_au_tournoi(self, tournoi_id: int, match):
@@ -200,10 +211,9 @@ class UtilisateurService:
             print(f"Statistiques de l'utilisateur {utilisateur_id} :")
             print(f"- Nombre de paris : {len(paris)}")
             print(f"- Nombre de tournois : {len(tournois)}")
-            return {
-                "nombre_paris": len(paris),
-                "nombre_tournois": len(tournois)
-            }
+            return {"nombre_paris": len(paris), "nombre_tournois": len(tournois)}
         except Exception as e:
-            logging.error(f"Erreur lors de la récupération des statistiques de l'utilisateur {utilisateur_id} : {e}")
+            logging.error(
+                f"Erreur lors de la récupération des statistiques de l'utilisateur {utilisateur_id} : {e}"
+            )
             return {}
