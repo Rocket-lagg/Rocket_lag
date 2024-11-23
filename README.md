@@ -39,6 +39,15 @@ Install the require library with:
 
 pip install -r requirements.txt
 
+Créer un .env avec :
+POSTGRES_HOST=sgbd-eleves.domensai.ecole
+POSTGRES_PORT=5432
+POSTGRES_DATABASE=idXXXX
+POSTGRES_USER=idXXXX
+POSTGRES_PASSWORD=idXXXX
+POSTGRES_SCHEMA=RocketLag
+LIST_ADMIN=[]
+
 ## Launching
 
 launch src.__main__.py

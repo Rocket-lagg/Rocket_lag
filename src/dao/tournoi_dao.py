@@ -117,7 +117,7 @@ class TournoiDao(metaclass=Singleton):
 
         except Exception as e:
             logging.error(f"Erreur lors de la récupération des tournois : {e}")
-            return False
+            return []
 
     def recuperer_equipe(self, id_tournoi, tour):
         """
