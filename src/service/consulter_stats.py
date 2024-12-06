@@ -320,7 +320,6 @@ class ConsulterStats(metaclass=Singleton):
                     joueur_detail = {
                         "nom": joueur_stats.get("nom"),
                         "nationalite": joueur_stats.get("nationalite"),
-                        "rating": joueur_stats.get("rating"),
                         "goals": joueur_stats.get("goals"),
                         "assists": joueur_stats.get("assists"),
                         "saves": joueur_stats.get("saves"),

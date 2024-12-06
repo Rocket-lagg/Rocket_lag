@@ -53,7 +53,7 @@ class ResetDatabase(metaclass=Singleton):
                             stage VARCHAR(100),        -- Étape ou phase du tournoi ou du match
                             indice_offensif FLOAT,
                             indice_performance FLOAT,
-                            PRIMARY KEY (match_id, equipe_nom,nom)
+                            PRIMARY KEY (match_id, equipe_nom,nom,date)
                         );
                         """
                     )
@@ -75,7 +75,7 @@ class ResetDatabase(metaclass=Singleton):
                         """
                         CREATE TABLE IF NOT EXISTS Equipe (
                             match_id VARCHAR(255),                 -- Identifiant unique du match
-                            equipe_nom VARCHAR(255) UNIQUE, -- Nom de l'équipe
+                            equipe_nom VARCHAR(255), -- Nom de l'équipe
                             equipe_score INT,                      -- Score de l'équipe
                             shots INT,                             -- Nombre de tirs
                             goals INT,                             -- Nombre de buts
@@ -95,7 +95,7 @@ class ResetDatabase(metaclass=Singleton):
                             ligue VARCHAR(100),                    -- Ligue ou division du match
                             indice_performance FLOAT,
                             indice_de_pression FLOAT,
-                            PRIMARY KEY (match_id, equipe_nom)     -- Clé primaire composée de match_id et equipe_nom
+                            PRIMARY KEY (match_id, equipe_nom, date)    -- Clé primaire composée de match_id et equipe_nom
                         );
                         """
                     )
@@ -116,7 +116,7 @@ class ResetDatabase(metaclass=Singleton):
                     cursor.execute(
                         """
                         CREATE TABLE IF NOT EXISTS match (
-                            match_id VARCHAR(255) PRIMARY KEY,
+                            match_id VARCHAR(255),
                             equipe1 VARCHAR(255),
                             equipe2 VARCHAR(255),
                             score1 INT,
@@ -127,7 +127,8 @@ class ResetDatabase(metaclass=Singleton):
                             ligue VARCHAR(255),
                             perso BOOL,
                             cote_equipe1 FLOAT,
-                            cote_equipe2 FLOAT
+                            cote_equipe2 FLOAT,
+                            PRIMARY KEY (match_id,date)
                         );
                         """
                     )
@@ -324,7 +325,7 @@ class ResetDatabase(metaclass=Singleton):
                             date TIMESTAMP WITH TIME ZONE
                         );
                     """)
-
+                    print("Table `match_a_parier` prête pour insertion.")
                     # Insérer les 100 premiers matchs
                     for i in range(min(100, len(matches))):  # Boucle sur les 100 premiers matchs
                         try:
@@ -332,14 +333,13 @@ class ResetDatabase(metaclass=Singleton):
                             tournament_name = tournaments[i % len(tournaments)]["name"]
 
                             # Calcul des cotes (par exemple, basé sur le nom des équipes)
-                            cote_equipe1 = 2
-                            cote_equipe2 = 2
+                            cote_equipe1 = 2.0
+                            cote_equipe2 = 2.0
 
                             # Insérer le match dans la base de données
                             cursor.execute("""
                                 INSERT INTO match_a_parier (tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2,date)
-                                VALUES (%s, %s, %s, %s, %s, %s)
-                                ON CONFLICT (tournoi, equipe1, equipe2, cote_equipe1, cote_equipe2,date) DO NOTHING;
+                                VALUES (%s, %s, %s, %s, %s, %s);
                             """, (
                                 tournament_name,
                                 matches[i]['team_left'],
@@ -348,6 +348,7 @@ class ResetDatabase(metaclass=Singleton):
                                 cote_equipe2,
                                 dates[i]
                             ))
+                            connection.commit()
 
                         except Exception as e:
                             print(f"")
@@ -371,6 +372,7 @@ class ResetDatabase(metaclass=Singleton):
         tournaments = scraper.find_tournoi2()
 
 
+
         # Étape 3 : Récupérer les matchs
         matches = scraper.extract_matches()
 
@@ -381,13 +383,14 @@ class ResetDatabase(metaclass=Singleton):
                     # Création de la table si elle n'existe pas
                     cursor.execute("""
                         CREATE TABLE IF NOT EXISTS match_result (
-                            id_match SERIAL PRIMARY KEY,
                             tournoi VARCHAR(255),
                             equipe1 VARCHAR(255),
                             equipe2 VARCHAR(255),
                             score_equipe1 INT,
                             score_equipe2 INT,
-                            date TIMESTAMP WITH TIME ZONE
+                            date TIMESTAMP WITH TIME ZONE,
+                            PRIMARY KEY (date, tournoi,equipe1,equipe2)
+
                         );
                     """)
 
@@ -409,8 +412,7 @@ class ResetDatabase(metaclass=Singleton):
                             # Insérer le match dans la base de données
                             cursor.execute("""
                                 INSERT INTO match_result (tournoi, equipe1, equipe2, score_equipe1, score_equipe2,date)
-                                VALUES (%s, %s, %s, %s, %s, %s)
-                                ON CONFLICT (tournoi, equipe1, equipe2, score_equipe1, score_equipe2,date) DO NOTHING;
+                                VALUES (%s, %s, %s, %s, %s, %s);
                             """, (
                                 tournament_name,
                                 matches[i]['team_left'],
@@ -419,10 +421,10 @@ class ResetDatabase(metaclass=Singleton):
                                 score_equipe2,
                                 dates[i-100]
                             ))
+                            connection.commit()
 
                         except Exception as e:
                             print(f"")
-
                     print(f"{min(100, len(matches))} matchs insérés dans la table `match_result`.")
 
         except Exception as e:
@@ -431,9 +433,9 @@ class ResetDatabase(metaclass=Singleton):
 
     def lancer(self):
 
-        self.lancer_joueur()
-        self.lancer_equipe()
-        self.lancer_match()
+        #self.lancer_joueur()
+        #self.lancer_equipe()
+        #self.lancer_match()
         self.lancer_paris()
         self.lancer_paris_utilisateur()
         self.lancer_tournoi()
@@ -448,10 +450,11 @@ class ResetDatabase(metaclass=Singleton):
         match_processor = MatchProcessor(api)
 
         # Step 2: Récupérer les matchs
-        match_processor.recup_matches(page=1, page_size=100000000000)
+        #match_processor.recup_matches(page=1, page_size=100000000000)
 
         # Step 3: Récupérer les données des matchs
-        match_processor.recup_match_data()
+        #match_processor.recup_match_data()
 
         # Step 4: Traiter les matchs et les joueurs
-        match_processor.process_matches()
+        #match_processor.process_matches()
+

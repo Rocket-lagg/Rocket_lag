@@ -85,13 +85,7 @@ class EntiteSportive(ABC):
         assert isinstance(saves, int), "saves doit être un entier"
         assert isinstance(assists, int), "assists doit être un entier"
         assert isinstance(score, int), "score doit être un entier"
-        assert isinstance(time_offensive_third, float), "time_offensive_third doit être un flottant"
-        assert isinstance(time_defensive_third, float), "time_defensive_third doit être un flottant"
-        assert isinstance(time_neutral_third, float) or isinstance(
-            time_neutral_third, int
-        ), "time_neutral_third doit être un flottant"
-        assert isinstance(demo_inflige, int), "demo_inflige doit être un entier"
-        assert isinstance(demo_recu, int), "demo_recu doit être un entier"
+        
 
         self.match_id = match_id
         self.equipe_nom = equipe_nom

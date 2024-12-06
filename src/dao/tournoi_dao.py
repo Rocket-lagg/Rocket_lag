@@ -100,7 +100,6 @@ class TournoiDao(metaclass=Singleton):
                                 id_tournoi=element["id_tournoi"],
                                 tour=element["tours"],
                                 type_match=element["type_match"],
-                                officiel=element["officiel"],
                             )
                             liste_tournois.append(tournoi)
                         return liste_tournois
@@ -111,7 +110,6 @@ class TournoiDao(metaclass=Singleton):
                             id_tournoi=res["id_tournoi"],
                             tour=res["tours"],
                             type_match=res["type_match"],
-                            officiel=res["officiel"],
                         )
                         return [tournoi]
 
@@ -713,3 +711,5 @@ class TournoiDao(metaclass=Singleton):
         except Exception as e:
             print(f"Erreur lors de la récupération des matchs du tournoi {id_tournoi} : {e}")
             return None
+
+

@@ -344,7 +344,6 @@ class MatchDao(metaclass=Singleton):
                 "stage": row["stage"],
                 "nom": row["nom"],
                 "nationalite": row["nationalite"],
-                "rating": row["rating"],
                 "shots": row["shots"],
                 "goals": row["goals"],
                 "saves": row["saves"],
@@ -497,5 +496,3 @@ class MatchDao(metaclass=Singleton):
         except Exception as e:
             logging.error(f"Erreur lors de l'ajout d'un match : {e}")
             raise
-
-

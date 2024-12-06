@@ -91,8 +91,7 @@ class BallchasingAPI:
         if all_replays:
             for i in range(len(all_replays)):
                 replay_id = all_replays[i]
-                match_details = ballchasing_api.match_data(replay_id)
-                match_process(replay)
+                self.match_process(replay_id,ligue,stage,region)
 
     def add_world(self):
         group_id ="1-swiss-stage-4ws5jld17r"
@@ -126,7 +125,6 @@ class BallchasingAPI:
         date = match_data.get("date", "Date inconnue")
         players_blue = [player.get("name", "Joueur inconnu") for player in match_data.get("blue", {}).get("players", [])]
         players_orange = [player.get("name", "Joueur inconnu") for player in match_data.get("orange", {}).get("players", [])]
-
         conserver_match=[]
 
         for couleur in ["blue", "orange"]:  # Parcourir les deux équipes
@@ -257,23 +255,23 @@ class BallchasingAPI:
 
         # Construire les données du match
         match_data = {
-            "date": date,
-            "stage": stage,
-            "ligue": ligue,
-            "region": region,
-            "score1": score1,
-            "score2": score2,
+            "match_id": replay,
             "equipe1": conserver_match[0].equipe_nom,
             "equipe2": conserver_match[1].equipe_nom,
+            "date": date,
+            "region": region,
+            "stage": stage,
+            "ligue": ligue,
             "perso": False,
+            "score1": score1,
+            "score2": score2,
             "cote_equipe1": 2.0,
             "cote_equipe2": 2.0,
         }
 
         # Enregistrer le match dans la base de données
-        result_match = self.match_dao.add_match(match_data)
-
-
+        match = Match(**match_data)
+        result_match = self.match_dao.creer(match)
 
 
 
